@@ -1,0 +1,546 @@
+#+TODO: TODO BACKLOGGED(!) SCHEDULED(!) STARTED(!) SUSPENDED(!) BLOCKED(!) DELEGATED(!) ABANDONED(!) DONE
+
+# FOR DOCUMENTATION OF THESE OPTIONS, see 12.2, Export Settings of the Org Info Manual
+
+#+OPTIONS: ':t                # export smart quotes
+#+OPTIONS: *:t                # export emphasized text
+#+OPTIONS: -:t                # conversion of special strings
+#+OPTIONS: ::t                # fixed-width sections
+#+OPTIONS: <:t                # time/date active/inactive stamps
+#+OPTIONS: \n:nil             # preserve line breaks
+#+OPTIONS: ^:nil              # TeX-like syntax for sub- and super-scripts
+#+OPTIONS: arch:headline      # archived trees
+#+OPTIONS: author:t           # toggle inclusion of author name on export
+#+OPTIONS: broken-links:mark  # ?
+#+OPTIONS: c:nil              # clock keywords
+#+OPTIONS: creator:nil        # other value is 'comment'
+
+# Exporting of drawers
+
+#+OPTIONS: d:t
+
+# Exporting of drawers to LaTeX is NOT WORKING as of 25 March 2020. The
+# workaround is to wrap the drawers in #+begin_example and #+end_example.
+
+# #+OPTIONS: d:("LOGBOOK")      # drawers to include or exclude
+
+#+OPTIONS: date:t             # ?
+#+OPTIONS: e:t                # entities
+#+OPTIONS: email:nil          # do or don't export my email
+#+OPTIONS: f:t                # footnotes
+#+OPTIONS: H:3                # number of headline levels to export
+#+OPTIONS: inline:t           # export inline tasks?
+#+OPTIONS: num:t              # section numbers
+#+OPTIONS: p:nil              # toggle export of planning information
+#+OPTIONS: pri:nil            # priority cookies
+#+OPTIONS: prop:("ATTACH_DIR" "Attachments")           # include property drawers? or list to include?
+#+OPTIONS: stat:t             # statistics cookies?
+#+OPTIONS: tags:t             # org-export-with-tags? (what's a "tag"?)
+#+OPTIONS: tasks:t            # include TODO items ("tasks" some complexity here)
+#+OPTIONS: tex:t              # exports inline LaTeX
+#+OPTIONS: timestamp:t        # creation timestamp in the exported file?
+#+OPTIONS: toc:2              # set level limit in TOC or nil to exclude
+#+OPTIONS: todo:t             # inclusion of actual TODO keyword
+#+OPTIONS: |:t                # include tables
+
+#+CREATOR: Emacs 26.2 of 2019-04-12, org version: 9.2.2
+
+#+LaTeX_HEADER: \usepackage{bm}
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{cmll}
+#+LaTeX_HEADER: \usepackage{amsmath}
+#+LaTeX_HEADER: \usepackage{amssymb}
+#+LaTeX_HEADER: \usepackage{interval}  % must install texlive-full
+#+LaTeX_HEADER: \usepackage{mathtools}
+#+LaTeX_HEADER: \usepackage{interval}  % must install texlive-full
+#+LaTeX_HEADER: \usepackage[shortcuts]{extdash}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usepackage[utf8]{inputenc}
+
+# #+LaTeX_HEADER: \usepackage[top=0.90in,bottom=0.55in,left=1in,right=1in,includefoot]{geometry}
+
+#+LaTeX_HEADER: \usepackage[top=1.25in,bottom=1.25in,left=1.25in,right=1.25in,includefoot]{geometry}
+
+#+LaTeX_HEADER: \usepackage{palatino}
+
+#+LaTeX_HEADER: \usepackage{siunitx}
+#+LaTeX_HEADER: \usepackage{braket}
+#+LaTeX_HEADER: \usepackage[euler-digits,euler-hat-accent]{eulervm}
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancyplain}
+#+LATEX_HEADER: \lhead{}
+#+LATEX_HEADER: \chead{\textbf{(c) Brian Beckman, 2023; Creative Commons Attribution-ShareAlike CC-BY-SA}}
+#+LATEX_HEADER: \rhead{}
+#+LATEX_HEADER: \lfoot{(c) Brian Beckman, 2023; CC-BY-SA}
+#+LATEX_HEADER: \cfoot{\thepage}
+#+LATEX_HEADER: \rfoot{}
+#+LATEX_HEADER: \usepackage{lineno}
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{tipa}
+
+# #+LATEX_HEADER: \linenumbers
+
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \setlength{\parindent}{15pt}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage[atend]{bookmark}
+#+LATEX_HEADER: \usepackage{mdframed}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc} % usually not needed (loaded by default)
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+#+LATEX_HEADER_EXTRA: \bookmarksetup{open, openlevel=2, numbered}
+#+LATEX_HEADER_EXTRA: \DeclareUnicodeCharacter{03BB}{$\lambda$}
+# The following doesn't work: just search replace literal ESC=27=1B with ^[ !
+# #+LATEX_HEADER_EXTRA: \DeclareUnicodeCharacter{001B}{xx}
+
+#                                                    _
+#  _ _  _____ __ __  __ ___ _ __  _ __  __ _ _ _  __| |___
+# | ' \/ -_) V  V / / _/ _ \ '  \| '  \/ _` | ' \/ _` (_-<
+# |_||_\___|\_/\_/  \__\___/_|_|_|_|_|_\__,_|_||_\__,_/__/
+
+#+LaTeX_HEADER: \newcommand\definedas{\stackrel{\text{\tiny def}}{=}}
+#+LaTeX_HEADER: \newcommand\belex{BELEX}
+#+LaTeX_HEADER: \newcommand\bleir{BLEIR}
+#+LaTeX_HEADER: \newcommand\llb{low-level \belex}
+#+LaTeX_HEADER: \newcommand\hlb{high-level \belex}
+#+LaTeX_HEADER: \newcommand{\Coloneqq}{\mathrel{\vcenter{\hbox{$:$}}{\coloneqq}}}
+
+
+#+SELECT_TAGS: export
+#+STARTUP: indent
+
+#+LaTeX_CLASS_OPTIONS: [10pt,oneside,x11names]
+
+#+LATEX: \setlength\parindent{0pt}
+
+# #+STARTUP: latexpreview inlineimages showall
+# #+STARTUP: showall
+
+#+TITLE: Concurrent Kittens
+#+AUTHOR: Brian Beckman
+#+DATE: 24 Mar 2023
+
+#+BEGIN_SRC elisp :exports none
+  (setq org-babel-python-command "python3")
+  (setq org-image-actual-width nil)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-src-fontify-natively t)
+  (add-to-list 'org-latex-packages-alist '("" "listingsutf8"))
+  (setq org-export-latex-listings 'minted)
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+        org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (org-babel-do-load-languages 'org-babel-load-languages
+   '((ditaa . t) (latex . t)))
+  (princ (concat (format "Emacs version: %s\n" (emacs-version))
+                 (format "org version: %s\n" (org-version))))
+#+END_SRC
+
+#+RESULTS:
+: Emacs version: GNU Emacs 28.2 (build 1, aarch64-apple-darwin21.1.0, NS appkit-2113.00 Version 12.0.1 (Build 21A559))
+:  of 2022-09-12
+: org version: 9.5.5
+
+* Change Log
+
+2023-24-Mar :: Current version.
+
+2023-22-Mar :: Start.
+
+* Prologue
+
+I must confess a mild mental disability: when I think about
+programs, I visualize little boats full of kittens and other
+little boats.
+
+=1+2*3=, five little kittens drowning in the sea. Venus rises on
+her half-shell, fists full of bows and sterns in matching colors.
+She reaches down and builds little boats, each from a bow and a
+stern. She puts some little kittens in each boat --- often three.
+Sometimes, she puts another little boat in a boat instead of a
+kitten.
+
+She kisses the first kitten (or boat) in each boat and says
+"You're the captain; take care of the others!" She blesses each
+little boat and sinks back into the sea, leaving =(+ 1 (* 2 3))=
+sailing safely on the waves. I open my eyes and see the kittens
+drowning again.
+
+Then again, who hasn't been burnt by C code like =x | y & z= or
+=x / y * z=? Maybe you're one of us dreamers, after all.
+
+** What?
+
+Let's implement some fundamental terms from the rho calculus[fn:: Meredith, L. G.; Radestock, Mattias (22 December 2005). "A Reflective Higher-Order Calculus". Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. doi:10.1016/j.entcs.2005.05.016.]
+and the pi calculus[fn:PI: https://en.wikipedia.org/wiki/%CE%A0-calculus]
+in a DSL[fn:: https://en.wikipedia.org/wiki/Domain-specific_language]
+made of little boats.
+That means "embedded in Clojure." Asynchronous behavior is easy to
+model in Clojure, and we have Clojure specs for type checking.
+
+Clojure expressions look like little boats containing kittens or
+other little boats, with the first one being the captain of its
+boat.
+
+** Why Not Scala?
+
+It's like this: you call up your friend Nancy and invite her to a
+party at your house. She asks "Will Ted be there?" You think to
+yourself /what fun!/ and innocently say, "Yes, I think so! I
+invited him!" Nancy says "I'm terribly sorry, but I won't be able
+to make it to your party. Please have a great time and give my
+best to everyone!" Nancy hangs up and thinks to herself /except
+Ted/. See me in person over a drink and I'll tell you more.
+
+** Why Not Something Better?
+
+I might use Agda, but it's obscure. I might use Haskell or
+Mathematica, but I no one else will use them. I might use Python,
+but, well, ok, umm, never mind, no. I might use Common Lisp. It's
+great, but not modern. I might use Racket, designed for DSLs after
+all, but no one else uses it. I might use Coq. It's full of rabbit
+holes -- otherwise lovely. I might use C++, but I would drive us
+both crazy. There /is/ a path of least resistance for me,
+considering all things.
+
+
+** "Clojure doesn't have types!"
+
+Not so. Clojure.spec[fn:: https://clojure.org/guides/spec] is at
+least as strong as types. It's not static, that's true, but
+=s/conform= /could/ be static.
+
+Static or not hardly matters in our case. We can build little
+boats on land before setting sail, or Venus will build them at sea
+for us. We can check types, we can do rewriting, we can prove
+theorems. It's good enough.
+
+Also, Clojure is already in our toolchain. We use it for abstract
+interpretation and test generation[fn:: https://github.com/rebcabin/asr-tester]
+for lfortran and lpython.[fn:: https://github.com/lcompilers]
+
+** How?
+
+This is an executable document. When I produce a PDF from it, all
+code blocks are executed and results reported. I like this better
+than Jupyter notebooks for many reasons, not least because I can
+define things in any order, say /after/ I use them. This document
+is an instance of Knuth's literate programming[fn::
+https://en.wikipedia.org/wiki/Literate_programming]. in
+org-babel.[fn:: https://orgmode.org/worg/org-contrib/babel/]
+
+* $\Pi$ Kittens in Little Boats
+
+#+begin_quote
+/Each boat contains kittens and / or more little boats. So we'll just say "kitten" and mean "an actual kitten or a little boat containing kittens or more little boats."/
+#+end_quote
+
+From the wiki page[fn:PI]
+
+#+begin_export latex
+\begin{equation}
+\begin{array}{clll}
+  P, Q & \Coloneqq \\
+       & | \quad 0                            & \textrm{dead kitten}       & \textrm{do nothing; halt}                                 \\
+       & | \quad x(y).P                       & \textrm{quiet kitten}      & \textrm{wait for }x\textrm{ on channel }y                 \\
+       & | \quad \bar{x}\langle{}y\rangle{}.P & \textrm{chatty kitten}     & \textrm{put }y\textrm{ on channel }x\textrm{; don't wait} \\
+       & | \quad P \vert Q                    & \textrm{two kittens}       & \textrm{run }P\textrm{ and }Q\textrm{ in parallel }       \\
+       & | \quad (\nu x) P                   & \textrm{whispering kitten} & \textrm{declare unbound fresh name }x\textrm{ in }P       \\
+       & | \quad ! P                          & \textrm{mama cat}          & \textrm{run copies of }P\textrm{ forever}
+\end{array}
+\end{equation}
+#+end_export
+
+This is super-low-level, like $\lambda$ calculus. We'd have to
+build up numbers (like Church numerals), Booleans, sets,
+functions, conditionals, loops, everything.
+
+Here is a tiny cartoon showing a straight reduction:
+
+
+We can jump ahead and try Clojure's very blue-collar
+/core.async/[fn:: https://clojuredocs.org/clojure.core.async]
+
+** Quiet Kitten
+
+** Chatty Kitten
+
+* COMMENT Get Started, Already!
+
+To make things easier to see, here is a little macro that prints
+an expression on the way to evaluating it. Semantically, it's the
+identity function, except that it forces side-effects. When we
+don't use it, we must otherwise force side-effects, say via
+=dorun= or =doall=[fn:: https://clojuredocs.org/clojure.core/doall].
+
+\vskip 0.26cm
+#+begin_src clojure :exports code :results none
+(defmacro plnecho
+  "preimage and value"
+  [x]
+  `(let [x# ~x]
+     (do (println '~x "~~>" x#)
+         x#)))
+#+end_src
+
+\newpage
+* COMMENT The Zoo
+
+** Agent
+
+Consider a Clojure agent[fn:: https://clojuredocs.org/clojure.core/agent]
+for asynchronous, atomic transactions:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results value
+  ;; Start up an agent for integers with 0 as its initial contents:
+  (let [counter (agent 0 :validator int?)
+        second  1000] ; custom unit of measure
+      ;; Send a value-changing function asynchronously:
+      (send counter (partial + 3))
+      ;; Wait for the agent to finish, with a timeout:
+      (await-for (* 5 second) counter)
+      ;; Fetch and report result; expect 3.
+      @counter)
+#+end_src
+
+#+RESULTS:
+: 3
+
+Notice the optional /validator/. Later, we'll replace that with a
+Clojure spec so that contents of agents are type-checked, at least
+at run-time.
+
+** Record
+
+Consider a Clojure defrecord[fn:: https://clojuredocs.org/clojure.core/defrecord]:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (do (defrecord Point [x y])
+      (let [joy (Point. 2.712, 3.14)]
+        (:x joy)))
+#+end_src
+
+#+RESULTS:
+: 2.712
+
+* Policy as Types
+
+Consider "Policy as Types."[fn:: https://arxiv.org/pdf/1307.7766.pdf]
+and this definition of a /Cell/, with my edits on the syntax,
+
+\vskip 0.26cm
+#+begin_src c++ :eval never
+  def Cell(slot, state) => {
+    new (v) {    // fresh name for a channel
+      v!(state)  // Write "state" to channel "v".
+      match {
+        slot?get(ret) => {  // If recv'g a "get" for "ret" on "slot",
+          for(s <- v) => ret!(s) // fetch "s" from "v"; write to "ret";
+          Cell(slot, s) }   // continue as "slot" with state "s".
+        slot?set(s) => {    // If recv'g a "set" message on "slot",
+          Cell(slot, s) }   // continue as "slot" with state "s".
+  } } }
+#+end_src
+
+** Channel
+
+Model channels like /slot/, which can process =get= and =set=
+messages, via a Clojure record that implements a Clojure
+/protocol/[fn:: https://clojuredocs.org/clojure.core/defprotocol]
+that implements those messages:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results none
+  (defprotocol Match
+    ;; Names "get" and "set" are reserved for Clojure / Java.
+    ;; Name our functions "get-" and "set-".
+    (get- [this ret])
+    (set- [this s]))
+#+end_src
+
+That means we can call =get-= and =set-= on instances of any type
+that implements the =Match= protocol. The leading hyphen in names
+like =-ag= means that the attribute named =-ag= is private. There
+is no enforcement of /private/; such would interfere with testing.
+It's just a naming convention. A trailing hyphen is conventional
+for names that would otherwise collide.
+
+In the following, =ret= and =s= are =Chan='s. To access their
+=-ag= attributes, write =(:-ag ret)=, for instance, as if =ret=
+were a hash-map. That's Clojure idiom.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results none
+  (do
+    (defrecord Chan [-ag] ;; Must be an initialized agent.
+      Match ; "-ag" without adornment means "my agent."
+      ;; ":-ag" as a Clojure keyword means "the other guy's agent."
+      (get- [_ ret] (send (:-ag ret) (fn [_] @-ag)))      ; async
+      (set- [_ s]   (send   -ag      (fn [_] (:-ag s))))) ; async
+    ;; Publicly, only make Chans this way.
+    (defn make-Chan [initial-state]
+      (Chan. (agent initial-state))))
+#+end_src
+
+To test =Chan=, make =a-chan= that contains 17; make a =ret=
+=Chan= initially containing 42; then =get-= the contents of
+=a-chan= into the =ret='s agent and check that its contents are
+17; don't forget =dorun= to force the asynchronous update:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (let [a-chan (make-Chan 17)
+        ret (make-Chan 42)]
+    (dorun [(get- a-chan ret)])
+    @(:-ag ret))
+#+end_src
+
+#+RESULTS:
+: 42
+
+Later, we'll put channels themselves, instead of integers, in
+channels. For the above, integers make for an easy test.
+
+** Spec for Channel
+
+In this instance, a spec for =Chan= is a simple wrapper over the
+built-in =instance?= predicate:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results none
+  (s/def ::chan (partial instance? Chan))
+#+end_src
+
+Clojure.spec requires specs to be named with namespaced keywords.
+The double-colon prefix means "in the current namespace." More
+generally, one may write =<some-namespace>/:some-keyword= to
+inject specs into other namespaces, with =/='s being the sigil for
+Clojure namespaces.
+
+Check it:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (s/valid? ::chan (make-Chan 42))
+#+end_src
+
+#+RESULTS:
+: true
+
+Let's redefine =Chan= so that the contents of all channels are,
+themselves, channels. We'll need a base case, the null channel or
+/stopped process/, denoted $0$ in Rho and Pi. Let that be an agent
+that contains the integer 0 and rejects anything else with a
+validator. An attempt to update the contents of =null-Chan= will
+raise an exception.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (do (s/def ::null-chan (s/and ::chan #(= 0 @(:-ag %))))
+      (def null-Chan (Chan. (agent 0 :validator (partial = 0))))
+      (s/valid? ::null-chan null-Chan))
+#+end_src
+
+#+RESULTS:
+: true
+
+In a later paper, we'll implement things like Church numerals with
+such. For now, let it suffice to check that the initial state of a
+=Chan= is either a =Chan= or an int, just so we can check the
+machinery. Unlike =s/and=, =s/or= requires us to name the
+alternatives. We do so with non-namespaced keywords =:int-chan=
+and =:chan=. Order matters because =s/or= stops on first success.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+    (do
+      (s/def ::chan-or-int
+        (s/or :int  int?
+              :chan ::chan))
+      (s/valid?
+       ::chan-or-int (make-Chan 42)))
+#+end_src
+
+#+RESULTS:
+: true
+
+Now, rewrite =Chan= so that it checks =initial-state= for
+conformance. Notice that, syntactically, the call to =s/conform=
+looks like a type assertion. We can lift such type checks closer
+to compile time by writing macros, but not now.
+
+Also be aware this is not the final form for =Chan=. It's just an
+intermediate form we can test on integer contents. In fact, it
+/only/ works on integers contents, just so we can test the basics.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results none
+  (do
+    (defrecord Chan [-ag] ;; Must be an initialized agent.
+      Match               ; "-ag" without adornment means "my agent."
+      ;; ":-ag" as a Clojure keyword means "the other guy's agent."
+      (get- [_ ret] (send (:-ag ret) (fn [_] @-ag)))      ; async
+      (set- [_ s]   (send   -ag      (fn [_] (:-ag s))))) ; async
+    ;; Publicly, only make Chans this way.
+    (defn make-Chan [initial-state]
+      (Chan. (:int (s/conform
+                     ::chan-or-int
+                     initial-state)))))
+#+end_src
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (let [a-chan (make-Chan 17)
+        ret (make-Chan 42)]
+    (dorun [(get- a-chan ret)])
+    @(:-ag ret))
+#+end_src
+
+#+RESULTS:
+: class java.lang.NullPointerException
+
+
+** TODO: Cell (UNDONE)
+
+Model /Cell/ above with another Clojure record that
+implements the same protocol, but differently:
+
+#+begin_src clojure :exports both
+  (do
+    (defrecord Cell [slot, state, -v]
+        Match
+      (get- [_ ret] (let [s @-v]
+                      (send ret (fn [_] s))
+                      (Cell. slot, s, (agent s))))
+      (set- [_ s] (Cell. slot, s, (agent s))))
+    ;; Publicly, only make Cells this way:
+    (defn make-Cell [slot, state]
+      (Cell. slot, state, (agent state))))
+#+end_src
+
+#+RESULTS:
+: #'intrinsic-function.core/make-Cell
+
+#+begin_src clojure :exports both :results output
+  ;;                         slot   initial state
+  (let [a-cell (plnecho (make-Cell (agent 17) 42))
+        b-cell (doall [(plnecho (set- a-cell 143))])
+        receiver (agent 1764)]
+    #_(println a-cell)
+    #_(dorun [(get- b-cell receiver)])
+    @receiver)
+#+end_src
+
+#+RESULTS:
+: (make-Cell (agent 17) 42) ~~> #intrinsic_function.core.Cell{:slot #agent[{:status :ready, :val 17} 0x2b9d2d5d], :state 42, :-v #agent[{:status :ready, :val 42} 0x3352071f]}
+: (set- a-cell 143) ~~> #intrinsic_function.core.Cell{:slot #agent[{:status :ready, :val 17} 0x2b9d2d5d], :state 143, :-v #agent[{:status :ready, :val 143} 0x2214bed]}

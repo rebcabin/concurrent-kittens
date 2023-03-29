@@ -1,0 +1,437 @@
+% Created 2023-03-21 Tue 12:27
+% Intended LaTeX compiler: pdflatex
+\documentclass[10pt,oneside,x11names]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{bm}
+\usepackage[T1]{fontenc}
+\usepackage{cmll}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{interval}  % must install texlive-full
+\usepackage{mathtools}
+\usepackage{interval}  % must install texlive-full
+\usepackage[shortcuts]{extdash}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[top=1.25in,bottom=1.25in,left=1.25in,right=1.25in,includefoot]{geometry}
+\usepackage{palatino}
+\usepackage{siunitx}
+\usepackage{braket}
+\usepackage[euler-digits,euler-hat-accent]{eulervm}
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\lhead{}
+\chead{\textbf{(c) Brian Beckman, 2023; Creative Commons Attribution-ShareAlike CC-BY-SA}}
+\rhead{}
+\lfoot{(c) Brian Beckman, 2023; CC-BY-SA}
+\cfoot{\thepage}
+\rfoot{}
+\usepackage{lineno}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{parskip}
+\setlength{\parindent}{15pt}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage[atend]{bookmark}
+\usepackage{mdframed}
+\usepackage[utf8]{inputenc} % usually not needed (loaded by default)
+\usepackage[T1]{fontenc}
+\newcommand\definedas{\stackrel{\text{\tiny def}}{=}}
+\newcommand\belex{BELEX}
+\newcommand\bleir{BLEIR}
+\newcommand\llb{low-level \belex}
+\newcommand\hlb{high-level \belex}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\bookmarksetup{open, openlevel=2, numbered}
+\DeclareUnicodeCharacter{03BB}{$\lambda$}
+\author{Brian Beckman, Ondřej Čertik}
+\date{20 Mar 2023}
+\title{Programming Patterns for ASR}
+\hypersetup{
+ pdfauthor={Brian Beckman, Ondřej Čertik},
+ pdftitle={Programming Patterns for ASR},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.2 of 2019-04-12, org version: 9.2.2},
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\setlength\parindent{0pt}
+
+\section{Change Log}
+\label{sec:org91c10ca}
+
+2023-21-Mar :: Add section on dynamic binding.
+
+\section{What?}
+\label{sec:orgd55e568}
+
+Let's simplify some C++ code. We can't easily run it in this
+document, because it depends on a big tree of includes, but we can
+look at it and figure out what it's trying to do.
+
+The first thing to do is to indent this properly, to make the
+structure obvious and to expose patterns. Standard C++ indentation
+is less than helpful.
+
+In Listing \ref{fig:typical-node-creation}, we see pushing back
+(appending) an assignment statement to the body of something we're
+building up. The assignment statement has five parameters:
+
+\begin{enumerate}
+\item an \emph{allocator}: \mintinline{c++}{Allocator & al}
+
+\item a \emph{location}, e.g., \texttt{file}, \texttt{line}, \texttt{column}: \mintinline{c++}{const Location & a_loc}
+
+\item a \emph{target} expression: \mintinline{c++}{expr_t * a_target},
+usually a \texttt{Var}
+
+\item a source or \emph{value} expression: \mintinline{c++}{expr_t * a_value}
+
+\item an \emph{overloaded}, \mintinline{c++}{stmt_t * a_overloaded},
+meaning obscure at present
+\end{enumerate}
+
+This particular assignment statement assigns or \emph{binds} the result
+of a function call to a variable.
+
+\begin{listing}[htbp]
+\begin{minted}[]{c++}
+body.push_back(
+    al, // Allocator  & al
+    ASRUtils::STMT(
+        ASR::make_Assignment_t(
+            al,     // Allocator      & al
+            loc,    // const Location & a_loc
+            // expr_t * a_target
+            ASRUtils::EXPR(
+                ASR::make_Var_t(
+                    al,          // Allocator      & al
+                    loc,         // const Location & a_loc
+                    return_var)),// symbol_t       * a_v
+            // expr_t * a_value
+            ASRUtils::EXPR(
+                ASR::make_FunctionCall_t(
+                    al,          // Allocator      & al
+                    loc,         // const Location & a_loc
+                    s,           // symbol_t       * a_name
+                    s,           // symbol_t       * a_original_name
+                    call_args.p, // call_arg_t     * a_args
+                    call_args.n, // size_t           n_args
+                    arg_type,    // ttype_t        * a_type
+                    nullptr,     // expr_t         * a_value
+                    nullptr)),   // expr_t         * a_dt
+            nullptr // stmt_t * a_overloaded
+            )));
+
+\end{minted}
+\caption{\label{fig:typical-node-creation}Typical Node Creation}
+\end{listing}
+
+\newpage
+The \texttt{STMT} and \texttt{EXPR} parameters and arguments correspond to
+\emph{terms} in the ASR grammar (see the file \texttt{asr.asdl}):
+
+\vskip 0.26cm
+\begin{verbatim}
+expr
+  = ...
+  | FunctionCall(symbol name, symbol? original_name,
+          call_arg* args, ttype type, expr? value, expr? dt)
+  | ...
+  | Var(symbol v)
+  | ...
+\end{verbatim}
+
+\vskip 0.26cm
+\begin{verbatim}
+stmt
+  = ...
+  | Assignment(expr target, expr value, stmt? overloaded)
+  | ...
+\end{verbatim}
+
+Note that the ``factory functions''
+\begin{itemize}
+\item \mintinline{c++}{ASR::make_FunctionCall_t}
+\item \mintinline{c++}{ASR::make_Var_t}
+\item \mintinline{c++}{ASR::make_Assignment_t}
+\end{itemize}
+are automatically
+generated from the ASR grammar.
+
+Our job is to simplify the \emph{use cases} for these functions -- the
+way they're called in, for example, Listing
+\ref{fig:typical-node-creation}, whilst preserving automatic
+generation from the grammar.
+
+We'd like to see something like Listing
+\ref{fig:simplified-usage}, which removes two levels of
+indentation, removes the ``always'' parameters \texttt{al} and \texttt{loc}, and
+defaults several arguments of pointer type to \mintinline{c++}{nullptr}. This is obviously easier on the eyes.
+
+\begin{listing}[htbp]
+\begin{minted}[]{c++}
+body.push_back_ALLOC(
+    ASRUtils::make_Assignment_STMT(
+        ASRUtils::make_Var_EXPR(
+            return_var), // symbol_t       * a_v
+        // expr_t * a_value
+        ASRUtils::make_FunctionCall_EXPR(
+            s,           // symbol_t       * a_name
+            s,           // symbol_t       * a_original_name
+            call_args.p, // call_arg_t     * a_args
+            call_args.n, // size_t           n_args
+            arg_type))); // ttype_t        * a_type
+\end{minted}
+\caption{\label{fig:simplified-usage}Simplified Node Creation}
+\end{listing}
+
+In these figures, I supplied the indentation and commentary with
+types and names of parameters by hand. Such indentation and
+commentary is very helpful and straightforward to implement in the
+ASR processor.
+
+How do we get from Figure \ref{fig:typical-node-creation} to
+Figure \ref{fig:simplified-usage}? There are several patterns to
+exploit to reduce the size and noisiness of this code:
+
+\begin{enumerate}
+\item Every level, including the \(0^{th}\) level, \texttt{push\_back}, has an
+allocator ref, \texttt{\& al}. This is probably either always the same
+or it can be supplied as a stack-disciplined, dynamically
+bound free variable.
+
+\item All levels below the first have location arguments. These will
+be likely different for each sub-term -- each \texttt{STMT} and
+\texttt{EXPR}. These should certainly be supplied as a
+stack-disciplined, dynamically bound free variable.
+
+\item The immediate construction of \texttt{EXPR}'s around the
+\texttt{FunctionCall} node and \texttt{Var} nodes to \texttt{EXPR} is pure noise.
+These can be replaced by higher-level calls. Likewise with
+the immediate construction of a \texttt{STMT} from the \texttt{Assignment}
+node.
+
+\item There are multiple ways to default arguments in C++. In our
+case, because the defaulted arguments are last in the parameter
+lists, \emph{overloads} might be the easiest way to specify them.
+See this reference for more.\footnote{\url{https://en.cppreference.com/w/cpp/language/default\_arguments}}
+\end{enumerate}
+
+\section{Dynamically Bound Variables}
+\label{sec:org36a4936}
+
+\subsection{Review of Lexical Binding}
+\label{sec:org131bb36}
+
+\emph{Lexical binding} is the norm. Roughly, it means ``the place where
+a variable acquires its value is obvious from just looking at the
+source code.'' It's a simple concept, but tied to a bunch of
+unfortunate, but necessary, terminology.
+
+Consider a function \texttt{f} that multiplies its argument, the \emph{bound
+variable} \texttt{x}, by the \emph{free variable} \texttt{y}, and returns the
+product. Let \texttt{y} be a global variable for the moment; we'll modify
+that later. The function \texttt{f} is in \emph{the scope}\footnote{\url{https://en.wikipedia.org/wiki/Scope\_(computer\_science)}}
+of the global variable \texttt{y}.
+
+\vskip 0.25cm
+\begin{minted}[]{c++}
+int y = 6;
+
+int f (int x) { int result = x * y; return result; }
+
+int main () { printf ("yfree = %d, f(xbound=%d) ~~> %d\n",
+                      y, 7, f(7)); }
+\end{minted}
+
+\begin{verbatim}
+yfree = 6, f(xbound=7) ~~> 42
+\end{verbatim}
+
+
+\begin{itemize}
+\item Summary of confusing terminology:
+
+\begin{itemize}
+\item \texttt{y} is free in the body of \texttt{f}, the opposite of \emph{bound}.
+
+\item \texttt{y} is \emph{not} bound in the body of \texttt{f}.
+
+\item \texttt{y} is \emph{lexically bound} in the body of \texttt{f} and in the
+bodies of any other functions in the \emph{scope} of \texttt{y}.
+
+\item \texttt{y} is \emph{globally bound}, meaning its scope is at least the
+entire file below the lexical position at which \texttt{y} acquires a
+value. Its scope can be enlarged at link time with the help of
+\texttt{extern} declarations in other files.
+\end{itemize}
+
+\item \texttt{x} more precisely, \texttt{x} is a \emph{parameter} of the function \texttt{f}.
+When speaking imprecisely of \texttt{x} as an \emph{argument}, we mean
+
+\begin{quote}
+\emph{the  current value of the variable \texttt{x} in a particular invocation of \texttt{f}.}
+\end{quote}
+
+In the example above, it's clear that the argument \texttt{7}
+is the value of the parameter \texttt{x} in the invocation \texttt{f(7)}.
+
+\begin{itemize}
+\item It's best to be very careful to distinguish parameters, which
+are variables, from arguments, which are values.
+
+\item The process by which variables acquire values is called
+\textbf{\emph{binding}} the variables. In the example above, all binding
+of \texttt{x} and \texttt{y} is lexical binding: it's obvious from reading
+the source code wherefrom \texttt{x} and \texttt{y} acquire their values.
+\end{itemize}
+
+\item \texttt{x} is called a \textbf{\emph{bound variable}} in the body of the function
+\texttt{f} because \texttt{x} is a parameter in the parameter list of \texttt{f}.
+That's the only thing that \emph{bound variable}, as a single phrase,
+means: \emph{in the parameter list}.
+
+\begin{itemize}
+\item One must answer ``in the parameter list of \emph{what function}?''
+when speaking of a bound variable.
+
+\item The term ``bound variable'' actually has another meaning in
+another context: it can mean that the variable has a value,
+without pertaining to any other properties of the variable.
+This is very bad usage of terminology, because it makes the
+term ``bound variable'' ambiguous without the context. We shall
+be very careful to avoid that ambiguity.
+\end{itemize}
+
+\item \texttt{y} is called a \textbf{\emph{free variable}} in the body of the function
+\texttt{f} because \texttt{y} is not a parameter in the parameter list of \texttt{f}.
+That's the only thing that \emph{free variable} means: \emph{not in the
+parameter list}. Thus, a variable may be free in the body of one
+function and bound in the body of another function.
+
+\begin{itemize}
+\item Technically, \texttt{y} in some free occurrence and \texttt{y} in some bound
+occurrence are \emph{not} the same variables, but the same \emph{names}
+referring to different variables. This is a common source of
+confusion. One must take care to distinguish \emph{names of
+variables}, which are symbols, or sometimes strings, from
+\emph{names of storage locations}, which are the variables
+themselves. Yes, one may have the same name for different
+variables. The situation becomes more piquant with pointers
+and with C++ \texttt{\&} references, which permit multiple names for
+the same variable.
+
+\item One must answer ``not in the parameter list of \emph{what
+function}?'' when speaking of a free variable.
+
+\item The adjectives \emph{bound} and \emph{free}, without other
+qualifications, mean \emph{``bound variable'' in the body of some
+function} and \emph{``free variable'' in the body of some function},
+with the terms ``bound variable'' and ``free variable'' taken as
+whole phrases.
+\end{itemize}
+
+\item \texttt{y} is \emph{also} a \textbf{\emph{global variable}} in that little program
+above. That means that its value, when \texttt{y} occurs free in the
+body of the function \texttt{f} or in the body of any other function,
+is looked up in the global environment.
+
+\item \texttt{y} is called \textbf{\emph{lexically bound}} in the body of \texttt{f}. That means
+that a human reading the program can look around the source code
+and find the places where \texttt{y} acquired a value. In this case,
+\texttt{y} is statically assigned the value \texttt{6} in the global
+environment.
+
+\begin{itemize}
+\item Again, the terminology is confusing, and we avoid ambiguity by
+never taking shortcuts with the language. \emph{Bound}, by itself,
+means one thing, the opposite of \emph{free}, and \emph{lexically bound}
+is not just the adverb \emph{lexically} modifying the adjective
+\emph{bound}, but a whole phrase denoting an entirely separate
+concept.
+\end{itemize}
+\end{itemize}
+
+\subsection{Dynamically Binding \texttt{y}}
+\label{sec:org0521e28}
+
+\vskip 0.26cm
+\begin{minted}[]{c++}
+int y = 6;
+
+static int push_y = y; // generalize this to a run-time stack
+
+void bind_y(int value) { push_y = y; y = value; }
+
+void unbind_y() { y = push_y; }
+
+int f (int x) { int result = x * y; return result; }
+
+int main () {
+    bind_y(17);  // in Python, this would start a "with" block.
+    printf ("yfree = %d, f(xbound=%d) ~~> %d\n",
+                      y, 7, f(7));
+    unbind_y();  // this would end the "with" block.
+    printf ("but look, yfree is still %d!\n", y); }
+\end{minted}
+
+\begin{verbatim}
+yfree = 17, f(xbound=7) ~~> 119
+but look, yfree is still 6!
+\end{verbatim}
+
+
+Dynamic binding effects a temporary change to the value of a free
+variable, global or not, at run time. The value of a variable is
+no longer lexically obvious: one must look up a run-time stack and
+not just a lexical nest of bindings. In the example above, we have
+a pair of functions that work only for the variable \texttt{y}, and only
+for one level of dynamic binding, but that illustrate the concept.
+
+\begin{itemize}
+\item The scope of the dynamic binding of \texttt{y} is all the code between
+the call of \texttt{bind\_y} and the call of \texttt{unbind\_y}.
+
+\item In the scope of the dynamic binding of \texttt{y}, all free occurrences
+of \texttt{y} in the bodies of all functions, no matter how deeply
+nested, will have the value \texttt{17}, in this instance.
+
+\item To support nesting of binding scopes, replace the
+implementations of \texttt{bind\_y} and \texttt{unbind\_y} with implementations
+that employ a stack\footnote{\url{https://cplusplus.com/reference/stack/stack/}}.
+
+\item Generalizing dynamic binding to any variable requires either
+special syntax and compiler help in the programming language, as
+with \texttt{binding} in
+Clojure\footnote{\url{https://clojuredocs.org/clojure.core/binding}} or special
+variables in Common Lisp\footnote{\url{https://wiki.c2.com/?SpecialVariable}},
+or a global dictionary between variable names as strings, e.g.,
+\texttt{"x"}, and their variables, say \texttt{x}, along with a stack for each
+variable.
+
+\begin{itemize}
+\item Both the footnoted articles above are worth your time to read
+if you're not familiar with dynamic binding.
+\end{itemize}
+\end{itemize}
+\end{document}

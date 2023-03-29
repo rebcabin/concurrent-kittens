@@ -1,0 +1,1015 @@
+#+TODO: TODO BACKLOGGED(!) SCHEDULED(!) STARTED(!) SUSPENDED(!) BLOCKED(!) DELEGATED(!) ABANDONED(!) DONE
+
+# FOR DOCUMENTATION OF THESE OPTIONS, see 12.2, Export Settings of the Org Info Manual
+
+#+OPTIONS: ':t                # export smart quotes
+#+OPTIONS: *:t                # export emphasized text
+#+OPTIONS: -:t                # conversion of special strings
+#+OPTIONS: ::t                # fixed-width sections
+#+OPTIONS: <:t                # time/date active/inactive stamps
+#+OPTIONS: \n:nil             # preserve line breaks
+#+OPTIONS: ^:nil              # TeX-like syntax for sub- and super-scripts
+#+OPTIONS: arch:headline      # archived trees
+#+OPTIONS: author:t           # toggle inclusion of author name on export
+#+OPTIONS: broken-links:mark  # ?
+#+OPTIONS: c:nil              # clock keywords
+#+OPTIONS: creator:nil        # other value is 'comment'
+
+# Exporting of drawers
+
+#+OPTIONS: d:t
+
+# Exporting of drawers to LaTeX is NOT WORKING as of 25 March 2020. The
+# workaround is to wrap the drawers in #+begin_example and #+end_example.
+
+# #+OPTIONS: d:("LOGBOOK")      # drawers to include or exclude
+
+#+OPTIONS: date:t             # ?
+#+OPTIONS: e:t                # entities
+#+OPTIONS: email:nil          # do or don't export my email
+#+OPTIONS: f:t                # footnotes
+#+OPTIONS: H:3                # number of headline levels to export
+#+OPTIONS: inline:t           # export inline tasks?
+#+OPTIONS: num:t              # section numbers
+#+OPTIONS: p:nil              # toggle export of planning information
+#+OPTIONS: pri:nil            # priority cookies
+#+OPTIONS: prop:("ATTACH_DIR" "Attachments")           # include property drawers? or list to include?
+#+OPTIONS: stat:t             # statistics cookies?
+#+OPTIONS: tags:t             # org-export-with-tags? (what's a "tag"?)
+#+OPTIONS: tasks:t            # include TODO items ("tasks" some complexity here)
+#+OPTIONS: tex:t              # exports inline LaTeX
+#+OPTIONS: timestamp:t        # creation timestamp in the exported file?
+#+OPTIONS: toc:2              # set level limit in TOC or nil to exclude
+#+OPTIONS: todo:t             # inclusion of actual TODO keyword
+#+OPTIONS: |:t                # include tables
+
+#+CREATOR: Emacs 26.2 of 2019-04-12, org version: 9.2.2
+
+#+LaTeX_HEADER: \usepackage{bm}
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{cmll}
+#+LaTeX_HEADER: \usepackage{amsmath}
+#+LaTeX_HEADER: \usepackage{amsthm}
+#+LaTeX_HEADER: \usepackage{amssymb}
+#+LaTeX_HEADER: \usepackage{interval}  % must install texlive-full
+#+LaTeX_HEADER: \usepackage{mathtools}
+#+LaTeX_HEADER: \usepackage{interval}  % must install texlive-full
+#+LaTeX_HEADER: \usepackage[shortcuts]{extdash}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usepackage[utf8]{inputenc}
+
+# #+LaTeX_HEADER: \usepackage[top=0.90in,bottom=0.55in,left=1.25in,right=1.25in,includefoot]{geometry}
+
+#+LaTeX_HEADER: \usepackage[top=1.25in,bottom=1.25in,left=1.75in,right=1.75in,includefoot]{geometry}
+
+#+LaTeX_HEADER: \usepackage{palatino}
+
+#+LaTeX_HEADER: \usepackage{siunitx}
+#+LaTeX_HEADER: \usepackage{braket}
+#+LaTeX_HEADER: \usepackage[euler-digits,euler-hat-accent]{eulervm}
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancyplain}
+#+LATEX_HEADER: \lhead{}
+#+LATEX_HEADER: \chead{\textbf{(c) Brian Beckman, 2023; Creative Commons Attribution-ShareAlike CC-BY-SA}}
+#+LATEX_HEADER: \rhead{}
+#+LATEX_HEADER: \lfoot{(c) Brian Beckman, 2023; CC-BY-SA}
+#+LATEX_HEADER: \cfoot{\thepage}
+#+LATEX_HEADER: \rfoot{}
+#+LATEX_HEADER: \usepackage{lineno}
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{tipa}
+
+# #+LATEX_HEADER: \linenumbers
+
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \setlength{\parindent}{15pt}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage[atend]{bookmark}
+#+LATEX_HEADER: \usepackage{mdframed}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc} % usually not needed (loaded by default)
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+#+LATEX_HEADER_EXTRA: \bookmarksetup{open, openlevel=2, numbered}
+#+LATEX_HEADER_EXTRA: \DeclareUnicodeCharacter{03BB}{$\lambda$}
+# The following doesn't work: just search replace literal ESC=27=1B with ^[ !
+# #+LATEX_HEADER_EXTRA: \DeclareUnicodeCharacter{001B}{xx}
+
+#                                                    _
+#  _ _  _____ __ __  __ ___ _ __  _ __  __ _ _ _  __| |___
+# | ' \/ -_) V  V / / _/ _ \ '  \| '  \/ _` | ' \/ _` (_-<
+# |_||_\___|\_/\_/  \__\___/_|_|_|_|_|_\__,_|_||_\__,_/__/
+
+#+LaTeX_HEADER: \newcommand\definedas{\stackrel{\text{\tiny def}}{=}}
+#+LaTeX_HEADER: \newcommand\belex{BELEX}
+#+LaTeX_HEADER: \newcommand\bleir{BLEIR}
+#+LaTeX_HEADER: \newcommand\llb{low-level \belex}
+#+LaTeX_HEADER: \newcommand\hlb{high-level \belex}
+#+LaTeX_HEADER: \newcommand{\Coloneqq}{\mathrel{\vcenter{\hbox{$:\,:\,=$}}{}}}
+
+#+SELECT_TAGS: export
+#+STARTUP: indent
+
+#+LaTeX_CLASS_OPTIONS: [10pt,oneside,x11names]
+
+#+LATEX: \setlength\parindent{0pt}
+
+# #+STARTUP: latexpreview inlineimages showall
+# #+STARTUP: showall
+
+#+TITLE: Concurrent Kittens in Little Boats
+#+AUTHOR: Brian Beckman
+#+DATE: 24 Mar 2023
+
+#+BEGIN_SRC elisp :exports none
+  (setq org-babel-python-command "python3")
+  (setq org-image-actual-width nil)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-src-fontify-natively t)
+  (add-to-list 'org-latex-packages-alist '("" "listingsutf8"))
+  (setq org-export-latex-listings 'minted)
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+        org-latex-pdf-process
+        '("pdflatex --synctex=1 -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex --synctex=1 -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex --synctex=1 -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (org-babel-do-load-languages 'org-babel-load-languages
+   '((ditaa . t) (latex . t)))
+  (princ (concat (format "Emacs version: %s\n" (emacs-version))
+                 (format "org version: %s\n" (org-version))))
+#+END_SRC
+
+#+RESULTS:
+: Emacs version: GNU Emacs 28.2 (build 1, aarch64-apple-darwin21.1.0, NS appkit-2113.00 Version 12.0.1 (Build 21A559))
+:  of 2022-09-12
+: org version: 9.5.5
+
+\clearpage
+* Prologue
+
+I must confess a mild mental disability: when I see
+mathematics or programs, I see drowning kittens, and I want to save them.
+
+=1+2*3=, five little kittens drowning in the sea.
+Venus-the-boatwright rises on her half-shell, fists full of bows
+and sterns. She reaches down and builds little boats, each from a
+bow and a stern. She puts some little kittens in each boat.
+Sometimes, she puts another little boat in a boat in place of a
+kitten.
+
+She kisses the first kitten (or boat) in each boat and says
+"You're the captain; take care of the others!" She blesses the
+little boats and sinks back into the sea, leaving =(+ 1 (* 2 3))=
+sailing safely on the waves.
+
+Have you been burnt by C code like =x | y & z= or =x / y * z=?
+Perhaps you can dream, like me, of saving the drowning kittens.
+Wright the boats in drydock[fn:: compiled ahead-of-time (AOT)] or
+asea[fn:: interpreted or compiled just-in-time (JIT)], right
+the boats so they float,[fn:: type-check and optimize] and write
+=(& z (| x y))= and =(* z (/ x y))=! If not, perhaps you can
+tolerate me. My affliction is not my fault! It is like
+misophonia.[fn:: https://www.webmd.com/mental-health/what-is-misophonia]:
+built-in, incurable, inexplicable (except to fellow
+sufferers).[fn:: Plus, I don't like writing parsers: it's boring.]
+
+** "What are you doing?"
+
+Let's implement some fundamental terms from the rho calculus[fn:: Meredith, L. G.; Radestock, Mattias (22 December 2005). "A Reflective Higher-Order Calculus". Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. doi:10.1016/j.entcs.2005.05.016.]
+and the pi calculus[fn:PI: https://en.wikipedia.org/wiki/%CE%A0-calculus]
+in a DSL[fn:: https://en.wikipedia.org/wiki/Domain-specific_language]
+made of little boats, meaning "embedded in Clojure." Asynchronous
+behavior is easy to model in Clojure, and we have
+=clojure.spec=[fn:: https://clojure.org/guides/spec] for type
+checking. Plus Clojure looks like little boats to save
+the drowning kittens. It's important for programs to look good.
+Mathematics and programming /are visual arts/.
+
+# Clojure expressions look like little boats containing kittens or
+# other little boats, with the first one being the captain of its
+# boat.
+
+** "Why not RhoLang?"
+
+You call up your friend Nancy and invite her to a party at your
+house. She asks "Will Ted be there?" You think to yourself
+/what fun!/ and innocently say, "Yes, I think so! I invited him!"
+Nancy says "I'm terribly sorry, but I won't be able to make it to
+your party. Please have a great time and give my best to
+everyone!" Nancy hangs up and thinks to herself /except to Ted/.
+
+Ted's last name is Scala.
+
+Let's compromise. Nancy won't ever see Scala again, plus she can't
+stand to see kittens drowning, i.e., implicit precedence rules.
+Otherwise she likes RhoLang. Let's create something with the same
+semantics as RhoLang embedded in Clojure, and call it CrowLang.
+
+Perhaps CrowLang can inter-operate with RhoLang. They're both on
+the Java Virtual Machine, after all. Or perhaps we'll write new
+lcompilers[fn:lcompilers: https://github.com/lcompilers] [\textit{sic}]
+for CrowLang and RhoLang (you can write an lcompiler for Scala, Nancy
+doesn't care). Lcompilers are fast, flexible, modularized, and
+easy to write. In fact, some day, lcompilers will use rho and pi
+for internal type-checking and other formalisms!
+
+** "Why not something better?"
+
+Considered and rejected:
+
+- Agda :: --- too obscure
+
+- Haskell or Mathematica :: --- I think Mathematica is my all-time
+  favorite programming language. Sadly, no one else will use it.
+  Haskell is in my top-five favorites, rejected for the same reason.
+
+- Python :: --- well, ok, umm, never mind, no
+
+- Common Lisp :: --- not modern, otherwise fantastic!
+
+- Racket :: --- designed for DSLs after all, but no one else uses it
+
+- Coq :: --- full of rabbit holes, otherwise lovely!
+
+- C++ :: --- I would drive us both crazy.
+
+There /is/ a path of least resistance for me, considering all
+things.
+
+** "Clojure doesn't have types!"
+
+Not so. Clojure.spec[fn:: https://clojure.org/guides/spec] is at
+least as strong as types. It's not static, that's true, but
+=s/conform= /could/ be static.
+
+Static or not hardly matters in our case. We can build little
+boats in drydock before setting sail, or Venus-the-boatwright will
+build them at sea for us. We can check types, we can do rewriting,
+we can prove theorems. It's good enough.
+
+Also, Clojure is already in our toolchain. We use it for abstract
+interpretation and test generation[fn:: https://github.com/rebcabin/asr-tester]
+for lfortran and lpython.[fn:lcompilers]
+
+** "How did you write this?"
+
+This is an executable document. When I produce a PDF from it, all
+code blocks are executed and results reported. I like this better
+than Jupyter notebooks for many reasons. This document
+is an instance of Knuth's literate programming[fn::
+https://en.wikipedia.org/wiki/Literate_programming] in
+org-babel.[fn:: https://orgmode.org/worg/org-contrib/babel/]
+
+# , not least because I can
+# define things in any order, say /after/ I use them. This document
+# is an instance of Knuth's literate programming[fn::
+# https://en.wikipedia.org/wiki/Literate_programming]. in
+# org-babel.[fn:: https://orgmode.org/worg/org-contrib/babel/]
+
+\newpage
+* $\Pi$ Kittens in Little Boats
+
+From the wiki page:[fn:PI]
+
+#+LaTeX_HEADER: \newcommand\napping    [0]{0}
+#+LaTeX_HEADER: \newcommand\chatting   [3]{\bar{#1}\langle{#2}\rangle{}.\,#3}
+#+LaTeX_HEADER: \newcommand\listening  [3]{#1(#2).\,#3}
+#+LaTeX_HEADER: \newcommand\two        [2]{#1\mathrel{\vert}{#2}}
+#+LaTeX_HEADER: \newcommand\whispering [2]{(\nu\,#1)\,{#2}}
+#+LaTeX_HEADER: \newcommand\mama       [1]{!\,{#1}}
+
+#+begin_export latex
+\begin{equation}
+\begin{array}{clll}
+  P, Q & \Coloneqq \\
+       & | \quad \napping            & \textrm{napping kitten}    & \textrm{Do nothing; halt.}                                    \\
+       & | \quad \listening{x}{y}{P} & \textrm{listening kitten}  & \textrm{Listen on channel }x\textrm{ for channel }y\textrm{.} \\
+       & | \quad \chatting{x}{y}{P}  & \textrm{chatting kitten}   & \textrm{Say "}y\textrm{" on channel }x\textrm{; don't wait.}  \\
+       & | \quad \two{P}{Q}          & \textrm{two kittens}       & \textrm{Run }P\textrm{ and }Q\textrm{ in parallel.}           \\
+       & | \quad \whispering{x}{P}   & \textrm{whispering kitten} & \textrm{fresh channel name }x\textrm{; Use it in }P\textrm{.} \\
+       & | \quad \mama{P}            & \textrm{mama cat}          & \textrm{Run copies of }P\textrm{ forever.} \\
+\end{array}
+\end{equation}
+#+end_export
+
+This pi calculus is-low-level, like $\lambda$ calculus, only with
+concurrency added. We'd have to build up numbers (like Church
+numerals), Booleans, sets, functions, conditionals, loops,
+everything. We'll do a little better, later. First, let's save
+some drowning kittens!
+
+** A Cartoon
+
+Here is a tiny calculation cartoon, again from the wiki page,
+showing a reduction similar to an \eta\nobreakdash-reduction in
+\lambda calculus:
+
+#+LaTeX_HEADER: \newcommand{\kitOne}{\chatting{x}{z}{\napping}}
+#+LaTeX_HEADER: \newcommand{\kitTwo}{\listening{x}{y}{\chatting{y}{x}{\listening{x}{y}{\napping}}}}
+#+LaTeX_HEADER: \newcommand{\kitThree}{\listening{z}{v}{\chatting{v}{v}{\napping}}}
+
+#+begin_export latex
+\begin{equation}
+\begin{array}{clll}
+  (\nu\,x) & (      & \kitOne \\
+           & \vert  & \kitTwo \\
+           & \vert  & \kitThree \\
+       {}  & )
+\end{array}
+\end{equation}
+#+end_export
+
+#+LaTeX_HEADER: \newcommand{\wkit}{\whispering{x}{P}}
+
+We have four drowning kittens. Kitten Zero is a whispering
+kitten $\wkit$. She whispers "$x$" to the other kittens,
+meaning "let's talk on channel $x$!" One might write:
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \kitOne \\
+ \vert  & \kitTwo \\
+ \vert  & \kitThree \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+Kitten Zero is obviously going to be the captain of a boat
+containing the remaining kittens, but we've only just started to
+wright boats.
+
+#+begin_quote
+/We'll say "kitten" and mean "an actual kitten, or a little boat
+containing kittens or more little boats." Each little boat contains zero-or-more kittens and zero-or-more more littler boats./
+#+end_quote
+
+One of the three remaining kittens is chatting on channel $x$ and
+the other two are listening, one on $x$ and the other on $z$.
+These three are doing their things two at a time,
+$\two{P}{(\two{Q}{R})}$ or $\two{(\two{P}{Q})}{R}$, it doesn't
+matter how you think about it (/associativity of/ par).[fn:: A
+better /par/ boat could hold any number of kittens, in any order.
+We'll get there.]
+
+Kitten One, $\kitOne$, chats on $x$, "Hey, let's continue chatting
+on $z$!" Then she takes a nap. Only one of the other kittens,
+Kitten Two, $\kitTwo$, listens on $x$.[fn:: If more than one
+kitten listens on the same channel, we have a classic race
+condition. A compiler can detect this directly from the syntax of
+the program! At run time, only one will hear and the other will
+starve, at least for a while.] She thinks, "Oy! Here I am waiting
+on $x$ for someone to tell me where (on what channel) to continue,
+and I just heard 'continue on $z$,' so I'll switch to $z$. After I
+switch, I'll have something to say, but just let me switch,
+first!"
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \kitOne \\
+ {}     & \parallel \hspace{4.5pt} \downarrow \\
+ \vert  & \kitTwo \\
+ {}     & \hspace{9.5pt}\downarrow\hspace{8.5pt}\downarrow \\
+ \vert  & \listening{x}{z}{\chatting{z}{x}{\listening{x}{y}{\napping}}} \\
+ \vert  & \kitThree \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+#+LaTeX_HEADER: \newcommand{\kitTwoSuffix}{\chatting{y}{x}{\cdots}}
+#+LaTeX_HEADER: \newcommand{\kitTwoSuffixx}{\chatting{y}{x}{\listening{x}{y}{\napping}}}
+
+The out-channel $\bar{x}$ of Kitten One matches the in-channel $x$
+of Kitten Two; Kitten One said something and Kitten Two heard it.
+The /say-prefix/, $\bar{x}\langle{}z\rangle$, before the dot of
+Kitten One, $\kitOne$, gets gobbled up, and Kitten One takes a
+nap. The /hear-prefix/, $x(y)$, before Kitten Two's first dot, the
+first dot of $\kitTwo$, also gets gobbled up. Plus, $y$ changes to
+$z$ in the next say-prefix, $\bar{y}\langle{x}\rangle$, of Kitten
+Two's first suffix, $\kitTwoSuffixx$:
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \napping  \\
+ \vert  & \chatting{z}{x}{\listening{x}{y}{\napping}} \\
+ \vert  & \listening{z}{v}{\chatting{v}{v}{\napping}} \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+This is rather like the substitution of actual arguments for
+formal parameters in a function call in an ordinary programming
+language.
+
+** Free and Bound
+
+#+LaTeX_HEADER: \newcommand{\kitTwoHearSuffix}{\listening{x}{y}{\napping}}
+
+Before this substitution of $z$ for $y$, the $y$ in Kitten Two's
+next say-prefix, $\bar{y}\langle{x}\rangle$, is /free/. That means
+it must change to $z$. However, the second $y$ in Kitten Two's
+first suffix, $\kitTwoSuffixx$, isn't free. The $y$ in $x(y)$
+doesn't change to $z$ because that $y$ is /local/ to the final
+suffix, $0$, of $\kitTwoHearSuffix$. If that that suffix had more
+to do, the name $y$ would be unconnected to the earlier
+appearances of $y$. In this case, the suffix takes a nap, so we
+don't have to worry.
+
+/Bound/ is a synonym for /not free/. A variable $y$ is either free
+or bound in a prefix, $(\nu\,x)$, $\bar{y}\langle{x}\rangle$, or
+$x(y)$. It can't be both except in the one strange case $x(x)$.
+Once it's bound, it's bound in all the suffixes to the right; $y$
+would be bound in the suffixes, $P.Q.\cdots$, of
+$\listening{x}{y}{P.Q.\cdots}$, at least up until the next
+binding. Any re-bindings of $y$ in a long suffix $P.Q.\cdots$
+pertain to the closest binding, looking leftward. That closest
+binding must be a whispering kitten or a listening kitten.
+
+\newpage
+** Binding
+
+There are only two ways to bind a name; only two /binding prefix forms/:
+
+- whispering :: --- $\whispering{x}{P}$ binds $x$ in its suffixes
+  $P$, up until the next binding.
+
+- listening :: --- $\listening{x}{y}{Q}$ binds $y$ in its suffixes
+  $Q$, up until the next binding.
+
+#+LaTeX_HEADER: \theoremstyle{definition}
+#+LaTeX_HEADER: \newtheorem{definition}{Definition}
+
+#+LaTeX_HEADER: \theoremstyle{warning}
+#+LaTeX_HEADER: \newtheorem{warning}{Warning}
+
+\label{def:binding}
+\begin{definition}{\emph{binding, scope:}}
+  Each binding of a given name, say $y$, pertains to the entire
+  suffix of its binding form, up until the next binding of $y$.
+  That new binding
+  \emph{shadows} the prior binding. This is like  the
+  \emph{environment model} or \emph{lexical binding} of an
+  ordinary programming language.
+  A sequence of binding prefixes describes a right-hugging
+  nest of \emph{scopes} in which the bound variable have known values.
+  $\blacksquare$
+\end{definition}
+
+We don't yet know /bound to what/? We can only find out later when
+a hear-prefix lines up with a say-prefix again. So this usage of
+the word /bound/ means /eventually bound to something/. The term
+/bound/ by itself can be ambiguous, because we might also say
+/bound/ when we /do/ know /bound to what/.
+
+** Substitution
+
+We can state a general rule for /substitution/, with some
+terminology to be clarified:
+
+\label{def:substitution}
+\begin{definition}{\emph{substitution}:}
+  When the channel $x$ of a left-most say-prefix, $\bar{x}\langle{z}\rangle$,
+  equals the channel $x$ of a left-most hear-prefix, $x(y)$, the prefixes
+  are gobbled up and all free occurrences of $y$ on the
+  right of the hear-prefix suffer substitution of $z$ for $y$.
+  $\blacksquare$
+\end{definition}
+
+** Renaming
+
+What if there were already some $z$'s amongst the free $y$'s? The
+listening kitten would have to patch that up first. It doesn't
+matter what temporary bound name she gives to a channel, so long
+as the same channel has the same bound name everywhere to the
+right of some dot. We might rename preexisting $z$'s something
+like $z_1$. That's /alpha renaming/. We don't have that problem
+here, but we might later. Our kittens always remember their
+sailorly duty to clean up messes in their boats.
+
+\label{def:renaming}
+\begin{definition}{\emph{renaming}:}
+  Prior to substitution of $z$ for a free variable $y$ in the suffixes of
+  a hear-prefix,
+  any bound occurrences of $z$ to the right of the hear-prefix must be
+  renamed consistently lest they collide with the incoming $z$
+  that replaces $y$. $\blacksquare$
+\end{definition}
+
+Renaming in the suffixes happens first, then substitution happens
+to the free variables.
+
+** Animated Cartoons
+
+I can't animate cartoons in a paper, but I visualize calculations
+as symbols moving around in an animated cartoon (please forgive my
+synaesthetic mental affliction). It saves me mistakes. I animate
+calculations with pen and paper.
+
+** Finishing Up
+
+Kitten Two, $\chatting{z}{x}{\listening{x}{z}{\napping}}$, now
+says on $z$ "Switch to $x$, will you?" to whomever is listening.
+Then she waits and listens on $x$. Kitten Three, $\kitThree$, is
+listening on $z$ for a channel.  She temporarily calls that channel
+$v$, but now she knows that $v$ is really $x$:
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \napping  \\
+ \vert  & {\listening{x}{z}{\napping}} \\
+ \vert  & {\chatting{x}{x}{\napping}} \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+See how the $z$ chat-listen pair got gobbled up and how $x$ got
+substituted for $v$? If not, do an animation on paper. Kitten
+Three didn't have to patch up any lingering $x$'s, but she
+remembers to check.
+
+Kitten Three says "$x$" on $x$ and takes a nap without waiting.
+Kitten Two hears on $x$ that her temporary channel name $z$ really
+should be $x$ again. She changes her $z$ to $x$, notices she
+doesn't have any patching up or anything else to do, and takes a
+nap. If you don't see it in your mind's eye, animate it on paper.
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \napping   \\
+ \vert  & {\napping} \\
+ \vert  & {\napping} \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+All the kittens are napping safely in the whisperer's boat.
+
+** COMMENT Telepathic Kittens
+
+Several kittens used the same temporary bound names $z$ and $x$ at
+various steps in this calculation, but it doesn't matter what each
+one thinks to herself. They usually don't have to patch up names
+that /other/ kittens are thinking about, only their own. This is
+/the environment model for variables/. Sometimes, kittens can be
+telepathic and then they know some temporary names that other
+kittens are thinking about. Those are /free variables/. Sometimes,
+telepathic kittens have some patching up to do, also. Let's talk
+about that later.
+
+** All Names are Channels
+
+Every variable, $x$, $y$, $z$, $v$, stands in for a communication
+channel. Sometimes we know what channel a variable stands for, say
+after substitution. Other times, a variable stands for a channel
+we'll find out about later. That's all we have so far: channels,
+known or unknown.
+
+** Bail the Boats!
+
+For now, we've got all kittens safely napping in the "whisper"
+boat. But they're not /dry/. They had to bail out a /lot/ of water
+to keep from drowning whilst Venus-the-boatwright was working.
+Venus will fix that with some little boats /inside/ other boats,
+including the biggest "whisper" boat.
+
+Venus first bails out most of the water, leaving little skeletal,
+boats-in-progress --- ordinary mathematical function notation:
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \texttt{say} (x, z, \napping) \\
+ \vert  & \texttt{hear}(x, y, \texttt{say}(y, x, \texttt{hear}(x, y, \napping))) \\
+ \vert  & \texttt{hear}(z, v, \texttt{say}(v, v, \napping))
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+There is still too much water (syntactic noise), and some kittens
+still aren't inside boats! Venus! Finish the boats:
+
+#+LaTeX_HEADER: \newcommand\say [3]{\left(\texttt{say}\thickspace{}#1\thickspace{}#2\thickspace{}#3\right)}
+#+LaTeX_HEADER: \newcommand\hear[3]{\left(\texttt{hear}\thickspace{}#1\thickspace{}#2\thickspace{}#3\right)}
+
+#+LaTeX_HEADER: \newcommand\kitA{\say{x}{z}{\napping}}
+#+LaTeX_HEADER: \newcommand\kitB{\hear{x}{y}{\say{y}{x}{\hear{x}{y}{\napping}}}}
+#+LaTeX_HEADER: \newcommand\kitC{\hear{z}{v}{\say{v}{v}{\napping}}}
+
+#+begin_export latex
+\begin{equation}
+\whispering{x}{\left(
+\begin{array}{clll}
+ {}     & \kitA \\
+ \vert  & \kitB \\
+ \vert  & \kitC \\
+\end{array}\right)}
+\end{equation}
+#+end_export
+
+Venus! You're not done! Everything must be a kitten or a boat!
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par (say x z 0)
+         (par (hear x y
+                (say y x
+                  (hear x y 0)))
+              (hear z v
+               (say v v 0)))))
+#+end_src
+
+Hooray, all the kittens are safe and dry! But they can't nap, yet.
+Venus! Rearrange the boats so kittens can chat and then nap!
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par (par (say  x z 0)  ;; Oooh!, x's line up!
+              (hear x y
+                    (say y x
+                         (hear x y 0))))
+         (hear z v
+               (say v v 0))))
+#+end_src
+
+This is great because we have a rule that says whenever a =say=
+and a =hear= line up their channels, we can rename, substitute and
+gobble up one =say= and its matching =hear=:
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par (par 0
+              (say z x
+                   (hear x z 0)))
+         (hear z v
+               (say v v 0))))
+#+end_src
+
+Darn it! Venus! Rearrange the =par='s again, (it's always OK to do
+that):
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par 0
+         (par (say  z x (hear x z 0))
+              (hear z v (say v v 0)))))
+#+end_src
+
+Substitute and gobble:
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par 0
+         (par (hear x z 0)
+              (say  x x 0))))
+#+end_src
+
+One more time:
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x
+    (par 0 (par 0 0)))
+#+end_src
+
+Inside a =par= boat, it doesn't matter whether you write =hear=
+before =say= or =say= before =hear= --- =par= is commutative.
+Also, because any number of napping kittens in =par='s is
+equivalent to a big napping kitten, we see
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  (channel x 0)
+#+end_src
+
+Finally, because there is nothing to do with channel $x$, The
+whispering kitten can nap, too.
+
+\vskip 0.26cm
+#+begin_src clojure :eval never
+  0
+#+end_src
+
+Thanks, Venus!
+
+** Kitten Boat Grammar
+
+This is what Venus-the-boatwright had in mind whilst she built:
+
+#+LaTeX_HEADER: \newcommand\knapping    [0]{\texttt{(nap)}}
+#+LaTeX_HEADER: \newcommand\kpar        [2]{\texttt{(par}\thickspace{}#1\thickspace{}#2\texttt{)}}
+#+LaTeX_HEADER: \newcommand\kwhispering [2]{\texttt{(channel}\thickspace{}#1\thickspace{}#2\texttt{)}}
+#+LaTeX_HEADER: \newcommand\kmama       [1]{\texttt{(repeat}\thickspace{}#1\texttt{)}}
+
+#+begin_export latex
+\begin{equation}
+\begin{array}{clll}
+  K, L & \Coloneqq \\
+       & | \quad \knapping            & \textrm{napping kitten}    & \textrm{Do nothing; halt.}                                   \\
+       & | \quad \hear{x}{y}{K}       & \textrm{listening kitten}  & \textrm{Listen on channel }x\textrm{ for channel }y.         \\
+       & | \quad \say{x}{y}{K}        & \textrm{chatting kitten}   & \textrm{Say "}y\textrm{" on channel }x\textrm{; don't wait.} \\
+       & | \quad \kpar{K}{L}          & \textrm{two kittens}       & \textrm{Run }K\textrm{ and }L\textrm{ in parallel.}          \\
+       & | \quad \kwhispering{x}{K}   & \textrm{whispering kitten} & \textrm{fresh channel name }x\textrm{; use it in }K\textrm{.}\\
+       & | \quad \kmama{K}            & \textrm{mama cat}          & \textrm{run copies of }K\textrm{ forever}\textrm{.}          \\
+\end{array}
+\end{equation}
+#+end_export
+
+\newpage
+* Channels and Names
+
+Our kittens are Kitten One, Kitten Two, and Kitten Three. These
+aren't names in kitten-speak, not names for channels like $x$ and
+$y$. These are names in boat-speak, just so we don't have to keep
+writing out the full boats each time.
+
+Let's run some real code! For technical reasons, we need some
+punctuation --- dots and quote marks here and there --- when we
+write out kittens in Clojure. We'll explain later.
+
+** Kit-1
+
+\vskip 0.26cm
+#+begin_src clojure :exports code
+  (def kit-1
+    (say. 'x 'z (nap.)))
+#+end_src
+
+#+RESULTS:
+: #'intrinsic-function.core/kit-1
+
+Notice that when =kit-1= takes a nap, she's not saying or hearing
+anything. /The free names of =(nap)=, the names subject to
+substitution, are the empty set/:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (free-names (nap.))
+#+end_src
+
+#+RESULTS:
+: #{}
+
+# Those are the names of channels that some other kitten can bind
+# in a =say= boat.
+
+In fact, the names that =kit-1= will eventually know about while
+napping, the /bound names, subject to renaming/, are also the
+empty set:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names (nap.))
+#+end_src
+
+#+RESULTS:
+: #{}
+
+Before she naps, Kitten One says $z$ on $x$, so both those names
+are free for =kit-1=, meaning she just barks them out. They don't
+stand for anything else:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (free-names kit-1)
+#+end_src
+
+#+RESULTS:
+: #{x z}
+
+=Kit-1= doesn't wait for any names before she's napping, so her
+/bound names/ are the empty set:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names kit-1)
+#+end_src
+
+#+RESULTS:
+: #{}
+
+\newpage
+** Kit-2
+
+Kitten Two listens on $x$ for bound $y$, then says, on whatever
+$y$ becomes, "$x$".
+
+\vskip 0.26cm
+#+begin_src clojure :exports code
+  (def kit-2
+    (hear. 'x 'y
+     (say. 'y 'x
+      (hear. 'x 'y (nap.)))))
+#+end_src
+
+#+RESULTS:
+: #'intrinsic-function.core/kit-2
+
+/We/ know $y$ as a free variable --- subject to substitution ---
+in her immediately-next say-prefix is going to become $z$, but
+/she/ doesn't know so yet. She only knows that she will
+/eventually/ know what $y$ stands for, so $y$ is eventually bound,
+thus bound. Her bound names include $y$ now, but $y$ becomes free,
+at least in her immediately-next say-prefix, after her first
+hear-prefix is gobbled up during substitution. $y$ might be
+subject to renaming (bound) in later activities if she has a big
+suffix.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names kit-2)
+#+end_src
+
+#+RESULTS:
+: #{y}
+
+Kitten Two's final activity is to listen on $x$ for
+whatever-\(y\)-becomes. In that final activity, in isolation, she
+doesn't know whether she will ever know $x$, so the free variables
+--- subject to substitution --- of that final activity had better
+include $x$.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (do (def kit-2-final (hear. 'x 'y (nap.)))
+      (free-names kit-2-final))
+#+end_src
+
+#+RESULTS:
+: #{x}
+
+By nap-time, she'll know what $y$ stands for, but she won't use it
+while napping; $y$ is eventually bound thus bound. We saw it's not
+free; check that it's bound:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names kit-2-final)
+#+end_src
+
+#+RESULTS:
+: #{y}
+
+In her next-to-last activity, which includes her last activity,
+she will know what $y$ is, so it is bound:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names
+   (say. 'y 'x
+    kit-2-final))
+#+end_src
+
+#+RESULTS:
+: #{y}
+
+For her whole sailorly mission-plan, Kitten Two will hear $y$ on
+$x$, so it's bound, at least until free --- subject to
+substitution.
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names
+   (hear. 'x 'y
+    (say. 'y 'x
+     (hear. 'x 'y (nap.)))))
+#+end_src
+
+#+RESULTS:
+: #{y}
+
+But she'll never use $x$. She just passes $x$ along, so it's free:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (free-names kit-2)
+#+end_src
+
+#+RESULTS:
+: #{x}
+
+** Kit-3
+
+Kitten Three listens on $z$ for $v$ --- a temporary name --- then
+says "$v$" on $v$
+
+\vskip 0.26cm
+#+begin_src clojure :exports code
+  (def kit-3
+    (hear. 'z 'v
+     (say. 'v 'v (nap.))))
+#+end_src
+
+#+RESULTS:
+: #'intrinsic-function.core/kit-3
+
+Her bound names include $v$, at least until it becomes free after
+renaming (which does nothing, here) and before substitution:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (bound-names kit-3)
+#+end_src
+
+#+RESULTS:
+: #{v}
+
+Her free names --- subject to substitution --- include $z$:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (free-names kit-3)
+#+end_src
+
+#+RESULTS:
+: #{z}
+
+Can you write down the free and bound names in her last activity,
+=(say 'v 'v)=? Here are spoilers:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both :results output
+  (let [kit-3-last (say. 'v 'v (nap.))]
+    (println (free-names kit-3-last))
+    (println (bound-names kit-3-last)))
+#+end_src
+
+#+RESULTS:
+: #{v}
+: #{}
+
+** Kitten Zero --- the Whisper Boat
+
+The bound names of Kitten Zero, captain of the Whisper Boat,
+include all the bound names of the other kittens, so had better be
+$x$ for her own, $y$ from Kitten Two, and $v$ from kitten Three:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (do (def whisper-boat
+        (channel. 'x
+                  (par. kit-1
+                        (par. kit-2 kit-3))))
+      (bound-names whisper-boat))
+#+end_src
+
+#+RESULTS:
+: #{x y v}
+
+Can you writ out her free names? Here is a spoiler:
+
+\vskip 0.26cm
+#+begin_src clojure :exports both
+  (free-names whisper-boat)
+#+end_src
+
+The free names --- subject to substitution --- include only $z$
+from both Kitten One, who barks them out in =(say. 'x 'z)=, and
+Kitten Three, who listens on $z$ for a substitution:
+
+#+RESULTS:
+: #{z}
+
+* COMMENT Rewriting
+
+All that was done with term rewriting[fn::
+https://arxiv.org/pdf/1701.00638.pdf], a medium-sized theory with
+unfinished edges. Our needs are very blue-collar.
+
+
+
+** That's Calculus, not Programming
+
+* COMMENT Asynchrony
+
+We can jump ahead and try Clojure's very blue-collar
+/core.async/[fn:: https://clojuredocs.org/clojure.core.async]
+
+** Listening Kitten
+
+** Chatting Kitten
+
+* Change Log
+
+2023-26-Mar :: Current version.
+
+2023-22-Mar :: Start.
