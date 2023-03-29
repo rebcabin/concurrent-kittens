@@ -797,7 +797,7 @@ stand for anything else:
 #+RESULTS:
 : #{x z}
 
-=Kit-1= doesn't wait for any names before she's napping, so her
+=Kit-1= doesn't wait for any names before nap-time, so her
 /bound names/ are the empty set:
 
 \vskip 0.26cm
@@ -976,7 +976,7 @@ $x$ for her own, $y$ from Kitten Two, and $v$ from kitten Three:
 #+RESULTS:
 : #{x y v}
 
-Can you writ out her free names? Here is a spoiler:
+Can you write out her free names? Here is a spoiler:
 
 \vskip 0.26cm
 #+begin_src clojure :exports both
