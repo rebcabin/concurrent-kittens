@@ -9,7 +9,7 @@ Pi and Rho calculi in a story about saving the kittens.
 
 # Read
 
-... the pdf
+`process-algebra.pdf`
 
 I've committed the current `.tex` files for your convenience,
 but they will get overwritten. It's a bad idea to modify the
