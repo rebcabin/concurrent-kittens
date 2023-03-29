@@ -1,4 +1,4 @@
-% Created 2023-03-28 Tue 21:28
+% Created 2023-03-29 Wed 15:28
 % Intended LaTeX compiler: pdflatex
 \documentclass[10pt,oneside,x11names]{article}
 \usepackage[utf8]{inputenc}
@@ -88,7 +88,7 @@
 \bookmarksetup{open, openlevel=2, numbered}
 \DeclareUnicodeCharacter{03BB}{$\lambda$}
 \author{Brian Beckman}
-\date{28 Mar 2023}
+\date{29 Mar 2023}
 \title{Concurrent Kittens in Little Boats}
 \hypersetup{
  pdfauthor={Brian Beckman},
@@ -107,22 +107,23 @@
 
 \clearpage
 \section{Prologue}
-\label{sec:orgd2b5aef}
+\label{sec:orga10f7ee}
 
 I must confess a mild mental disability: when I see
-mathematics or programs, I see drowning kittens, and I want to save them.
+mathematics or programs, I see drowning kittens, and I want to
+save them.
 
 \texttt{1+2*3}, five little kittens drowning in the sea.
-Venus-the-boatwright rises on her half-shell, fists full of bows
-and sterns. She reaches down and builds little boats, each from a
-bow and a stern. She puts some little kittens in each boat.
-Sometimes, she puts another little boat in a boat in place of a
-kitten.
+Venus-the-boatwright rises on her half-shell, fists full of
+bows and sterns. She reaches down and builds little boats,
+each from a bow and a stern. She puts some little kittens in
+each boat. Sometimes, she puts another little boat in a boat
+in place of a kitten.
 
 She kisses the first kitten (or boat) in each boat and says
 ``You're the captain; take care of the others!'' She blesses the
-little boats and sinks back into the sea, leaving \texttt{(+ 1 (* 2 3))}
-sailing safely on the waves.
+little boats and sinks back into the sea, leaving
+\texttt{(+ 1 (* 2 3))} sailing safely on the waves.
 
 Have you been burnt by C code like \texttt{x | y \& z} or \texttt{x / y * z}?
 Perhaps you can dream, like me, of saving the drowning kittens.
@@ -132,14 +133,14 @@ the boats so they float,\footnote{type-check and optimize} and write
 \texttt{(\& z (| x y))} and \texttt{(* z (/ x y))}! If not, perhaps you can
 tolerate me. My affliction is not my fault! It is like
 misophonia:\footnote{\url{https://www.webmd.com/mental-health/what-is-misophonia}}
-built-in, incurable, miserable, inexplicable (except to fellow
-sufferers).\footnote{Plus, I don't like writing parsers: it's boring.}
+built-in, incurable, misery-making for others, inexplicable except to fellow
+sufferers.\footnote{Plus, I don't like writing parsers: it's boring.}
 
 \subsection{``What are you doing?''}
-\label{sec:org5e00c6f}
+\label{sec:org10601b8}
 
-Let's implement some fundamental terms from the rho calculus\footnote{Meredith, L. G.; Radestock, Mattias (22 December 2005). ``A Reflective Higher-Order Calculus''. Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. \url{https://doi.org/10.1016/j.entcs.2005.05.016}.}
-and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{orgb76a145}}
+Let's implement some fundamentals of the rho calculus\footnote{Meredith, L. G.; Radestock, Mattias (22 December 2005). ``A Reflective Higher-Order Calculus''. Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. \url{https://doi.org/10.1016/j.entcs.2005.05.016}.}
+and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{org0f63cdf}}
 in a DSL\footnote{\url{https://en.wikipedia.org/wiki/Domain-specific\_language}}
 made of little boats, meaning ``embedded in Clojure.'' Asynchronous
 behavior is easy to model in Clojure, and we have
@@ -149,7 +150,7 @@ the drowning kittens. It's important for programs to look good.
 Mathematics and programming \emph{are visual arts}.
 
 \subsection{``Why not RhoLang?''}
-\label{sec:orgcee1857}
+\label{sec:orgc220f64}
 
 You call up your friend Nancy and invite her to a party at your
 house. She asks ``Will Ted be there?'' You think to yourself
@@ -167,14 +168,14 @@ semantics as RhoLang embedded in Clojure, and call it CrowLang.
 
 Perhaps CrowLang can inter-operate with RhoLang. They're both on
 the Java Virtual Machine, after all. Or perhaps we'll write new
-lcompilers\footnote{\url{https://github.com/lcompilers}\label{org18816ed}} [\textit{sic}]
-for CrowLang and RhoLang (you can write an lcompiler for Scala, Nancy
-doesn't care). Lcompilers are fast, flexible, modularized, and
+lcompilers\footnote{\url{https://github.com/lcompilers}\label{org3302eb2}} [\textit{sic}]
+for CrowLang and RhoLang. You can write an lcompiler for Scala, Nancy
+doesn't care. Lcompilers are fast, flexible, modularized, and
 easy to write. In fact, some day, lcompilers will use rho and pi
 for internal type-checking and other formalisms!
 
 \subsection{``Why not something better?''}
-\label{sec:orgcca7dff}
+\label{sec:org71b23e6}
 
 Considered and rejected:
 
@@ -200,7 +201,7 @@ There \emph{is} a path of least resistance for me, considering all
 things.
 
 \subsection{``Clojure doesn't have types!''}
-\label{sec:org641c48d}
+\label{sec:orgb9c8acb}
 
 Not so. Clojure.spec\footnote{\url{https://clojure.org/guides/spec}} is at
 least as strong as types. It's not static, that's true, but
@@ -213,22 +214,22 @@ we can prove theorems. It's good enough.
 
 Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation\footnote{\url{https://github.com/rebcabin/asr-tester}}
-for lfortran and lpython.\textsuperscript{\ref{org18816ed}}
+for lfortran and lpython.\textsuperscript{\ref{org3302eb2}}
 
 \subsection{``How did you write this?''}
-\label{sec:orgdbc9214}
+\label{sec:org82057ce}
 
 This is an executable document. When I produce a PDF from it, all
 code blocks are executed and results reported. I like this better
 than Jupyter notebooks for many reasons. This document
-is an instance of Knuth's literate programming\footnote{\url{https://en.wikipedia.org/wiki/Literate\_programming}} in
-org-babel.\footnote{\url{https://orgmode.org/worg/org-contrib/babel/}}
+is an instance of Knuth's literate programming\footnote{\url{https://en.wikipedia.org/wiki/Literate\_programming}}
+in org-babel.\footnote{\url{https://orgmode.org/worg/org-contrib/babel/}}
 
 \newpage
-\section{\(\Pi\) Kittens in Little Boats}
-\label{sec:org6b758e4}
+\section{\(\Pi\) Communicating Concurrent Kittens}
+\label{sec:org0f2bfe1}
 
-From the wiki page:\textsuperscript{\ref{orgb76a145}}
+From the wiki page:\textsuperscript{\ref{org0f63cdf}}
 
 \begin{equation}
 \begin{array}{clll}
@@ -249,7 +250,7 @@ everything. We'll do a little better, later. First, let's save
 some drowning kittens!
 
 \subsection{A Cartoon}
-\label{sec:org0c6f0ed}
+\label{sec:org1d38e40}
 
 Here is a tiny calculation cartoon, again from the wiki page,
 showing a reduction similar to an \(\eta\)\nobreakdash-reduction in
@@ -321,13 +322,14 @@ first!''
 The out-channel \(\bar{x}\) of Kitten One matches the in-channel \(x\)
 of Kitten Two; Kitten One said something and Kitten Two heard it.
 The \emph{say-prefix}, \(\bar{x}\langle{}z\rangle\), before the dot of
-Kitten One, \(\kitOne\), gets gobbled up, and Kitten One takes a
-nap. The \emph{hear-prefix}, \(x(y)\), before Kitten Two's first dot, the
+Kitten One, \(\kitOne\), gets gobbled up, and then Kitten One takes a
+nap, \(0\). The \emph{hear-prefix}, \(x(y)\), before Kitten Two's first dot, the
 first dot of \(\kitTwo\), also gets gobbled up. Plus, \(y\) changes to
 \(z\) in the next say-prefix, \(\bar{y}\langle{x}\rangle\), of Kitten
 Two's first suffix, \(\kitTwoSuffixx\):
 
 \begin{equation}
+\label{eqn:after-step-one}
 \whispering{x}{\left(
 \begin{array}{clll}
  {}     & \napping  \\
@@ -341,40 +343,38 @@ formal parameters in a function call in an ordinary programming
 language.
 
 \subsection{Free and Bound}
-\label{sec:orgbf17944}
+\label{sec:org2b09c61}
 
-Before this substitution of \(z\) for \(y\), the \(y\) in Kitten Two's
-next say-prefix, \(\bar{y}\langle{x}\rangle\), is \emph{free}. That means
-it must change to \(z\). However, the second \(y\) in Kitten Two's
-first suffix, \(\kitTwoSuffixx\), isn't free. The \(y\) in \(x(y)\)
-doesn't change to \(z\) because that \(y\) is \emph{local} to the final
-suffix, \(0\), of \(\kitTwoHearSuffix\). If that that suffix had more
-to do, the name \(y\) would be unconnected to the earlier
-appearances of \(y\). In this case, the suffix takes a nap, so we
-don't have to worry.
+Before this substitution of \(z\) for \(y\), the \(y\) in Kitten
+Two's next say-prefix, \(\bar{y}\langle{x}\rangle\), is \emph{free}.
+That means it must change to \(z\). However, the \(y\) in Kitten
+Two's next hear-suffix, \(x(y).0\), isn't free. The \(y\) in
+\(x(y)\) doesn't change to \(z\) because that \(y\) is \emph{local} to
+the final suffix, \(0\). If \(0\) had more to do using \(y\), that
+\(y\) would shadow the earlier \(y\). In this case, the suffix \(0\)
+has no more to do, so we don't have to worry.
 
-\emph{Bound} is a synonym for \emph{not free}. A variable \(y\) is either free
-or bound in a prefix, \((\nu\,x)\), \(\bar{y}\langle{x}\rangle\), or
-\(x(y)\). It can't be both except in the one strange case \(x(x)\).
-Once it's bound, it's bound in all the suffixes to the right; \(y\)
-would be bound in the suffixes, \(P.Q.\cdots\), of
-\(\listening{x}{y}{P.Q.\cdots}\), at least up until the next
-binding. Any re-bindings of \(y\) in a long suffix \(P.Q.\cdots\)
-pertain to the closest binding, looking leftward. That closest
-binding must be a whispering kitten or a listening kitten.
+\emph{Bound} is a synonym for \emph{not free}. A variable \(y\) is either
+free or bound in a prefix, \((\nu\,x)\),
+\(\bar{y}\langle{x}\rangle\), or \(x(y)\). It can't be both.\footnote{What about the strange case \(x(x)\)? We'll solve that soon.}
+Once \(y\) is bound, it's bound in all suffixes to the right up
+until the next binding of \(y\). Any re-bindings of \(y\) in a
+long suffix pertain to the closest binding to the left. That
+closest binding must be a whispering kitten or a listening
+kitten.
 
 \newpage
 \subsection{Binding}
-\label{sec:org046ff7a}
+\label{sec:org2f2dd8e}
 
-There are only two ways to bind a name; only two \emph{binding prefix forms}:
+There are only two ways to bind a name --- only two \emph{binding prefix forms}:
 
 \begin{description}
 \item[{whispering}] --- \(\whispering{x}{P}\) binds \(x\) in its suffixes
-\(P\), up until the next binding.
+\(P.Q.\cdots\), \newline up until the next binding of \(x\).
 
 \item[{listening}] --- \(\listening{x}{y}{Q}\) binds \(y\) in its suffixes
-\(Q\), up until the next binding.
+\(Q.R.\cdots\), \newline up until the next binding of \(y\).
 \end{description}
 
 \label{def:binding}
@@ -382,22 +382,36 @@ There are only two ways to bind a name; only two \emph{binding prefix forms}:
   Each binding of a given name, say $y$, pertains to the entire
   suffix of its binding form, up until the next binding of $y$.
   That new binding
-  \emph{shadows} the prior binding. This is like  the
+  \emph{shadows} the prior binding. This is like the
   \emph{environment model} or \emph{lexical binding} of an
   ordinary programming language.
   A sequence of binding prefixes describes a right-hugging
-  nest of \emph{scopes} in which the bound variable have known values.
+  nest of \emph{scopes} in which to look up values of
+  bound variables.
+
+  Shadowing, if undesirable, can be removed
+  by $\alpha$\nobreakdash-renaming the new bound occurrence of $y$,
+  say to $y_1$,
+  bringing the prior binding of $y$ into scope of $y_1$.
   $\blacksquare$
 \end{definition}
 
-We don't yet know \emph{bound to what}? We can only find out later when
-a hear-prefix lines up with a say-prefix again. So this usage of
-the word \emph{bound} means \emph{eventually bound to something}. The term
+\(\alpha\)\nobreakdash-Renaming is explained immediately below in
+Section \ref{renaming}.
+
+In our example, looking at Kitten Two's suffix,
+\(\kitTwoSuffixx\), we don't yet know \emph{to what value} \(y\) gets
+bound. We can only find out later when the hear-prefix \(x(y)\)
+lines up with \(x\) in a say-prefix like
+\(\bar{x}\langle{z}\rangle\) again.
+
+This usage of the word
+\emph{bound} means \emph{eventually bound to something}. The term
 \emph{bound} by itself can be ambiguous, because we might also say
 \emph{bound} when we \emph{do} know \emph{bound to what}.
 
 \subsection{Substitution}
-\label{sec:org4b1fb34}
+\label{sec:org1ba323e}
 
 We can state a general rule for \emph{substitution}, with some
 terminology to be clarified:
@@ -407,21 +421,25 @@ terminology to be clarified:
   When the channel $x$ of a left-most say-prefix, $\bar{x}\langle{z}\rangle$,
   equals the channel $x$ of a left-most hear-prefix, $x(y)$, the prefixes
   are gobbled up and all free occurrences of $y$ on the
-  right of the hear-prefix suffer substitution of $z$ for $y$.
+  right of the hear-prefix suffer substitution of $z$ for $y$. If there
+  are two or more listeners on $x$, the results are non-deterministic.
   $\blacksquare$
 \end{definition}
 
 \subsection{Renaming}
-\label{sec:orga54a324}
+\label{sec:org2a88dcb}
+\label{renaming} What if there were already some bound \(z\)'s
+amongst the suffixes of free \(y\)'s? The kitten listening on
+\(y\) and hearing \(z\) would have to patch that up first. It
+doesn't matter what temporary name she gives to a channel, so
+long as the same channel has the same bound name everywhere in
+the suffixes. We might rename preexisting \(z\)'s something like
+\(z_1\) so long as \(z_1\) doesn't itself collide with preexisting
+names. That's \emph{alpha renaming}. It might harmlessly un-shadow
+some names.
 
-What if there were already some \(z\)'s amongst the free \(y\)'s? The
-listening kitten would have to patch that up first. It doesn't
-matter what temporary bound name she gives to a channel, so long
-as the same channel has the same bound name everywhere in some
-suffixes, to the right of some dot or some whisper. We might
-rename preexisting \(z\)'s something like \(z_1\). That's \emph{alpha
-renaming}. We don't have that problem here, but we might later.
-Our kittens always remember their sailorly duty to clean up messes
+We don't have that problem here, but we might later. Our
+kittens always remember their sailorly duty to clean up messes
 in their boats.
 
 \label{def:renaming}
@@ -433,45 +451,47 @@ in their boats.
   that replaces $y$. $\blacksquare$
 \end{definition}
 
-Renaming in the suffixes happens first, then substitution happens
-to the free variables.
-
 \subsection{Animated Cartoons}
-\label{sec:org47c7157}
+\label{sec:org278b81d}
 
-I can't animate cartoons in a paper, but I visualize calculations
-as symbols moving around in an animated cartoon (please forgive
-another related mental afflictions, synaesthesia). It saves me
-mistakes. I animate calculations with pen and paper.
+I can't animate cartoons in a paper, but I visualize
+calculations as symbols moving around in an animated cartoon
+(please forgive another of my mental afflictions:
+synaesthesia). It saves me mistakes. I animate calculations
+with pen and paper.
 
 \subsection{Finishing Up}
-\label{sec:org4b63fe4}
+\label{sec:org52bc710}
 
-Kitten Two, \(\chatting{z}{x}{\listening{x}{z}{\napping}}\), now
-says on \(z\) ``Switch to \(x\), will you?'' to whomever is listening.
-Then she waits and listens on \(x\). Kitten Three, \(\kitThree\), is
-listening on \(z\) for a channel.  She temporarily calls that channel
-\(v\), but now she knows that \(v\) is really \(x\):
+In Equation \ref{eqn:after-step-one}, Kitten Two, now
+\(\chatting{z}{x}{\listening{x}{z}{\napping}}\), says on \(z\)
+``Switch to \(x\), will you?'' to whomever is listening. Then she
+waits and listens on \(x\) for \(y\). Kitten Three, \(\kitThree\), is
+listening on \(z\) for a channel. She temporarily calls that
+channel \(v\), but now she knows that \(v\) is really \(x\):
 
 \begin{equation}
 \whispering{x}{\left(
 \begin{array}{clll}
  {}     & \napping  \\
- \vert  & {\listening{x}{z}{\napping}} \\
+ \vert  & {\listening{x}{y}{\napping}} \\
  \vert  & {\chatting{x}{x}{\napping}} \\
 \end{array}\right)}
 \end{equation}
 
-See how the \(z\) chat-listen pair got gobbled up and how \(x\) got
-substituted for \(v\)? If not, do an animation on paper. Kitten
-Three didn't have to patch up any lingering \(x\)'s, but she
-remembers to check.
+See how the \(z\) chat-listen pair got gobbled up and how \(x\)
+got substituted for both free \(v\)'s in Kitten Three's suffix?
+If not, do an animation on paper. Kitten Three didn't have to
+patch up any bound \(x\)'s, but she remembers to check. Both
+occurrences of \(x\) in \(\bar{x}\langle{x}\rangle\) are free,
+just as both \(v\)'s were free before substitution.
 
-Kitten Three says ``\(x\)'' on \(x\) and takes a nap without waiting.
-Kitten Two hears on \(x\) that her temporary channel name \(z\) really
-should be \(x\) again. She changes her \(z\) to \(x\), notices she
-doesn't have any patching up or anything else to do, and takes a
-nap. If you don't see it in your mind's eye, animate it on paper.
+Kitten Three says ``\(x\)'' on \(x\) and takes a nap without
+waiting. Kitten Two hears on \(x\) that her temporary, bound
+channel name \(y\) really should be \(x\) again. She changes her
+\(y\) to \(x\), notices she doesn't have any patching up or
+anything else to do, and takes a nap. If you don't see it in
+your mind's eye, animate it on paper.
 
 \begin{equation}
 \whispering{x}{\left(
@@ -482,25 +502,66 @@ nap. If you don't see it in your mind's eye, animate it on paper.
 \end{array}\right)}
 \end{equation}
 
+In your animation, you'll see that Kitten Three becomes \(x(x)\)
+after matching up and before renaming and substitution. This
+temporary condition appears to state that \(x\) is both bound
+and free in the same prefix, and that can't be!
+
+The resolution is that the two \(x\)'s are different \(x\)'s! the
+first \(x\), outside the parentheses, is a real, free name of a
+real channel --- in fact, the channel furnished by and bound
+in the whispering Kitten Zero \((\nu\,x)\). That \(x\) is subject
+to \emph{matching up} with a say-prefix on \(\bar{x}\). The second
+\(x\), inside the parentheses, is a bound stand-in for the real
+\(x\) said by  \(\bar{x}\langle{x}\rangle\). That real \(x\) gets
+substituted for stand-in \(x\) in the suffix, which happens to
+be \(0\), so we don't worry about.
+
 All the kittens are napping safely in the whisperer's boat.
 
 \subsection{All Names are Channels}
-\label{sec:org9893eff}
+\label{sec:orga9a441b}
 
 Every variable, \(x\), \(y\), \(z\), \(v\), stands in for a communication
 channel. Sometimes we know what channel a variable stands for, say
-after substitution. Other times, a variable stands for a channel
-we'll find out about later. That's all we have so far: channels,
-known or unknown.
+a bound variable in a whisper or a free variable before matching
+or after substitution. Other times, a variable stands for a
+channel we'll find out about later, say a bound variable in a
+hear-prefix matching. That's all we have so far: channels, known
+or unknown.
+
+Here are the stages in a reduction:
+
+\begin{enumerate}
+\item \textbf{Matching} --- a free channel \(x\) in a hear-prefix
+\(x(y)\) equals a free channel \(\bar{x}\) in a say-prefix
+\(\bar{x}\langle{z}\rangle\). Exactly one of the matching
+hear-prefixes is chosen, non-deterministically. It is noted
+that \(z\) will replace \(x\).
+
+\item \textbf{Renaming} --- All bound \(z\)'s in the suffix of
+\(x(y)\) are consistently renamed to prevent collisions with
+the incoming \(x\).
+
+\item \textbf{Substitution} --- All free \(z\)'s in the suffix of
+\(x(y)\) are replaced with \(z\).
+
+\item \textbf{Gobbling} --- \(x(y)\) and \(\bar{x}\langle{z}\rangle\)
+are removed, exposing the first prefix of their suffixes.
+\end{enumerate}
+
+We sidestep the ``funny'' problem of \(x(x)\) because we never
+construct it. We just gobble its predecessor hear-prefix.
 
 \subsection{Bail the Boats!}
-\label{sec:org69c67d8}
+\label{sec:org331aa3b}
 
-For now, we've got all kittens safely napping in the ``whisper''
-boat. But they're not \emph{dry}. They had to bail out a \emph{lot} of water
-to keep from drowning whilst Venus-the-boatwright was working.
-Venus will fix that with some little boats \emph{inside} other boats,
-including the biggest ``whisper'' boat.
+For now, we've got all kittens safely napping in the big
+``whisper'' boat. But they're not \emph{dry}. They had to bail out a
+\emph{lot} of water --- syntactic noise --- to keep from drowning
+whilst Venus-the-boatwright was working. Venus will fix that
+with some little boats \emph{inside} other boats, including the
+biggest ``whisper'' boat.
 
 Venus first bails out most of the water, leaving little skeletal,
 boats-in-progress --- ordinary mathematical function notation:
@@ -514,7 +575,7 @@ boats-in-progress --- ordinary mathematical function notation:
 \end{array}\right)}
 \end{equation}
 
-There is still too much water (syntactic noise), and some kittens
+There is still too much water, and some kittens
 still aren't inside boats! Venus! Finish the boats:
 
 \begin{equation}
@@ -562,20 +623,20 @@ gobble up one \texttt{say} and its matching \texttt{hear}:
 (channel x
   (par (par 0
             (say z x
-                 (hear x z 0)))
+                 (hear x y 0)))
        (hear z v
              (say v v 0))))
 \end{minted}
 
-Darn it! Venus! Rearrange the \texttt{par}'s again, (it's always OK to do
+Darn it! Venus! Rearrange the \texttt{par} boats again, (it's always OK to do
 that):
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
 (channel x
   (par 0
-       (par (say  z x (hear x z 0))
-            (hear z v (say v v 0)))))
+       (par (say  z x (hear x y 0))
+            (hear z v (say  v v 0)))))
 \end{minted}
 
 Substitute and gobble:
@@ -584,7 +645,7 @@ Substitute and gobble:
 \begin{minted}[]{clojure}
 (channel x
   (par 0
-       (par (hear x z 0)
+       (par (hear x y 0)
             (say  x x 0))))
 \end{minted}
 
@@ -597,15 +658,17 @@ One more time:
 \end{minted}
 
 Inside a \texttt{par} boat, it doesn't matter whether you write \texttt{hear}
-before \texttt{say} or \texttt{say} before \texttt{hear} --- \texttt{par} is commutative.
-Also, because any number of napping kittens in \texttt{par}'s is
-equivalent to a big napping kitten, we see
+before \texttt{say} or \texttt{say} before \texttt{hear} --- \texttt{par} is the captain
+and doesn't care; \texttt{par} is commutative.
+Also, because any number of napping kittens in \texttt{par} boats is
+equivalent to a all the kittens napping, we may write
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
 (channel x 0)
 \end{minted}
 
+\newpage
 Finally, because there is nothing to do with channel \(x\), The
 whispering kitten can nap, too.
 
@@ -617,7 +680,7 @@ whispering kitten can nap, too.
 Thanks, Venus!
 
 \subsection{Kitten Boat Grammar}
-\label{sec:org0c4d57e}
+\label{sec:org4dd17e0}
 
 This is what Venus-the-boatwright had in mind whilst she built:
 
@@ -633,21 +696,20 @@ This is what Venus-the-boatwright had in mind whilst she built:
 \end{array}
 \end{equation}
 
-\newpage
 \section{Channels and Names}
-\label{sec:orgae7cae5}
+\label{sec:orgf22805e}
 
-Our kittens are Kitten One, Kitten Two, and Kitten Three. These
-aren't names in kitten-speak, not names for channels like \(x\) and
-\(y\). These are names in boat-speak, just so we don't have to keep
-writing out the full boats each time.
+Our kittens are named Kitten One, Kitten Two, and Kitten
+Three. These aren't names in kitten-speak, not names for
+channels like \(x\) and \(y\). These are names in boat-speak, just
+so we don't have to keep writing out the full boats each time.
 
 Let's run some real code! For technical reasons, we need some
 punctuation --- dots and quote marks here and there --- when we
-write out kittens in Clojure. We'll explain later.
+write out kittens in Clojure.
 
 \subsection{Kit-1}
-\label{sec:orgdbf1a14}
+\label{sec:org29af91c}
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -655,9 +717,9 @@ write out kittens in Clojure. We'll explain later.
   (say. 'x 'z (nap.)))
 \end{minted}
 
-Notice that when \texttt{kit-1} takes a nap, she's not saying or hearing
-anything. \emph{The free names of \texttt{(nap)}, the names subject to
-substitution, are the empty set}:
+Notice that when \texttt{kit-1} eventually takes a nap, she's not
+saying or hearing anything. \emph{The free names of \texttt{(nap)}, the
+names subject to substitution, are the empty set}:
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -685,7 +747,7 @@ empty set:
 
 Before she naps, Kitten One says \(z\) on \(x\), so both those names
 are free for \texttt{kit-1}, meaning she just barks them out. They don't
-stand for anything else:
+stand for anything else in potential suffixes of \texttt{kit-1}:
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -709,10 +771,8 @@ stand for anything else:
 #{}
 \end{verbatim}
 
-
-\newpage
 \subsection{Kit-2}
-\label{sec:org1de2bae}
+\label{sec:org0f1098f}
 
 Kitten Two listens on \(x\) for bound \(y\), then says, on whatever
 \(y\) becomes, ``\(x\)''.
@@ -725,15 +785,11 @@ Kitten Two listens on \(x\) for bound \(y\), then says, on whatever
     (hear. 'x 'y (nap.)))))
 \end{minted}
 
-\emph{We} know \(y\) as a free variable --- subject to substitution ---
-in her immediately-next say-prefix is going to become \(z\), but
-\emph{she} doesn't know so yet. She only knows that she will
-\emph{eventually} know what \(y\) stands for, so \(y\) is eventually bound,
-thus bound. Her bound names include \(y\) now, but \(y\) becomes free,
-at least in her immediately-next say-prefix, after her first
-hear-prefix is gobbled up during substitution. \(y\) might be
-subject to renaming (bound) in later activities if she has a big
-suffix.
+\emph{We} know that in her immediately-next say-prefix,
+\texttt{(say y x)}, \(y\) is a free variable and subject to
+substitution. It eventually becomes \(z\), but \emph{she} doesn't
+know so yet. She only knows that she will \emph{eventually} know
+that \(y\) stands for \(z\); \(y\) is eventually bound, thus bound.
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -741,19 +797,20 @@ suffix.
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{y}
 \end{verbatim}
 
 
 Kitten Two's final activity is to listen on \(x\) for
-whatever-\(y\)-becomes. In that final activity, in isolation, she
-doesn't know whether she will ever know \(x\), so the free variables
---- subject to substitution --- of that final activity had better
-include \(x\).
+whatever-\(y\)-becomes. In that final activity, in isolation,
+she doesn't know whether she will ever know \(x\), so the free
+variables --- subject to substitution --- of that final
+activity had better include \(x\).
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
-(do (def kit-2-final (hear. 'x 'y (nap.)))
+(do (def kit-2-final
+      (hear. 'x 'y (nap.)))
     (free-names kit-2-final))
 \end{minted}
 
@@ -762,9 +819,9 @@ include \(x\).
 \end{verbatim}
 
 
-By nap-time, she'll know what \(y\) stands for, but she won't use it
-while napping; \(y\) is eventually bound thus bound. We saw it's not
-free; check that it's bound:
+By nap-time, she'll know what \(y\) stands for, but she won't
+use it while napping; \(y\) is eventually bound thus bound in
+her final activity:
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -776,6 +833,7 @@ free; check that it's bound:
 \end{verbatim}
 
 
+\newpage
 In her next-to-last activity, which includes her last activity,
 she will know what \(y\) is, so it is bound:
 
@@ -791,24 +849,7 @@ she will know what \(y\) is, so it is bound:
 \end{verbatim}
 
 
-For her whole sailorly mission-plan, Kitten Two will hear \(y\) on
-\(x\), so it's bound, at least until free --- subject to
-substitution.
-
-\vskip 0.26cm
-\begin{minted}[]{clojure}
-(bound-names
- (hear. 'x 'y
-  (say. 'y 'x
-   (hear. 'x 'y (nap.)))))
-\end{minted}
-
-\begin{verbatim}
-#{y}
-\end{verbatim}
-
-
-But she'll never use \(x\). She just passes \(x\) along, so it's free:
+Kit-2 never uses \(x\). She just passes \(x\) along, so it's free:
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -816,14 +857,14 @@ But she'll never use \(x\). She just passes \(x\) along, so it's free:
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{x}
 \end{verbatim}
 
 \subsection{Kit-3}
-\label{sec:orge975673}
+\label{sec:org906dd87}
 
 Kitten Three listens on \(z\) for \(v\) --- a temporary name --- then
-says ``\(v\)'' on \(v\)
+says ``\(v\)'' on \(v\): after substitution of something for \(v\):
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -832,8 +873,8 @@ says ``\(v\)'' on \(v\)
    (say. 'v 'v (nap.))))
 \end{minted}
 
-Her bound names include \(v\), at least until it becomes free after
-renaming (which does nothing, here) and before substitution:
+Her bound names include \(v\), at least until it becomes free
+before substitution:
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -841,7 +882,7 @@ renaming (which does nothing, here) and before substitution:
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{v}
 \end{verbatim}
 
 
@@ -853,7 +894,7 @@ Her free names --- subject to substitution --- include \(z\):
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{z}
 \end{verbatim}
 
 
@@ -873,7 +914,7 @@ Can you write down the free and bound names in her last activity,
 \end{verbatim}
 
 \subsection{Kitten Zero --- the Whisper Boat}
-\label{sec:orgc502ee7}
+\label{sec:orgedd2d02}
 
 The bound names of Kitten Zero, captain of the Whisper Boat,
 include all the bound names of the other kittens, so had better be
@@ -889,7 +930,7 @@ include all the bound names of the other kittens, so had better be
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{x y v}
 \end{verbatim}
 
 
@@ -901,7 +942,7 @@ Can you write out her free names? Here is a spoiler:
 \end{minted}
 
 \begin{verbatim}
-class java.lang.IllegalArgumentException
+#{z}
 \end{verbatim}
 
 
@@ -914,7 +955,9 @@ Kitten Three, who listens on \(z\) for a substitution:
 \end{verbatim}
 
 \section{Change Log}
-\label{sec:org8bf4126}
+\label{sec:orgcb3a04c}
+
+2023-29-Mar :: Many small corrections.
 
 2023-28-Mar :: Done building boats.
 

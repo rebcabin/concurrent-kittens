@@ -119,6 +119,9 @@
                (hear. 'x 'y (nap.)))))
 
 
+(bound-names kit-2)  ; #{y}
+
+
 (def kit-3
   (hear. 'z 'v
          (say. 'v 'v (nap.))))
