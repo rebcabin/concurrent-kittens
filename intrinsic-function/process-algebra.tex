@@ -1,4 +1,4 @@
-% Created 2023-03-28 Tue 20:38
+% Created 2023-03-28 Tue 21:16
 % Intended LaTeX compiler: pdflatex
 \documentclass[10pt,oneside,x11names]{article}
 \usepackage[utf8]{inputenc}
@@ -88,7 +88,7 @@
 \bookmarksetup{open, openlevel=2, numbered}
 \DeclareUnicodeCharacter{03BB}{$\lambda$}
 \author{Brian Beckman}
-\date{24 Mar 2023}
+\date{28 Mar 2023}
 \title{Concurrent Kittens in Little Boats}
 \hypersetup{
  pdfauthor={Brian Beckman},
@@ -107,7 +107,7 @@
 
 \clearpage
 \section{Prologue}
-\label{sec:org8710f9e}
+\label{sec:orga06c6f7}
 
 I must confess a mild mental disability: when I see
 mathematics or programs, I see drowning kittens, and I want to save them.
@@ -127,19 +127,19 @@ sailing safely on the waves.
 Have you been burnt by C code like \texttt{x | y \& z} or \texttt{x / y * z}?
 Perhaps you can dream, like me, of saving the drowning kittens.
 Wright the boats in drydock\footnote{compiled ahead-of-time (AOT)} or
-asea\footnote{interpreted or compiled just-in-time (JIT)}, right
+asea,\footnote{interpreted or compiled just-in-time (JIT)} right
 the boats so they float,\footnote{type-check and optimize} and write
 \texttt{(\& z (| x y))} and \texttt{(* z (/ x y))}! If not, perhaps you can
 tolerate me. My affliction is not my fault! It is like
-misophonia.\footnote{\url{https://www.webmd.com/mental-health/what-is-misophonia}}:
-built-in, incurable, inexplicable (except to fellow
+misophonia:\footnote{\url{https://www.webmd.com/mental-health/what-is-misophonia}}
+built-in, incurable, miserable, inexplicable (except to fellow
 sufferers).\footnote{Plus, I don't like writing parsers: it's boring.}
 
 \subsection{``What are you doing?''}
-\label{sec:org766714c}
+\label{sec:orga878985}
 
 Let's implement some fundamental terms from the rho calculus\footnote{Meredith, L. G.; Radestock, Mattias (22 December 2005). ``A Reflective Higher-Order Calculus''. Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. \url{https://doi.org/10.1016/j.entcs.2005.05.016}.}
-and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{org84b0e5f}}
+and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{org001540d}}
 in a DSL\footnote{\url{https://en.wikipedia.org/wiki/Domain-specific\_language}}
 made of little boats, meaning ``embedded in Clojure.'' Asynchronous
 behavior is easy to model in Clojure, and we have
@@ -149,7 +149,7 @@ the drowning kittens. It's important for programs to look good.
 Mathematics and programming \emph{are visual arts}.
 
 \subsection{``Why not RhoLang?''}
-\label{sec:orgc2be556}
+\label{sec:org850d37c}
 
 You call up your friend Nancy and invite her to a party at your
 house. She asks ``Will Ted be there?'' You think to yourself
@@ -167,14 +167,14 @@ semantics as RhoLang embedded in Clojure, and call it CrowLang.
 
 Perhaps CrowLang can inter-operate with RhoLang. They're both on
 the Java Virtual Machine, after all. Or perhaps we'll write new
-lcompilers\footnote{\url{https://github.com/lcompilers}\label{org689557b}} [\textit{sic}]
+lcompilers\footnote{\url{https://github.com/lcompilers}\label{org9c56192}} [\textit{sic}]
 for CrowLang and RhoLang (you can write an lcompiler for Scala, Nancy
 doesn't care). Lcompilers are fast, flexible, modularized, and
 easy to write. In fact, some day, lcompilers will use rho and pi
 for internal type-checking and other formalisms!
 
 \subsection{``Why not something better?''}
-\label{sec:orgd9bea58}
+\label{sec:org5673547}
 
 Considered and rejected:
 
@@ -200,7 +200,7 @@ There \emph{is} a path of least resistance for me, considering all
 things.
 
 \subsection{``Clojure doesn't have types!''}
-\label{sec:org3d0b0d2}
+\label{sec:org90cbd90}
 
 Not so. Clojure.spec\footnote{\url{https://clojure.org/guides/spec}} is at
 least as strong as types. It's not static, that's true, but
@@ -213,10 +213,10 @@ we can prove theorems. It's good enough.
 
 Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation\footnote{\url{https://github.com/rebcabin/asr-tester}}
-for lfortran and lpython.\textsuperscript{\ref{org689557b}}
+for lfortran and lpython.\textsuperscript{\ref{org9c56192}}
 
 \subsection{``How did you write this?''}
-\label{sec:orgc0b6a1e}
+\label{sec:org07de5e4}
 
 This is an executable document. When I produce a PDF from it, all
 code blocks are executed and results reported. I like this better
@@ -226,9 +226,9 @@ org-babel.\footnote{\url{https://orgmode.org/worg/org-contrib/babel/}}
 
 \newpage
 \section{\(\Pi\) Kittens in Little Boats}
-\label{sec:org5ebd3be}
+\label{sec:org6b45bc9}
 
-From the wiki page:\textsuperscript{\ref{org84b0e5f}}
+From the wiki page:\textsuperscript{\ref{org001540d}}
 
 \begin{equation}
 \begin{array}{clll}
@@ -249,7 +249,7 @@ everything. We'll do a little better, later. First, let's save
 some drowning kittens!
 
 \subsection{A Cartoon}
-\label{sec:org2948276}
+\label{sec:orgb7b8c92}
 
 Here is a tiny calculation cartoon, again from the wiki page,
 showing a reduction similar to an \(\eta\)\nobreakdash-reduction in
@@ -341,7 +341,7 @@ formal parameters in a function call in an ordinary programming
 language.
 
 \subsection{Free and Bound}
-\label{sec:org0d3abe5}
+\label{sec:org496253c}
 
 Before this substitution of \(z\) for \(y\), the \(y\) in Kitten Two's
 next say-prefix, \(\bar{y}\langle{x}\rangle\), is \emph{free}. That means
@@ -365,7 +365,7 @@ binding must be a whispering kitten or a listening kitten.
 
 \newpage
 \subsection{Binding}
-\label{sec:org93ace7c}
+\label{sec:org796eee6}
 
 There are only two ways to bind a name; only two \emph{binding prefix forms}:
 
@@ -397,7 +397,7 @@ the word \emph{bound} means \emph{eventually bound to something}. The term
 \emph{bound} when we \emph{do} know \emph{bound to what}.
 
 \subsection{Substitution}
-\label{sec:orgd04f40a}
+\label{sec:orga54e87c}
 
 We can state a general rule for \emph{substitution}, with some
 terminology to be clarified:
@@ -412,16 +412,17 @@ terminology to be clarified:
 \end{definition}
 
 \subsection{Renaming}
-\label{sec:orgc0b66bd}
+\label{sec:org85a3008}
 
 What if there were already some \(z\)'s amongst the free \(y\)'s? The
 listening kitten would have to patch that up first. It doesn't
 matter what temporary bound name she gives to a channel, so long
-as the same channel has the same bound name everywhere to the
-right of some dot. We might rename preexisting \(z\)'s something
-like \(z_1\). That's \emph{alpha renaming}. We don't have that problem
-here, but we might later. Our kittens always remember their
-sailorly duty to clean up messes in their boats.
+as the same channel has the same bound name everywhere in some
+suffixes, to the right of some dot or some whisper. We might
+rename preexisting \(z\)'s something like \(z_1\). That's \emph{alpha
+renaming}. We don't have that problem here, but we might later.
+Our kittens always remember their sailorly duty to clean up messes
+in their boats.
 
 \label{def:renaming}
 \begin{definition}{\emph{renaming}:}
@@ -436,15 +437,15 @@ Renaming in the suffixes happens first, then substitution happens
 to the free variables.
 
 \subsection{Animated Cartoons}
-\label{sec:org72313b0}
+\label{sec:org786214f}
 
 I can't animate cartoons in a paper, but I visualize calculations
-as symbols moving around in an animated cartoon (please forgive my
-synaesthetic mental affliction). It saves me mistakes. I animate
-calculations with pen and paper.
+as symbols moving around in an animated cartoon (please forgive
+another related mental afflictions, synaesthesia). It saves me
+mistakes. I animate calculations with pen and paper.
 
 \subsection{Finishing Up}
-\label{sec:org6c09a0a}
+\label{sec:org8f8ea0f}
 
 Kitten Two, \(\chatting{z}{x}{\listening{x}{z}{\napping}}\), now
 says on \(z\) ``Switch to \(x\), will you?'' to whomever is listening.
@@ -484,7 +485,7 @@ nap. If you don't see it in your mind's eye, animate it on paper.
 All the kittens are napping safely in the whisperer's boat.
 
 \subsection{All Names are Channels}
-\label{sec:org2ea80cb}
+\label{sec:org577e4a7}
 
 Every variable, \(x\), \(y\), \(z\), \(v\), stands in for a communication
 channel. Sometimes we know what channel a variable stands for, say
@@ -493,7 +494,7 @@ we'll find out about later. That's all we have so far: channels,
 known or unknown.
 
 \subsection{Bail the Boats!}
-\label{sec:orgb4bd1e8}
+\label{sec:org0f49794}
 
 For now, we've got all kittens safely napping in the ``whisper''
 boat. But they're not \emph{dry}. They had to bail out a \emph{lot} of water
@@ -616,7 +617,7 @@ whispering kitten can nap, too.
 Thanks, Venus!
 
 \subsection{Kitten Boat Grammar}
-\label{sec:org35988c7}
+\label{sec:orgd54abbf}
 
 This is what Venus-the-boatwright had in mind whilst she built:
 
@@ -634,7 +635,7 @@ This is what Venus-the-boatwright had in mind whilst she built:
 
 \newpage
 \section{Channels and Names}
-\label{sec:org5246fce}
+\label{sec:org2170518}
 
 Our kittens are Kitten One, Kitten Two, and Kitten Three. These
 aren't names in kitten-speak, not names for channels like \(x\) and
@@ -646,7 +647,7 @@ punctuation --- dots and quote marks here and there --- when we
 write out kittens in Clojure. We'll explain later.
 
 \subsection{Kit-1}
-\label{sec:orga3e51ae}
+\label{sec:orgca9c431}
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -692,7 +693,7 @@ stand for anything else:
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{x z}
 \end{verbatim}
 
 
@@ -705,13 +706,13 @@ class clojure.lang.Compiler$CompilerException
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{}
 \end{verbatim}
 
 
 \newpage
 \subsection{Kit-2}
-\label{sec:org0d553b9}
+\label{sec:org3d98633}
 
 Kitten Two listens on \(x\) for bound \(y\), then says, on whatever
 \(y\) becomes, ``\(x\)''.
@@ -740,7 +741,7 @@ suffix.
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{y}
 \end{verbatim}
 
 
@@ -815,11 +816,11 @@ But she'll never use \(x\). She just passes \(x\) along, so it's free:
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{x}
 \end{verbatim}
 
 \subsection{Kit-3}
-\label{sec:org11f3c3e}
+\label{sec:org27db907}
 
 Kitten Three listens on \(z\) for \(v\) --- a temporary name --- then
 says ``\(v\)'' on \(v\)
@@ -840,7 +841,7 @@ renaming (which does nothing, here) and before substitution:
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{v}
 \end{verbatim}
 
 
@@ -852,7 +853,7 @@ Her free names --- subject to substitution --- include \(z\):
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{z}
 \end{verbatim}
 
 
@@ -872,7 +873,7 @@ Can you write down the free and bound names in her last activity,
 \end{verbatim}
 
 \subsection{Kitten Zero --- the Whisper Boat}
-\label{sec:org08d970e}
+\label{sec:orgd7c43bc}
 
 The bound names of Kitten Zero, captain of the Whisper Boat,
 include all the bound names of the other kittens, so had better be
@@ -888,7 +889,7 @@ include all the bound names of the other kittens, so had better be
 \end{minted}
 
 \begin{verbatim}
-class clojure.lang.Compiler$CompilerException
+#{x y v}
 \end{verbatim}
 
 
@@ -900,7 +901,7 @@ Can you writ out her free names? Here is a spoiler:
 \end{minted}
 
 \begin{verbatim}
-class java.lang.IllegalArgumentException
+#{z}
 \end{verbatim}
 
 
@@ -913,7 +914,9 @@ Kitten Three, who listens on \(z\) for a substitution:
 \end{verbatim}
 
 \section{Change Log}
-\label{sec:org8b24e62}
+\label{sec:org5d4516a}
+
+2023-28-Mar :: Done building boats.
 
 2023-26-Mar :: Current version.
 

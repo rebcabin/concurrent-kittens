@@ -109,6 +109,27 @@
     (bound-names K)))
 
 
+(def kit-1
+  (say. 'x 'z (nap.)))
+
+
+(def kit-2
+  (hear. 'x 'y
+         (say. 'y 'x
+               (hear. 'x 'y (nap.)))))
+
+
+(def kit-3
+  (hear. 'z 'v
+         (say. 'v 'v (nap.))))
+
+
+(def whisper-boat
+  (channel. 'x
+            (par. kit-1
+                  (par. kit-2 kit-3))))
+
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]

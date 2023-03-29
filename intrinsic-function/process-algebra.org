@@ -123,7 +123,7 @@
 
 #+TITLE: Concurrent Kittens in Little Boats
 #+AUTHOR: Brian Beckman
-#+DATE: 24 Mar 2023
+#+DATE: 28 Mar 2023
 
 #+BEGIN_SRC elisp :exports none
   (setq org-babel-python-command "python3")
@@ -170,12 +170,12 @@ sailing safely on the waves.
 Have you been burnt by C code like =x | y & z= or =x / y * z=?
 Perhaps you can dream, like me, of saving the drowning kittens.
 Wright the boats in drydock[fn:: compiled ahead-of-time (AOT)] or
-asea[fn:: interpreted or compiled just-in-time (JIT)], right
+asea,[fn:: interpreted or compiled just-in-time (JIT)] right
 the boats so they float,[fn:: type-check and optimize] and write
 =(& z (| x y))= and =(* z (/ x y))=! If not, perhaps you can
 tolerate me. My affliction is not my fault! It is like
-misophonia.[fn:: https://www.webmd.com/mental-health/what-is-misophonia]:
-built-in, incurable, inexplicable (except to fellow
+misophonia:[fn:: https://www.webmd.com/mental-health/what-is-misophonia]
+built-in, incurable, miserable, inexplicable (except to fellow
 sufferers).[fn:: Plus, I don't like writing parsers: it's boring.]
 
 ** "What are you doing?"
@@ -490,11 +490,12 @@ terminology to be clarified:
 What if there were already some $z$'s amongst the free $y$'s? The
 listening kitten would have to patch that up first. It doesn't
 matter what temporary bound name she gives to a channel, so long
-as the same channel has the same bound name everywhere to the
-right of some dot. We might rename preexisting $z$'s something
-like $z_1$. That's /alpha renaming/. We don't have that problem
-here, but we might later. Our kittens always remember their
-sailorly duty to clean up messes in their boats.
+as the same channel has the same bound name everywhere in some
+suffixes, to the right of some dot or some whisper. We might
+rename preexisting $z$'s something like $z_1$. That's /alpha
+renaming/. We don't have that problem here, but we might later.
+Our kittens always remember their sailorly duty to clean up messes
+in their boats.
 
 \label{def:renaming}
 \begin{definition}{\emph{renaming}:}
@@ -511,9 +512,9 @@ to the free variables.
 ** Animated Cartoons
 
 I can't animate cartoons in a paper, but I visualize calculations
-as symbols moving around in an animated cartoon (please forgive my
-synaesthetic mental affliction). It saves me mistakes. I animate
-calculations with pen and paper.
+as symbols moving around in an animated cartoon (please forgive
+another related mental afflictions, synaesthesia). It saves me
+mistakes. I animate calculations with pen and paper.
 
 ** Finishing Up
 
@@ -1009,6 +1010,8 @@ We can jump ahead and try Clojure's very blue-collar
 ** Chatting Kitten
 
 * Change Log
+
+2023-28-Mar :: Done building boats.
 
 2023-26-Mar :: Current version.
 
