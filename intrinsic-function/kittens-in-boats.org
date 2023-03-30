@@ -156,26 +156,36 @@ I must confess a mild mental disability: when I see
 mathematics or programs, I see drowning kittens, and I want to
 save them.
 
-=1+2*3=, five little kittens, =1=, =+=, =2=, =*=,
-=3=, drowning in a syntactical sea. Venus-the-boatwright
-rises on her half-shell, fists full of bows and sterns. She
-reaches down and builds little boats, each from a bow and a
-stern. She puts some little kittens in each boat. Sometimes,
-she puts another little boat in a boat in place of a kitten.
+=x | y & z=, five little kittens, =x=, =|=, =y=, =&=, =z=
+drowning in the Syntactical Sea of Forgotten Precedence.
+Venus-the-boatwright rises on her half-shell, fists full of
+bows and sterns. She reaches down and builds little boats,
+each from a bow and a stern. She puts some little kittens in
+each boat. Sometimes, she puts another little boat in a boat
+in place of a kitten.
 
 She kisses the first kitten (or boat) in each boat and says
 "You're the captain; take care of the others!" She blesses the
 little boats and sinks back into the sea, leaving
-=(+ 1 (* 2 3))= sailing safely on the waves.
+=(& z (| x y))= sailing safely on the waves. Venus knows you
+didn't mean =(| x (& y z))=.
 
-Have you been burnt by C code like =x | y & z= or =x / y * z=?
+Have you been burnt by C code like =x|y&z= or =x/y*z=?
+Mathematicians  normally read \(\,x/yz\,\) as
+\(\,x/(yz)\,\),[fn:: I haven't found a recent official source
+to cite from the American Mathematical Society and the
+American Physical Society, but there is this
+https://math.stackexchange.com/questions/213406/does-x-yz-mean-x-yz-or-x-yz]
+but I know of no programming language that treats =x/y*z= like
+that. Rather, programming languages treat it like $(x z)/y$.
+
 Perhaps you can dream, like me, of saving the drowning
 kittens. Wright the boats in drydock[fn:: compiled
 ahead-of-time (AOT)] or asea,[fn:: interpreted or compiled
 just-in-time (JIT)] right the boats so they float,[fn::
 type-check and optimize] and write =(& z (| x y))= and
 =(* z (/ x y))=! Or did you mean =(| x (& y z))= and
-=(/ x (* y z))=? Who can know?
+=(/ x (* y z))=? Only you can know!
 
 If you don't like bows and sterns and little boats, perhaps you can
 tolerate me. My affliction is not my fault! It is like
@@ -261,7 +271,6 @@ Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation[fn:: https://github.com/rebcabin/asr-tester]
 for lfortran and lpython.[fn:lcompilers]
 
-\newpage
 ** "How did you write this?"
 
 This is an executable document. When I produce a PDF from it, all

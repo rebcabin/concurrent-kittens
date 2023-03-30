@@ -1,4 +1,4 @@
-% Created 2023-03-30 Thu 10:23
+% Created 2023-03-30 Thu 15:45
 % Intended LaTeX compiler: pdflatex
 \documentclass[10pt,oneside,x11names]{article}
 \usepackage[utf8]{inputenc}
@@ -107,31 +107,41 @@
 
 \clearpage
 \section{Prologue}
-\label{sec:orgd4074e9}
+\label{sec:orgd329eec}
 
 I must confess a mild mental disability: when I see
 mathematics or programs, I see drowning kittens, and I want to
 save them.
 
-\texttt{1+2*3}, five little kittens, \texttt{1}, \texttt{+}, \texttt{2}, \texttt{*},
-\texttt{3}, drowning in a syntactical sea. Venus-the-boatwright
-rises on her half-shell, fists full of bows and sterns. She
-reaches down and builds little boats, each from a bow and a
-stern. She puts some little kittens in each boat. Sometimes,
-she puts another little boat in a boat in place of a kitten.
+\texttt{x | y \& z}, five little kittens, \texttt{x}, \texttt{|}, \texttt{y}, \texttt{\&}, \texttt{z}
+drowning in the Syntactical Sea of Forgotten Precedence.
+Venus-the-boatwright rises on her half-shell, fists full of
+bows and sterns. She reaches down and builds little boats,
+each from a bow and a stern. She puts some little kittens in
+each boat. Sometimes, she puts another little boat in a boat
+in place of a kitten.
 
 She kisses the first kitten (or boat) in each boat and says
 ``You're the captain; take care of the others!'' She blesses the
 little boats and sinks back into the sea, leaving
-\texttt{(+ 1 (* 2 3))} sailing safely on the waves.
+\texttt{(\& z (| x y))} sailing safely on the waves. Venus knows you
+didn't mean \texttt{(| x (\& y z))}.
 
-Have you been burnt by C code like \texttt{x | y \& z} or \texttt{x / y * z}?
+Have you been burnt by C code like \texttt{x|y\&z} or \texttt{x/y*z}?
+Mathematicians  normally read \(\,x/yz\,\) as
+\(\,x/(yz)\,\),\footnote{I haven't found a recent official source
+to cite from the American Mathematical Society and the
+American Physical Society, but there is this
+\url{https://math.stackexchange.com/questions/213406/does-x-yz-mean-x-yz-or-x-yz}}
+but I know of no programming language that treats \texttt{x/y*z} like
+that. Rather, programming languages treat it like \((x z)/y\).
+
 Perhaps you can dream, like me, of saving the drowning
 kittens. Wright the boats in drydock\footnote{compiled
 ahead-of-time (AOT)} or asea,\footnote{interpreted or compiled
 just-in-time (JIT)} right the boats so they float,\footnote{type-check and optimize} and write \texttt{(\& z (| x y))} and
 \texttt{(* z (/ x y))}! Or did you mean \texttt{(| x (\& y z))} and
-\texttt{(/ x (* y z))}? Who can know?
+\texttt{(/ x (* y z))}? Only you can know!
 
 If you don't like bows and sterns and little boats, perhaps you can
 tolerate me. My affliction is not my fault! It is like
@@ -140,10 +150,10 @@ built-in, incurable, misery-making for others, inexplicable except to fellow
 sufferers.\footnote{Plus, I don't like writing parsers: it's boring.}
 
 \subsection{``What are you doing?''}
-\label{sec:orgb9e9286}
+\label{sec:org952ae8c}
 
 Let's implement some fundamentals of the rho calculus\footnote{Meredith, L. G.; Radestock, Mattias (22 December 2005). ``A Reflective Higher-Order Calculus''. Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. \url{https://doi.org/10.1016/j.entcs.2005.05.016}.}
-and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{org62d1ef8}}
+and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{orgb058f63}}
 in a DSL\footnote{\url{https://en.wikipedia.org/wiki/Domain-specific\_language}}
 made of little boats, meaning ``embedded in Clojure.'' Asynchronous
 behavior is easy to model in Clojure, and there is
@@ -153,7 +163,7 @@ the drowning kittens. It's important for programs to look good.
 Mathematics and programming \emph{are visual arts}.
 
 \subsection{``Why not RhoLang?''}
-\label{sec:org865379c}
+\label{sec:org9a56fc9}
 
 You call up your friend Nancy and invite her to a party at your
 house. She asks ``Will Ted be there?'' You think to yourself
@@ -171,14 +181,14 @@ semantics as RhoLang embedded in Clojure, and call it CrowLang.
 
 Perhaps CrowLang can inter-operate with RhoLang. They're both on
 the Java Virtual Machine, after all. Or perhaps we'll write new
-lcompilers\footnote{\url{https://github.com/lcompilers}\label{org6f31eef}} [\textit{sic}]
+lcompilers\footnote{\url{https://github.com/lcompilers}\label{orgce371e5}} [\textit{sic}]
 for CrowLang and RhoLang. You can write an lcompiler for Scala, Nancy
 doesn't care. Lcompilers are fast, flexible, modularized, and
 easy to write. In fact, some day, lcompilers will use rho and pi
 for internal type-checking and other formalisms!
 
 \subsection{``Why not something better?''}
-\label{sec:org8806f0b}
+\label{sec:org9c7ebde}
 
 Considered and rejected:
 
@@ -204,7 +214,7 @@ There \emph{is} a path of least resistance for me, considering all
 things.
 
 \subsection{``Clojure doesn't have types!''}
-\label{sec:org459f34b}
+\label{sec:org3833452}
 
 Not so. Clojure.spec\footnote{\url{https://clojure.org/guides/spec}} is at
 least as strong as types. It's not static, that's true, but
@@ -217,11 +227,10 @@ prove theorems. It's good enough.
 
 Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation\footnote{\url{https://github.com/rebcabin/asr-tester}}
-for lfortran and lpython.\textsuperscript{\ref{org6f31eef}}
+for lfortran and lpython.\textsuperscript{\ref{orgce371e5}}
 
-\newpage
 \subsection{``How did you write this?''}
-\label{sec:orgca64c87}
+\label{sec:org3854b23}
 
 This is an executable document. When I produce a PDF from it, all
 code blocks are executed and results reported. I like this better
@@ -231,9 +240,9 @@ in org-babel.\footnote{\url{https://orgmode.org/worg/org-contrib/babel/}}
 
 \newpage
 \section{\(\Pi\) Communicating Concurrent Kittens}
-\label{sec:org5ca784d}
+\label{sec:orgeaf6f56}
 
-From the wiki page:\textsuperscript{\ref{org62d1ef8}}
+From the wiki page:\textsuperscript{\ref{orgb058f63}}
 
 \begin{equation}
 \begin{array}{clll}
@@ -254,7 +263,7 @@ everything. We'll do a little better, later. First, let's save
 some drowning kittens!
 
 \subsection{A Cartoon}
-\label{sec:org7537303}
+\label{sec:org992f9fa}
 
 Here is a tiny calculation cartoon, again from the wiki page,
 showing a reduction similar to an \(\eta\)\nobreakdash-reduction in
@@ -347,7 +356,7 @@ formal parameters in a function call in an ordinary programming
 language.
 
 \subsection{Free and Bound}
-\label{sec:org763545d}
+\label{sec:orgd6ac081}
 
 Before this substitution of \(z\) for \(y\), the \(y\) in Kitten
 Two's next say-prefix, \(\bar{y}\langle{x}\rangle\), is \emph{free}.
@@ -369,7 +378,7 @@ kitten.
 
 \newpage
 \subsection{Binding}
-\label{sec:orgfd767ee}
+\label{sec:org453da96}
 
 There are only two ways to bind a name --- only two \emph{binding prefix forms}:
 
@@ -415,7 +424,7 @@ This usage of the word
 \emph{bound} when we \emph{do} know \emph{bound to what}.
 
 \subsection{Substitution}
-\label{sec:orgb06f666}
+\label{sec:org58c03f6}
 
 Here is a general rule for \emph{substitution}, with some
 terminology to be clarified:
@@ -431,7 +440,7 @@ terminology to be clarified:
 \end{definition}
 
 \subsection{Renaming}
-\label{sec:orga1f5380}
+\label{sec:orgae4850a}
 \label{renaming} What if there were already some bound \(z\)'s
 amongst the suffixes of free \(y\)'s? The kitten listening on
 \(y\) and hearing \(z\) would have to patch that up first. It
@@ -456,7 +465,7 @@ in their boats.
 \end{definition}
 
 \subsection{Animated Cartoons}
-\label{sec:org67ca978}
+\label{sec:org9b1a422}
 
 I can't animate cartoons in a paper, but I visualize
 calculations as symbols moving around in an animated cartoon
@@ -465,7 +474,7 @@ synaesthesia). It saves me mistakes. I animate calculations
 with pen and paper.
 
 \subsection{Finishing Up}
-\label{sec:orgc101a01}
+\label{sec:org80f3dce}
 
 In Equation \ref{eqn:after-step-one}, Kitten Two, now
 \(\chatting{z}{x}{\listening{x}{z}{\napping}}\), says on \(z\)
@@ -524,7 +533,7 @@ be \(0\), don't worry.
 All the kittens are napping safely in the whisperer's boat.
 
 \subsection{All Names are Channels}
-\label{sec:orgde0e754}
+\label{sec:org81cf844}
 
 Every variable, \(x\), \(y\), \(z\), \(v\), stands in for a
 communication channel. Sometimes one knows what channel a
@@ -558,7 +567,7 @@ Sidestep the ``funny'' problem of \(x(x)\); never construct it.
 Just gobble its predecessor hear-prefix.
 
 \subsection{Bail the Boats!}
-\label{sec:orga970ce4}
+\label{sec:orgd83b9b1}
 
 For now, we've got all kittens safely napping in the big
 ``whisper'' boat. But they're not \emph{dry}. They had to bail out a
@@ -684,7 +693,7 @@ whispering kitten can nap, too.
 Thanks, Venus!
 
 \subsection{Kitten Boat Calculus}
-\label{sec:org3fb733e}
+\label{sec:orge6c0d08}
 
 This is what Venus-the-boatwright had in mind whilst she built:
 
@@ -701,7 +710,7 @@ This is what Venus-the-boatwright had in mind whilst she built:
 \end{equation}
 
 \section{Channels and Names}
-\label{sec:org21230e2}
+\label{sec:orgbd3d0f1}
 
 The kittens are named Kitten One, Kitten Two, and Kitten
 Three. These aren't names in kitten-speak, not names for
@@ -713,7 +722,7 @@ punctuation --- dots and quote marks here and there --- for
 kittens written out in Clojure.
 
 \subsection{Kit-1}
-\label{sec:orga0dc98e}
+\label{sec:org06ed129}
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -776,7 +785,7 @@ stand for anything else in potential suffixes of \texttt{kit-1}:
 \end{verbatim}
 
 \subsection{Kit-2}
-\label{sec:org43b19e9}
+\label{sec:orgc35362d}
 
 Kitten Two listens on \(x\) for bound \(y\), then says, on whatever
 \(y\) becomes, ``\(x\)''.
@@ -865,7 +874,7 @@ Kit-2 never uses \(x\). She just passes \(x\) along, so it's free:
 \end{verbatim}
 
 \subsection{Kit-3}
-\label{sec:org19e8b44}
+\label{sec:org360f135}
 
 Kitten Three listens on \(z\) for \(v\) --- a temporary name --- then
 says ``\(v\)'' on \(v\): after substitution of something for \(v\):
@@ -918,7 +927,7 @@ Can you write down the free and bound names in her last activity,
 \end{verbatim}
 
 \subsection{Kitten Zero --- the Whisper Boat}
-\label{sec:orgcc758c4}
+\label{sec:orgb55a57b}
 
 The bound names of Kitten Zero, captain of the Whisper Boat,
 include all the bound names of the other kittens, so had better be
@@ -955,7 +964,7 @@ from both Kitten One, who barks them out in \texttt{(say. 'x 'z)}, and
 Kitten Three, who listens on \(z\) for a substitution:
 
 \section{Change Log}
-\label{sec:orgd1f88a4}
+\label{sec:orga8d3e18}
 
 2023-30-Mar :: weeding out the ``we's''
 
