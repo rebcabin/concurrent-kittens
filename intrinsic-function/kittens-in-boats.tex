@@ -1,4 +1,4 @@
-% Created 2023-03-30 Thu 15:45
+% Created 2023-03-30 Thu 16:29
 % Intended LaTeX compiler: pdflatex
 \documentclass[10pt,oneside,x11names]{article}
 \usepackage[utf8]{inputenc}
@@ -107,7 +107,7 @@
 
 \clearpage
 \section{Prologue}
-\label{sec:orgd329eec}
+\label{sec:org4b3dee1}
 
 I must confess a mild mental disability: when I see
 mathematics or programs, I see drowning kittens, and I want to
@@ -121,20 +121,24 @@ each from a bow and a stern. She puts some little kittens in
 each boat. Sometimes, she puts another little boat in a boat
 in place of a kitten.
 
-She kisses the first kitten (or boat) in each boat and says
-``You're the captain; take care of the others!'' She blesses the
-little boats and sinks back into the sea, leaving
-\texttt{(\& z (| x y))} sailing safely on the waves. Venus knows you
-didn't mean \texttt{(| x (\& y z))}.
+She kisses the first kitten (or little boat) in each little
+boat and says ``You're the captain; take care of the others!''
+She blesses the little boats and sinks back into the sea,
+leaving \texttt{(\& z (| x y))} sailing safely on the waves. Venus
+knows you didn't mean \texttt{(| x (\& y z))}.
 
 Have you been burnt by C code like \texttt{x|y\&z} or \texttt{x/y*z}?
-Mathematicians  normally read \(\,x/yz\,\) as
-\(\,x/(yz)\,\),\footnote{I haven't found a recent official source
-to cite from the American Mathematical Society and the
-American Physical Society, but there is this
-\url{https://math.stackexchange.com/questions/213406/does-x-yz-mean-x-yz-or-x-yz}}
+Mathematicians and Physicists normally read \(\,x/yz\,\) as
+\(\,x/(yz)\,\),\footnote{Section E.2.e of the Style Guide of the
+American Physical society states that multiplication has
+higher precedence than division, thus implies my
+statement.}\textsuperscript{,}\,\footnote{\url{https://cdn.journals.aps.org/files/styleguide-pr.pdf}}\textsuperscript{,}\,\footnote{I
+have not found recent corroboration from the American
+Mathematical Society, but I know I have read it in the past!}
+\footnote{\url{https://math.stackexchange.com/questions/213406/does-x-yz-mean-x-yz-or-x-yz}}
 but I know of no programming language that treats \texttt{x/y*z} like
-that. Rather, programming languages treat it like \((x z)/y\).
+that. Rather, programming languages treat it like \((x
+z)/y\).\footnote{even in Mathematica, where \texttt{x / y z === x z / y}}
 
 Perhaps you can dream, like me, of saving the drowning
 kittens. Wright the boats in drydock\footnote{compiled
@@ -150,10 +154,10 @@ built-in, incurable, misery-making for others, inexplicable except to fellow
 sufferers.\footnote{Plus, I don't like writing parsers: it's boring.}
 
 \subsection{``What are you doing?''}
-\label{sec:org952ae8c}
+\label{sec:org42996d0}
 
 Let's implement some fundamentals of the rho calculus\footnote{Meredith, L. G.; Radestock, Mattias (22 December 2005). ``A Reflective Higher-Order Calculus''. Electronic Notes in Theoretical Computer Science. 141 (5): 49–67. \url{https://doi.org/10.1016/j.entcs.2005.05.016}.}
-and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{orgb058f63}}
+and the pi calculus\footnote{\url{https://en.wikipedia.org/wiki/\%CE\%A0-calculus}\label{orgd08846b}}
 in a DSL\footnote{\url{https://en.wikipedia.org/wiki/Domain-specific\_language}}
 made of little boats, meaning ``embedded in Clojure.'' Asynchronous
 behavior is easy to model in Clojure, and there is
@@ -163,7 +167,7 @@ the drowning kittens. It's important for programs to look good.
 Mathematics and programming \emph{are visual arts}.
 
 \subsection{``Why not RhoLang?''}
-\label{sec:org9a56fc9}
+\label{sec:orge02b05f}
 
 You call up your friend Nancy and invite her to a party at your
 house. She asks ``Will Ted be there?'' You think to yourself
@@ -181,14 +185,14 @@ semantics as RhoLang embedded in Clojure, and call it CrowLang.
 
 Perhaps CrowLang can inter-operate with RhoLang. They're both on
 the Java Virtual Machine, after all. Or perhaps we'll write new
-lcompilers\footnote{\url{https://github.com/lcompilers}\label{orgce371e5}} [\textit{sic}]
+lcompilers\footnote{\url{https://github.com/lcompilers}\label{org5cbf904}} [\textit{sic}]
 for CrowLang and RhoLang. You can write an lcompiler for Scala, Nancy
 doesn't care. Lcompilers are fast, flexible, modularized, and
 easy to write. In fact, some day, lcompilers will use rho and pi
 for internal type-checking and other formalisms!
 
 \subsection{``Why not something better?''}
-\label{sec:org9c7ebde}
+\label{sec:orgd4f35ee}
 
 Considered and rejected:
 
@@ -214,7 +218,7 @@ There \emph{is} a path of least resistance for me, considering all
 things.
 
 \subsection{``Clojure doesn't have types!''}
-\label{sec:org3833452}
+\label{sec:orgc167fe3}
 
 Not so. Clojure.spec\footnote{\url{https://clojure.org/guides/spec}} is at
 least as strong as types. It's not static, that's true, but
@@ -227,10 +231,10 @@ prove theorems. It's good enough.
 
 Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation\footnote{\url{https://github.com/rebcabin/asr-tester}}
-for lfortran and lpython.\textsuperscript{\ref{orgce371e5}}
+for lfortran and lpython.\textsuperscript{\ref{org5cbf904}}
 
 \subsection{``How did you write this?''}
-\label{sec:org3854b23}
+\label{sec:org14c3c17}
 
 This is an executable document. When I produce a PDF from it, all
 code blocks are executed and results reported. I like this better
@@ -240,9 +244,9 @@ in org-babel.\footnote{\url{https://orgmode.org/worg/org-contrib/babel/}}
 
 \newpage
 \section{\(\Pi\) Communicating Concurrent Kittens}
-\label{sec:orgeaf6f56}
+\label{sec:orgec8f23a}
 
-From the wiki page:\textsuperscript{\ref{orgb058f63}}
+From the wiki page:\textsuperscript{\ref{orgd08846b}}
 
 \begin{equation}
 \begin{array}{clll}
@@ -263,7 +267,7 @@ everything. We'll do a little better, later. First, let's save
 some drowning kittens!
 
 \subsection{A Cartoon}
-\label{sec:org992f9fa}
+\label{sec:org443ea6e}
 
 Here is a tiny calculation cartoon, again from the wiki page,
 showing a reduction similar to an \(\eta\)\nobreakdash-reduction in
@@ -356,7 +360,7 @@ formal parameters in a function call in an ordinary programming
 language.
 
 \subsection{Free and Bound}
-\label{sec:orgd6ac081}
+\label{sec:orgfec2cbc}
 
 Before this substitution of \(z\) for \(y\), the \(y\) in Kitten
 Two's next say-prefix, \(\bar{y}\langle{x}\rangle\), is \emph{free}.
@@ -378,7 +382,7 @@ kitten.
 
 \newpage
 \subsection{Binding}
-\label{sec:org453da96}
+\label{sec:orgc6b57cb}
 
 There are only two ways to bind a name --- only two \emph{binding prefix forms}:
 
@@ -424,7 +428,7 @@ This usage of the word
 \emph{bound} when we \emph{do} know \emph{bound to what}.
 
 \subsection{Substitution}
-\label{sec:org58c03f6}
+\label{sec:org8f7d5bb}
 
 Here is a general rule for \emph{substitution}, with some
 terminology to be clarified:
@@ -440,7 +444,7 @@ terminology to be clarified:
 \end{definition}
 
 \subsection{Renaming}
-\label{sec:orgae4850a}
+\label{sec:org677b579}
 \label{renaming} What if there were already some bound \(z\)'s
 amongst the suffixes of free \(y\)'s? The kitten listening on
 \(y\) and hearing \(z\) would have to patch that up first. It
@@ -465,7 +469,7 @@ in their boats.
 \end{definition}
 
 \subsection{Animated Cartoons}
-\label{sec:org9b1a422}
+\label{sec:orgb63db0f}
 
 I can't animate cartoons in a paper, but I visualize
 calculations as symbols moving around in an animated cartoon
@@ -474,7 +478,7 @@ synaesthesia). It saves me mistakes. I animate calculations
 with pen and paper.
 
 \subsection{Finishing Up}
-\label{sec:org80f3dce}
+\label{sec:org86ffdae}
 
 In Equation \ref{eqn:after-step-one}, Kitten Two, now
 \(\chatting{z}{x}{\listening{x}{z}{\napping}}\), says on \(z\)
@@ -533,7 +537,7 @@ be \(0\), don't worry.
 All the kittens are napping safely in the whisperer's boat.
 
 \subsection{All Names are Channels}
-\label{sec:org81cf844}
+\label{sec:orgc9a3453}
 
 Every variable, \(x\), \(y\), \(z\), \(v\), stands in for a
 communication channel. Sometimes one knows what channel a
@@ -567,7 +571,7 @@ Sidestep the ``funny'' problem of \(x(x)\); never construct it.
 Just gobble its predecessor hear-prefix.
 
 \subsection{Bail the Boats!}
-\label{sec:orgd83b9b1}
+\label{sec:org95ca59d}
 
 For now, we've got all kittens safely napping in the big
 ``whisper'' boat. But they're not \emph{dry}. They had to bail out a
@@ -693,7 +697,7 @@ whispering kitten can nap, too.
 Thanks, Venus!
 
 \subsection{Kitten Boat Calculus}
-\label{sec:orge6c0d08}
+\label{sec:orgd4b74cd}
 
 This is what Venus-the-boatwright had in mind whilst she built:
 
@@ -710,7 +714,7 @@ This is what Venus-the-boatwright had in mind whilst she built:
 \end{equation}
 
 \section{Channels and Names}
-\label{sec:orgbd3d0f1}
+\label{sec:org20af4c5}
 
 The kittens are named Kitten One, Kitten Two, and Kitten
 Three. These aren't names in kitten-speak, not names for
@@ -722,7 +726,7 @@ punctuation --- dots and quote marks here and there --- for
 kittens written out in Clojure.
 
 \subsection{Kit-1}
-\label{sec:org06ed129}
+\label{sec:orgb92320f}
 
 \vskip 0.26cm
 \begin{minted}[]{clojure}
@@ -785,7 +789,7 @@ stand for anything else in potential suffixes of \texttt{kit-1}:
 \end{verbatim}
 
 \subsection{Kit-2}
-\label{sec:orgc35362d}
+\label{sec:orge8ce1f0}
 
 Kitten Two listens on \(x\) for bound \(y\), then says, on whatever
 \(y\) becomes, ``\(x\)''.
@@ -874,7 +878,7 @@ Kit-2 never uses \(x\). She just passes \(x\) along, so it's free:
 \end{verbatim}
 
 \subsection{Kit-3}
-\label{sec:org360f135}
+\label{sec:org115bd1d}
 
 Kitten Three listens on \(z\) for \(v\) --- a temporary name --- then
 says ``\(v\)'' on \(v\): after substitution of something for \(v\):
@@ -927,7 +931,7 @@ Can you write down the free and bound names in her last activity,
 \end{verbatim}
 
 \subsection{Kitten Zero --- the Whisper Boat}
-\label{sec:orgb55a57b}
+\label{sec:org1ed9ea1}
 
 The bound names of Kitten Zero, captain of the Whisper Boat,
 include all the bound names of the other kittens, so had better be
@@ -964,7 +968,7 @@ from both Kitten One, who barks them out in \texttt{(say. 'x 'z)}, and
 Kitten Three, who listens on \(z\) for a substitution:
 
 \section{Change Log}
-\label{sec:orga8d3e18}
+\label{sec:org412ed6a}
 
 2023-30-Mar :: weeding out the ``we's''
 

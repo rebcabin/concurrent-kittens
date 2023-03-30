@@ -9,7 +9,7 @@ Pi and Rho calculi in a story about saving the kittens.
 
 # Read
 
-`process-algebra.pdf`
+`kittens-in-boats.pdf`
 
 I've committed the current `.tex` files for your convenience,
 but they will get overwritten. It's a bad idea to modify the
@@ -17,5 +17,5 @@ but they will get overwritten. It's a bad idea to modify the
 
 # Modify
 
-Modify both the Clojure code and the document `process-algebra.org` via
+Modify both the Clojure code and the document `kittens-in-boats.org` via
 org-babel in Emacs. It will create a `.tex` file for you.
