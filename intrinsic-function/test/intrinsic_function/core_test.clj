@@ -71,7 +71,7 @@
     (is (parl? -parl-123))
     (is (not (parl? -parr-123)))
     (is (not (parr? -parl-123)))
-    (is (parr? parr-123)))
+    (is (parr? -parr-123)))
   (testing "convolving"
     (is (= -parr-123 (convolve-pars -parl-123)))
     (is (= -parl-123 (convolve-pars -parr-123)))))
