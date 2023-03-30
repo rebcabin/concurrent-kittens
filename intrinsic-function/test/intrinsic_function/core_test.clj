@@ -59,12 +59,22 @@
 (def -parr-123 (par. -kit-1 (par. -kit-2 -kit-3)))
 
 
+;;   ___                     _   _
+;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
+;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
+;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
+;;       |_|
+
+
 (deftest parl-parr-test
   (testing "par-left and par-right"
     (is (parl? -parl-123))
     (is (not (parl? -parr-123)))
     (is (not (parr? -parl-123)))
-    (is (parr? parr-123))))
+    (is (parr? parr-123)))
+  (testing "convolving"
+    (is (= -parr-123 (convolve-pars -parl-123)))
+    (is (= -parl-123 (convolve-pars -parr-123)))))
 
 
 (deftest free-names-test
@@ -77,12 +87,21 @@
     (is (= #{'z}    (free-names -whisper-boat)))))
 
 
-(bound-names -whisper-boat)
+;;  _    ___                      _     _             _         _
+;; ( )  / _ \ __ __ _  _ _ _ ___ ( )   /_\  _ _  __ _| |_  _ __(_)___
+;; |/  | (_) / _/ _| || | '_(_-< |/   / _ \| ' \/ _` | | || (_-< (_-<
+;;      \___/\__\__|\_,_|_| /__/     /_/ \_\_||_\__,_|_|\_, /__/_/__/
+;;                                                      |__/
 
 
-(deftest bound-names-test
+(deftest names-test
   (testing "bound names"
     (is (= #{}         (bound-names -kit-1)))
     (is (= #{'y}       (bound-names -kit-2)))
     (is (= #{'v}       (bound-names -kit-3)))
-    (is (= #{'x 'y 'v} (bound-names -whisper-boat)))))
+    (is (= #{'x 'y 'v} (bound-names -whisper-boat))))
+  (testing "free names"
+    (is (= #{'x 'z}    (free-names -kit-1)))
+    (is (= #{'x}       (free-names -kit-2)))
+    (is (= #{'z}       (free-names -kit-3)))
+    (is (= #{'z}       (free-names -whisper-boat)))))

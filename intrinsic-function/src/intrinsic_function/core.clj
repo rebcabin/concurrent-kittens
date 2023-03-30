@@ -109,6 +109,12 @@
     (bound-names K)))
 
 
+;; __      ___ _
+;; \ \    / (_) |_ _ _  ___ ______ ___ ___
+;;  \ \/\/ /| |  _| ' \/ -_|_-<_-</ -_|_-<
+;;   \_/\_/ |_|\__|_||_\___/__/__/\___/__/
+
+
 ;; One apparently needs the following witnesses for org-babel
 ;; (org-latex-export-to-pdf doesn't work well without them).
 
@@ -146,6 +152,13 @@
   ;;       :L {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}}}})
 
 
+;;   ___                     _   _
+;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
+;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
+;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
+;;       |_|
+
+
 (defn parl?
   "left-hugging par's"
   [{:keys [K L]}]
@@ -161,8 +174,12 @@
 (defn convolve-pars
   [{:keys [K L] :as input}]
   (cond (parl? input)
-        )
-  [K L])
+        (let [{Kl :K, Ll :L} K]
+          (par. Kl (par. Ll L)))
+        (parr? input)
+        (let [{Kr :K, Lr :L} L]
+          (par. (par. K Kr) Lr))
+        :else input))
 
 
 (defn -main

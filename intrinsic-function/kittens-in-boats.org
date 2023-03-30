@@ -156,12 +156,12 @@ I must confess a mild mental disability: when I see
 mathematics or programs, I see drowning kittens, and I want to
 save them.
 
-=1+2*3=, five little kittens drowning in the sea.
-Venus-the-boatwright rises on her half-shell, fists full of
-bows and sterns. She reaches down and builds little boats,
-each from a bow and a stern. She puts some little kittens in
-each boat. Sometimes, she puts another little boat in a boat
-in place of a kitten.
+=1+2*3=, five little kittens, =1=, =+=, =2=, =*=,
+=3=, drowning in a syntactical sea. Venus-the-boatwright
+rises on her half-shell, fists full of bows and sterns. She
+reaches down and builds little boats, each from a bow and a
+stern. She puts some little kittens in each boat. Sometimes,
+she puts another little boat in a boat in place of a kitten.
 
 She kisses the first kitten (or boat) in each boat and says
 "You're the captain; take care of the others!" She blesses the
@@ -169,11 +169,15 @@ little boats and sinks back into the sea, leaving
 =(+ 1 (* 2 3))= sailing safely on the waves.
 
 Have you been burnt by C code like =x | y & z= or =x / y * z=?
-Perhaps you can dream, like me, of saving the drowning kittens.
-Wright the boats in drydock[fn:: compiled ahead-of-time (AOT)] or
-asea,[fn:: interpreted or compiled just-in-time (JIT)] right
-the boats so they float,[fn:: type-check and optimize] and write
-=(& z (| x y))= and =(* z (/ x y))=! If not, perhaps you can
+Perhaps you can dream, like me, of saving the drowning
+kittens. Wright the boats in drydock[fn:: compiled
+ahead-of-time (AOT)] or asea,[fn:: interpreted or compiled
+just-in-time (JIT)] right the boats so they float,[fn::
+type-check and optimize] and write =(& z (| x y))= and
+=(* z (/ x y))=! Or did you mean =(| x (& y z))= and
+=(/ x (* y z))=? Who can know?
+
+If you don't like bows and sterns and little boats, perhaps you can
 tolerate me. My affliction is not my fault! It is like
 misophonia:[fn:: https://www.webmd.com/mental-health/what-is-misophonia]
 built-in, incurable, misery-making for others, inexplicable except to fellow
@@ -187,7 +191,7 @@ in a DSL[fn:: https://en.wikipedia.org/wiki/Domain-specific_language]
 made of little boats, meaning "embedded in Clojure." Asynchronous
 behavior is easy to model in Clojure, and there is
 =clojure.spec=[fn:: https://clojure.org/guides/spec] for type
-checking. Plus Clojure looks like little boats to save
+checking. Plus Clojure /looks like/ little boats to save
 the drowning kittens. It's important for programs to look good.
 Mathematics and programming /are visual arts/.
 
@@ -257,6 +261,7 @@ Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation[fn:: https://github.com/rebcabin/asr-tester]
 for lfortran and lpython.[fn:lcompilers]
 
+\newpage
 ** "How did you write this?"
 
 This is an executable document. When I produce a PDF from it, all
