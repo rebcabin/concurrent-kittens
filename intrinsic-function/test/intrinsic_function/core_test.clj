@@ -29,9 +29,9 @@
 
 
 ;; __   __               _      ___            _
-;; \ \ / /__ _ _ _  _ __( )___ | _ ) ___  __ _| |_
-;;  \ V / -_) ' \ || (_-</(_-< | _ \/ _ \/ _` |  _|
-;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__|
+;; \ \ / /__ _ _ _  _ __( )___ | _ ) ___  __ _| |_ ___
+;;  \ V / -_) ' \ || (_-</(_-< | _ \/ _ \/ _` |  _(_-<
+;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__/__/
 
 
 (def -kit-1
@@ -53,6 +53,18 @@
   (channel. 'x
    (par. -kit-1
     (par. -kit-2 -kit-3))))
+
+
+(def -parl-123 (par. (par. -kit-1 -kit-2) -kit-3))
+(def -parr-123 (par. -kit-1 (par. -kit-2 -kit-3)))
+
+
+(deftest parl-parr-test
+  (testing "par-left and par-right"
+    (is (parl? -parl-123))
+    (is (not (parl? -parr-123)))
+    (is (not (parr? -parl-123)))
+    (is (parr? parr-123))))
 
 
 (deftest free-names-test

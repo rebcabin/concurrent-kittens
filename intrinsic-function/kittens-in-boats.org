@@ -121,7 +121,7 @@
 # #+STARTUP: latexpreview inlineimages showall
 # #+STARTUP: showall
 
-#+TITLE: Concurrent Kittens in Little Boats
+#+TITLE: Communicating Concurrent Kittens
 #+AUTHOR: Brian Beckman
 #+DATE: 29 Mar 2023
 
@@ -185,7 +185,7 @@ Let's implement some fundamentals of the rho calculus[fn:: Meredith, L. G.; Rade
 and the pi calculus[fn:PI: https://en.wikipedia.org/wiki/%CE%A0-calculus]
 in a DSL[fn:: https://en.wikipedia.org/wiki/Domain-specific_language]
 made of little boats, meaning "embedded in Clojure." Asynchronous
-behavior is easy to model in Clojure, and we have
+behavior is easy to model in Clojure, and there is
 =clojure.spec=[fn:: https://clojure.org/guides/spec] for type
 checking. Plus Clojure looks like little boats to save
 the drowning kittens. It's important for programs to look good.
@@ -248,10 +248,10 @@ Not so. Clojure.spec[fn:: https://clojure.org/guides/spec] is at
 least as strong as types. It's not static, that's true, but
 =s/conform= /could/ be static.
 
-Static or not hardly matters in our case. We can build little
+Static or not hardly matters in our case. One can build little
 boats in drydock before setting sail, or Venus-the-boatwright will
-build them at sea for us. We can check types, we can do rewriting,
-we can prove theorems. It's good enough.
+build them at sea for us. One can check types, do rewriting,
+prove theorems. It's good enough.
 
 Also, Clojure is already in our toolchain. We use it for abstract
 interpretation and test generation[fn:: https://github.com/rebcabin/asr-tester]
@@ -326,7 +326,7 @@ showing a reduction similar to an \eta\nobreakdash-reduction in
 
 #+LaTeX_HEADER: \newcommand{\wkit}{\whispering{x}{P}}
 
-We have four drowning kittens. Kitten Zero is a whispering
+I see have four drowning kittens. Kitten Zero is a whispering
 kitten $\wkit$. She whispers "$x$" to the other kittens,
 meaning "let's talk on channel $x$!" One might write:
 
@@ -361,7 +361,7 @@ We'll get there.]
 Kitten One, $\kitOne$, chats on $x$, "Hey, let's continue chatting
 on $z$!" Then she takes a nap. Only one of the other kittens,
 Kitten Two, $\kitTwo$, listens on $x$.[fn:: If more than one
-kitten listens on the same channel, we have a classic race
+kitten listens on the same channel, one sees a classic race
 condition. A compiler can detect this directly from the syntax of
 the program! At run time, only one will hear and the other will
 starve, at least for a while.] She thinks, "Oy! Here I am waiting
@@ -423,7 +423,7 @@ Two's next hear-suffix, $x(y).0$, isn't free. The $y$ in
 $x(y)$ doesn't change to $z$ because that $y$ is /local/ to
 the final suffix, $0$. If $0$ had more to do using $y$, that
 $y$ would shadow the earlier $y$. In this case, the suffix $0$
-has no more to do, so we don't have to worry.
+has no more to do; don't worry.
 
 /Bound/ is a synonym for /not free/. A variable $y$ is either
 free or bound in a prefix, $(\nu\,x)$,
@@ -475,19 +475,19 @@ There are only two ways to bind a name --- only two /binding prefix forms/:
 Section [[renaming]].
 
 In our example, looking at Kitten Two's suffix,
-$\kitTwoSuffixx$, we don't yet know /to what value/ $y$ gets
-bound. We can only find out later when the hear-prefix $x(y)$
-lines up with $x$ in a say-prefix like
+$\kitTwoSuffixx$, one doesn't yet know /to what value/ $y$
+gets bound. One can only find out later when the hear-prefix
+$x(y)$ lines up with $x$ in a say-prefix like
 $\bar{x}\langle{z}\rangle$ again.
 
 This usage of the word
 /bound/ means /eventually bound to something/. The term
-/bound/ by itself can be ambiguous, because we might also say
+/bound/ by itself can be ambiguous, because one might also say
 /bound/ when we /do/ know /bound to what/.
 
 ** Substitution
 
-We can state a general rule for /substitution/, with some
+Here is a general rule for /substitution/, with some
 terminology to be clarified:
 
 \label{def:substitution}
@@ -506,13 +506,13 @@ amongst the suffixes of free $y$'s? The kitten listening on
 $y$ and hearing $z$ would have to patch that up first. It
 doesn't matter what temporary name she gives to a channel, so
 long as the same channel has the same bound name everywhere in
-the suffixes. We might rename preexisting $z$'s something like
-$z_1$ so long as $z_1$ doesn't itself collide with preexisting
-names. That's /alpha renaming/. It might harmlessly un-shadow
-some names.
+the suffixes. One might rename preexisting $z$'s something
+like $z_1$ so long as $z_1$ doesn't itself collide with
+preexisting names. That's /alpha renaming/. It might
+harmlessly un-shadow some names.
 
-We don't have that problem here, but we might later. Our
-kittens always remember their sailorly duty to clean up messes
+One doesn't have that problem here, but we might later.
+Kittens always remember their sailorly duty to clean up messes
 in their boats.
 
 \label{def:renaming}
@@ -590,7 +590,7 @@ to /matching up/ with a say-prefix on $\bar{x}$. The second
 $x$, inside the parentheses, is a bound stand-in for the real
 $x$ said by  $\bar{x}\langle{x}\rangle$. That real $x$ gets
 substituted for stand-in $x$ in the suffix, which happens to
-be $0$, so we don't worry about.
+be $0$, don't worry.
 
 All the kittens are napping safely in the whisperer's boat.
 
@@ -609,13 +609,13 @@ about that later.
 
 ** All Names are Channels
 
-Every variable, $x$, $y$, $z$, $v$, stands in for a communication
-channel. Sometimes we know what channel a variable stands for, say
-a bound variable in a whisper or a free variable before matching
-or after substitution. Other times, a variable stands for a
-channel we'll find out about later, say a bound variable in a
-hear-prefix matching. That's all we have so far: channels, known
-or unknown.
+Every variable, $x$, $y$, $z$, $v$, stands in for a
+communication channel. Sometimes one knows what channel a
+variable stands for, say a bound variable in a whisper or a
+free variable before matching or after substitution. Other
+times, a variable stands for a channel we'll find out about
+later, say a bound variable in a hear-prefix matching. That's
+all one has so far: channels, known or unknown.
 
 Here are the stages in a reduction:
 
@@ -635,8 +635,8 @@ Here are the stages in a reduction:
 4. \textbf{Gobbling} --- $x(y)$ and $\bar{x}\langle{z}\rangle$
    are removed, exposing the first prefix of their suffixes.
 
-We sidestep the "funny" problem of $x(x)$ because we never
-construct it. We just gobble its predecessor hear-prefix.
+Sidestep the "funny" problem of $x(x)$; never construct it.
+Just gobble its predecessor hear-prefix.
 
 ** Bail the Boats!
 
@@ -709,9 +709,9 @@ Venus! Rearrange the boats so kittens can chat and then nap!
                (say v v 0))))
 #+end_src
 
-This is great because we have a rule that says whenever a =say=
-and a =hear= line up their channels, we can rename, substitute and
-gobble up one =say= and its matching =hear=:
+This is great because there is a rule that says whenever a
+=say= and a =hear= line up their channels, rename, substitute
+and gobble up one =say= and its matching =hear=:
 
 \vskip 0.26cm
 #+begin_src clojure :eval never
@@ -752,11 +752,11 @@ One more time:
     (par 0 (par 0 0)))
 #+end_src
 
-Inside a =par= boat, it doesn't matter whether you write =hear=
-before =say= or =say= before =hear= --- =par= is the captain
-and doesn't care; =par= is commutative.
-Also, because any number of napping kittens in =par= boats is
-equivalent to a all the kittens napping, we may write
+Inside a =par= boat, it doesn't matter whether you write
+=hear= before =say= or =say= before =hear= --- =par= is the
+captain and doesn't care; =par= is commutative. Also, because
+any number of napping kittens in =par= boats is equivalent to
+a all the kittens napping, write
 
 \vskip 0.26cm
 #+begin_src clojure :eval never
@@ -774,7 +774,7 @@ whispering kitten can nap, too.
 
 Thanks, Venus!
 
-** Kitten Boat Grammar
+** Kitten Boat Calculus
 
 This is what Venus-the-boatwright had in mind whilst she built:
 
@@ -799,14 +799,14 @@ This is what Venus-the-boatwright had in mind whilst she built:
 
 * Channels and Names
 
-Our kittens are named Kitten One, Kitten Two, and Kitten
+The kittens are named Kitten One, Kitten Two, and Kitten
 Three. These aren't names in kitten-speak, not names for
 channels like $x$ and $y$. These are names in boat-speak, just
-so we don't have to keep writing out the full boats each time.
+so one doesn't write out the full boats over and over again.
 
-Let's run some real code! For technical reasons, we need some
-punctuation --- dots and quote marks here and there --- when we
-write out kittens in Clojure.
+Let's run some real code! For technical reasons, there is some
+punctuation --- dots and quote marks here and there --- for
+kittens written out in Clojure.
 
 ** Kit-1
 
@@ -1033,9 +1033,6 @@ The free names --- subject to substitution --- include only $z$
 from both Kitten One, who barks them out in =(say. 'x 'z)=, and
 Kitten Three, who listens on $z$ for a substitution:
 
-#+RESULTS:
-: #{z}
-
 * COMMENT Rewriting
 
 All that was done with term rewriting[fn::
@@ -1048,7 +1045,7 @@ unfinished edges. Our needs are very blue-collar.
 
 * COMMENT Asynchrony
 
-We can jump ahead and try Clojure's very blue-collar
+jump ahead and try Clojure's very blue-collar
 /core.async/[fn:: https://clojuredocs.org/clojure.core.async]
 
 ** Listening Kitten
@@ -1056,6 +1053,8 @@ We can jump ahead and try Clojure's very blue-collar
 ** Chatting Kitten
 
 * Change Log
+
+2023-30-Mar :: weeding out the "we's"
 
 2023-29-Mar :: Many small corrections.
 

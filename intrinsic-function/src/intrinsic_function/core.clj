@@ -35,10 +35,10 @@
   (subst    [this x y]))
 
 
-;;  _   _          _   _ _   _
-;; | |_| |_  ___  | |_(_) |_| |_ ___ _ _  ___
-;; |  _| ' \/ -_) | / / |  _|  _/ -_) ' \(_-<
-;;  \__|_||_\___| |_\_\_|\__|\__\___|_||_/__/
+;;  _   _ _   _                      _         _
+;; | |_(_) |_| |_ ___ _ _    __ __ _| |__ _  _| |_  _ ___
+;; | / / |  _|  _/ -_) ' \  / _/ _` | / _| || | | || (_-<
+;; |_\_\_|\__|\__\___|_||_| \__\__,_|_\__|\_,_|_|\_,_/__/
 
 
 (defrecord nap     []
@@ -109,6 +109,10 @@
     (bound-names K)))
 
 
+;; One apparently needs the following witnesses for org-babel
+;; (org-latex-export-to-pdf doesn't work well without them).
+
+
 (def kit-1
   (say. 'x 'z (nap.)))
 
@@ -117,20 +121,48 @@
   (hear. 'x 'y
          (say. 'y 'x
                (hear. 'x 'y (nap.)))))
+  ;; => {:chan x, :msg y, :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}})
 
 
-(bound-names kit-2)  ; #{y}
+(bound-names kit-2)
+;; => #{y}
 
 
 (def kit-3
   (hear. 'z 'v
          (say. 'v 'v (nap.))))
+  ;; => {:chan z, :msg v, :K {:chan v, :msg v, :K {}}})
 
 
 (def whisper-boat
   (channel. 'x
             (par. kit-1
                   (par. kit-2 kit-3))))
+  ;; => {:x x,
+  ;;     :K
+  ;;     {:K {:chan x, :msg z, :K {}},
+  ;;      :L
+  ;;      {:K {:chan x, :msg y, :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}},
+  ;;       :L {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}}}})
+
+
+(defn parl?
+  "left-hugging par's"
+  [{:keys [K L]}]
+  (instance? par K))
+
+
+(defn parr?
+  "right-hugging par's"
+  [{:keys [K L]}]
+  (instance? par L))
+
+
+(defn convolve-pars
+  [{:keys [K L] :as input}]
+  (cond (parl? input)
+        )
+  [K L])
 
 
 (defn -main
