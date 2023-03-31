@@ -622,7 +622,7 @@ after "matching up" and before "renaming" and "substitution." This
 temporary condition appears to state that $x$ is both bound and
 free in the same prefix, and that can't be!
 
-The resolution is that the two $x$'s are different $x$'s! the
+The resolution is that the two $x$'s are different $x$'s! The
 first $x$, outside the parentheses, is a real, free name of a
 real channel --- in fact, the channel furnished by and bound
 in the whispering Kitten Zero $(\nu\,x)$. That $x$ is subject
