@@ -477,6 +477,9 @@ There are only two ways to bind a name --- only two /binding prefix forms/:
 #+LaTeX_HEADER: \theoremstyle{definition}
 #+LaTeX_HEADER: \newtheorem{definition}{Definition}
 
+#+LaTeX_HEADER: \theoremstyle{slogan}
+#+LaTeX_HEADER: \newtheorem{slogan}{Slogan}
+
 #+LaTeX_HEADER: \theoremstyle{warning}
 #+LaTeX_HEADER: \newtheorem{warning}{Warning}
 
@@ -889,6 +892,16 @@ empty set/:
 #+RESULTS:
 : #{}
 
+#+begin_export latex
+\begin{slogan}
+  Free names are subject to substitution.
+  Free names are stand-ins for unknowns.
+  Bound names are subject to renaming.
+  Bound names are known or eventually known.
+  $\blacksquare$
+\end{slogan}
+#+end_export
+
 Before she naps, Kitten One says $z$ on $x$, so both those names
 are free for =kit-1=, meaning she just barks them out. They don't
 stand for anything else in potential suffixes of =kit-1=:
@@ -970,9 +983,8 @@ her final activity:
 #+RESULTS:
 : #{y}
 
-\newpage
 In her next-to-last activity, which includes her last activity,
-she will know what $y$ is, so it is bound:
+Kitten Two will know what $y$ is, so it is bound:
 
 \vskip 0.26cm
 #+begin_src clojure :exports both
