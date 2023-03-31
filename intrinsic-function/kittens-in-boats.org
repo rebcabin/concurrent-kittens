@@ -806,7 +806,6 @@ a all the kittens napping, write
   (channel x 0)
 #+end_src
 
-\newpage
 Finally, because there is nothing to do with channel $x$, The
 whispering kitten can nap, too.
 
@@ -817,6 +816,7 @@ whispering kitten can nap, too.
 
 Thanks, Venus!
 
+\newpage
 ** Kitten Boat Calculus
 
 This is what Venus-the-boatwright had in mind whilst she built:
