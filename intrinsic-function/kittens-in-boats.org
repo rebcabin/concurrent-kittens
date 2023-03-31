@@ -669,7 +669,7 @@ Here are the stages in a reduction:
    $x(y)$ are consistently renamed to prevent collisions with
    the incoming $z$.
 
-3. \textbf{Substitution} --- All free $z$'s in the suffix of
+3. \textbf{Substitution} --- All free $y$'s in the suffix of
    $x(y)$ are replaced with $z$.
 
 4. \textbf{Gobbling} --- $x(y)$ and $\bar{x}\langle{z}\rangle$
