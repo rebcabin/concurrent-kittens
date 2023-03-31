@@ -352,6 +352,7 @@ meaning "let's talk on channel $x$!" One might write:
 
 #+begin_export latex
 \begin{equation}
+\label{eqn:the-first-boat}
 \whispering{x}{\left(
 \begin{array}{clll}
  {}     & \kitOne \\
@@ -392,6 +393,7 @@ first!"
 
 #+begin_export latex
 \begin{equation}
+\label{eqn:the-first-chat}
 \whispering{x}{\left(
 \begin{array}{clll}
  {}     & \kitOne \\
@@ -494,16 +496,18 @@ There are only two ways to bind a name --- only two /binding prefix forms/:
 \alpha\nobreakdash-Renaming is explained immediately below in
 Section [[renaming]].
 
-In our example, looking at Kitten Two's suffix,
-$\kitTwoSuffixx$, one doesn't yet know /to what value/ $y$
-gets bound. One can only find out later when the hear-prefix
-$x(y)$ lines up with $x$ in a say-prefix like
-$\bar{x}\langle{z}\rangle$ again.
+In our example, looking at Kitten Two's suffix, $\kitTwoSuffixx$
+in Equation \ref{eqn:the-first-boat} before any changes, one
+doesn't yet know /to what value/ $y$ gets bound. One only finds
+out later in Equations \ref{eqn:the-first-chat} and
+\ref{eqn:after-step-one}, when Kitten Two's hear-prefix, $x(y)$,
+lines up with $\bar{x}$ in Kitten One's say-prefix,
+$\bar{x}\langle{z}\rangle$.
 
 This usage of the word
 /bound/ means /eventually bound to something/. The term
-/bound/ by itself can be ambiguous, because one might also say
-/bound/ when we /do/ know /bound to what/.
+/bound/ by itself can be ambiguous, because one might say
+/bound/ when we do or when we do not know /bound to what/.
 
 ** Substitution
 
