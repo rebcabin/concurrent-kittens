@@ -667,7 +667,7 @@ Here are the stages in a reduction:
 
 2. \textbf{Renaming} --- All bound $z$'s in the suffix of
    $x(y)$ are consistently renamed to prevent collisions with
-   the incoming $x$.
+   the incoming $z$.
 
 3. \textbf{Substitution} --- All free $z$'s in the suffix of
    $x(y)$ are replaced with $z$.
