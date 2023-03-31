@@ -34,29 +34,8 @@
 ;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__/__/
 
 
-(def -kit-1
-  (say. 'x 'z (nap.)))
-
-
-(def -kit-2
-  (hear. 'x 'y
-   (say. 'y 'x
-    (hear. 'x 'y (nap.)))))
-
-
-(def -kit-3
-  (hear. 'z 'v
-   (say. 'v 'v (nap.))))
-
-
-(def -whisper-boat
-  (channel. 'x
-   (par. -kit-1
-    (par. -kit-2 -kit-3))))
-
-
-(def -parl-123 (par. (par. -kit-1 -kit-2) -kit-3))
-(def -parr-123 (par. -kit-1 (par. -kit-2 -kit-3)))
+(def parl-123 (par. (par. kit-1 kit-2) kit-3))
+(def parr-123 (par. kit-1 (par. kit-2 kit-3)))
 
 
 ;;   ___                     _   _
@@ -66,105 +45,105 @@
 ;;       |_|
 
 
-(deftest parl-parr-test
+(deftest parlparr-test
   (testing "par-left and par-right"
-    (is (parl? -parl-123))
-    (is (not (parl? -parr-123)))
-    (is (not (parr? -parl-123)))
-    (is (parr? -parr-123)))
+    (is (parl? parl-123))
+    (is (not (parl? parr-123)))
+    (is (not (parr? parl-123)))
+    (is (parr? parr-123)))
   (testing "convolving"
-    (is (= -parr-123 (convolve-pars -parl-123)))
-    (is (= -parl-123 (convolve-pars -parr-123)))))
+    (is (= parr-123 (convolve-pars parl-123)))
+    (is (= parl-123 (convolve-pars parr-123)))))
 
 
 (deftest free-names-test
   (testing "free names"
     (is (= #{}      (free-names (nap.))))
     (is (= #{'x 'y} (free-names (say. 'x 'y (nap.)))))
-    (is (= #{'x 'z} (free-names -kit-1)))
-    (is (= #{'x}    (free-names -kit-2)))
-    (is (= #{'z}    (free-names -kit-3)))
-    (is (= #{'z}    (free-names -whisper-boat)))
+    (is (= #{'x 'z} (free-names kit-1)))
+    (is (= #{'x}    (free-names kit-2)))
+    (is (= #{'z}    (free-names kit-3)))
+    (is (= #{'z}    (free-names whisper-boat)))
     (is (= #{}      (free-names (->pars []))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-1 -kit-2 -kit-3])))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-2 -kit-3 -kit-1])))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-3 -kit-1 -kit-2])))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-2 -kit-1 -kit-3])))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-1 -kit-3 -kit-2])))))
-    (is (= (free-names -whisper-boat)
-           (free-names (channel. 'x (->pars [-kit-3 -kit-2 -kit-1])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-1 kit-2 kit-3])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-2 kit-3 kit-1])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-3 kit-1 kit-2])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-2 kit-1 kit-3])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-1 kit-3 kit-2])))))
+    (is (= (free-names whisper-boat)
+           (free-names (channel. 'x (->pars [kit-3 kit-2 kit-1])))))
 
-    (is (= (free-names -whisper-boat)
+    (is (= (free-names whisper-boat)
            (free-names (channel.
                         'x
-                        (->pars [-kit-1
-                                 (->pars [-kit-2 -kit-3])])))))
-    (is (= (free-names -whisper-boat)
+                        (->pars [kit-1
+                                 (->pars [kit-2 kit-3])])))))
+    (is (= (free-names whisper-boat)
            (free-names (channel.
                         'x
-                        (->pars [-kit-1
-                                 (par. -kit-2 -kit-3)])))))
-    (is (= (free-names -whisper-boat)
+                        (->pars [kit-1
+                                 (par. kit-2 kit-3)])))))
+    (is (= (free-names whisper-boat)
            (free-names (channel.
                         'x
-                        (->pars [(->pars [-kit-1 -kit-2])
-                                 -kit-3])))))
-    (is (= (free-names -whisper-boat)
+                        (->pars [(->pars [kit-1 kit-2])
+                                 kit-3])))))
+    (is (= (free-names whisper-boat)
            (free-names (channel.
                         'x
-                        (->pars [(par. -kit-1 -kit-2)
-                                 -kit-3])))))))
+                        (->pars [(par. kit-1 kit-2)
+                                 kit-3])))))))
 
 (deftest bound-names-test
   (testing "bound names"
     (is (= #{}         (bound-names (nap.))))
     (is (= #{}         (bound-names (say. 'x 'y (nap.)))))
-    (is (= #{}         (bound-names -kit-1)))
-    (is (= #{'y}       (bound-names -kit-2)))
-    (is (= #{'v}       (bound-names -kit-3)))
-    (is (= #{'x 'y 'v} (bound-names -whisper-boat)))
+    (is (= #{}         (bound-names kit-1)))
+    (is (= #{'y}       (bound-names kit-2)))
+    (is (= #{'v}       (bound-names kit-3)))
+    (is (= #{'x 'y 'v} (bound-names whisper-boat)))
     (is (= #{}         (bound-names (->pars []))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-1 -kit-2 -kit-3])))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-2 -kit-3 -kit-1])))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-3 -kit-1 -kit-2])))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-2 -kit-1 -kit-3])))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-1 -kit-3 -kit-2])))))
-    (is (= (bound-names -whisper-boat)
-           (bound-names (channel. 'x (->pars [-kit-3 -kit-2 -kit-1])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-1 kit-2 kit-3])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-2 kit-3 kit-1])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-3 kit-1 kit-2])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-2 kit-1 kit-3])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-1 kit-3 kit-2])))))
+    (is (= (bound-names whisper-boat)
+           (bound-names (channel. 'x (->pars [kit-3 kit-2 kit-1])))))
 
-    (is (= (bound-names -whisper-boat)
+    (is (= (bound-names whisper-boat)
            (bound-names (channel.
                         'x
-                        (->pars [-kit-1
-                                 (->pars [-kit-2 -kit-3])])))))
+                        (->pars [kit-1
+                                 (->pars [kit-2 kit-3])])))))
 
-    (is (= (bound-names -whisper-boat)
+    (is (= (bound-names whisper-boat)
            (bound-names (channel.
                          'x
-                         (->pars [-kit-1
-                                  (par. -kit-2 -kit-3)])))))
+                         (->pars [kit-1
+                                  (par. kit-2 kit-3)])))))
 
-    (is (= (bound-names -whisper-boat)
+    (is (= (bound-names whisper-boat)
            (bound-names (channel.
                         'x
-                        (->pars [(->pars [-kit-1 -kit-2])
-                                 -kit-3])))))
+                        (->pars [(->pars [kit-1 kit-2])
+                                 kit-3])))))
 
-    (is (= (bound-names -whisper-boat)
+    (is (= (bound-names whisper-boat)
            (bound-names (channel.
                          'x
-                         (->pars [(par. -kit-1 -kit-2)
-                                  -kit-3])))))))
+                         (->pars [(par. kit-1 kit-2)
+                                  kit-3])))))))
 
 
 (deftest flatten--test
@@ -180,8 +159,8 @@
 ;; UNEXPLAINED: "pars." syntax does not work in test,
 ;;              but it does work in core. Here, it throws
 ;;              a compile-time IllegalArgumentException.
-#_(bound-names (channel. 'x (pars. [-kit-1 -kit-2 -kit-3])))
-#_(free-names (pars.  [-kit-1 -kit-2 -kit-3]))
+#_(bound-names (channel. 'x (pars. [kit-1 kit-2 kit-3])))
+#_(free-names (pars.  [kit-1 kit-2 kit-3]))
 
 
 ;;  _    ___                      _     _             _         _
@@ -193,12 +172,14 @@
 
 (deftest names-test
   (testing "bound names"
-    (is (= #{}         (bound-names -kit-1)))
-    (is (= #{'y}       (bound-names -kit-2)))
-    (is (= #{'v}       (bound-names -kit-3)))
-    (is (= #{'x 'y 'v} (bound-names -whisper-boat))))
+    (is (= #{}         (bound-names kit-1)))
+    (is (= #{'y}       (bound-names kit-2)))
+    (is (= #{'v}       (bound-names kit-3)))
+    (is (= #{'x 'y 'v} (bound-names whisper-boat)))
+    (is (= #{'x 'y 'v} (bound-names whisper-boat-2))))
   (testing "free names"
-    (is (= #{'x 'z}    (free-names -kit-1)))
-    (is (= #{'x}       (free-names -kit-2)))
-    (is (= #{'z}       (free-names -kit-3)))
-    (is (= #{'z}       (free-names -whisper-boat)))))
+    (is (= #{'x 'z}    (free-names kit-1)))
+    (is (= #{'x}       (free-names kit-2)))
+    (is (= #{'z}       (free-names kit-3)))
+    (is (= #{'z}       (free-names whisper-boat)))
+    (is (= #{'z}       (free-names whisper-boat-2)))))
