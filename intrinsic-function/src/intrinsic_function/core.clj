@@ -60,6 +60,11 @@
 ;; |_\_\_|\__|\__\___|_||_| \__\__,_|_\__|\_,_|_|\_,_/__/
 
 
+;; -+-+-+-
+;;  n a p
+;; -+-+-+-
+
+
 (defrecord nap     []
 
   Names  (free-names  [_] #{})  (bound-names [_] #{})
@@ -71,6 +76,11 @@
 
   (subst    [this _ _] this)
   (patch-up [this _]   this))
+
+
+;; -+-+-+-+-
+;;  p a r s
+;; -+-+-+-+-
 
 
 (defrecord pars    [kits]
@@ -94,6 +104,11 @@
                             "can't repars a pars"))))
 
 
+;; -+-+-+-
+;;  p a r
+;; -+-+-+-
+
+
 (defrecord par     [K L]
 
   Names
@@ -112,6 +127,11 @@
   (par->vec [_]    (flatten [(par->vec K) (par->vec L)]))
   (repars   [_]    (throw (java.lang.UnsupportedOperationException.
                            "can't repars a par"))))
+
+
+;; -+-+-+-+-
+;;  h e a r
+;; -+-+-+-+-
 
 
 (defrecord hear    [chan msg K]
@@ -133,10 +153,15 @@
 
   Flatten
 
-  (par->vec [_]    (->hear chan msg (par->vec K)))
+  (par->vec [_]    (hear. chan msg (par->vec K)))
   (repars   [this] (if (seq? K)
-                     (->hear chan msg (->pars K))
+                     (hear. chan msg (pars. K))
                      this)))
+
+
+;; -+-+-+-
+;;  s a y
+;; -+-+-+-
 
 
 (defrecord say     [chan msg K]
@@ -150,10 +175,15 @@
 
   Flatten
 
-  (par->vec [_]    (->say chan msg (par->vec K)))
+  (par->vec [_]    (say. chan msg (par->vec K)))
   (repars   [this] (if (seq? K)
-                     (->say chan msg (->pars K))
+                     (say. chan msg (pars. K))
                      this)))
+
+
+;; -+-+-+-+-+-+-+-
+;;  c h a n n e l
+;; -+-+-+-+-+-+-+-
 
 
 (defrecord channel [x K]                ; like nu in the pi calculus
@@ -171,10 +201,15 @@
 
   Flatten
 
-  (par->vec [_]     (->channel x (par->vec K)))
+  (par->vec [_]     (channel. x (par->vec K)))
   (repars   [this]  (if (seq? K)
-                      (->channel x (->pars K))
+                      (channel. x (pars. K))
                       this)))
+
+
+;; -+-+-+-+-+-+-+-
+;;  r e p e a t -
+;; -+-+-+-+-+-+-+-
 
 
 (defrecord repeat- [K]         ; without hyphen, collides with built-in "repeat"
@@ -186,16 +221,16 @@
 
   Flatten
 
-  (par->vec [_]     (->repeat- (par->vec K)))
+  (par->vec [_]     (repeat-. (par->vec K)))
   (repars   [this]  (if (seq? K)
-                      (->repeat- (->pars K))
+                      (repeat-. (pars. K))
                       this)))
 
 
-;; __      ___ _
-;; \ \    / (_) |_ _ _  ___ ______ ___ ___
-;;  \ \/\/ /| |  _| ' \/ -_|_-<_-</ -_|_-<
-;;   \_/\_/ |_|\__|_||_\___/__/__/\___/__/
+;; __   __               _      ___            _
+;; \ \ / /__ _ _ _  _ __( )___ | _ ) ___  __ _| |_ ___
+;;  \ V / -_) ' \ || (_-</(_-< | _ \/ _ \/ _` |  _(_-<
+;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__/__/
 
 
 ;; Apparently need the following witnesses for org-babel
@@ -285,22 +320,6 @@
         :else input))
 
 
-;; -+-+-+-+-+-+-+-+-+-+-+-
-;;  u n - n e s t   p a r
-;; -+-+-+-+-+-+-+-+-+-+-+-
-
-
-(defn unnest-pars
-  [{:keys [K L] :as input}]
-  (cond (parl? input)
-        (let [{Kl :K, Ll :L} K]
-          (pars. Kl Ll L))
-        (parr? input)
-        (let [{Kr :K, Lr :L} L]
-          (pars. K Kr Lr))
-        :else input))
-
-
 ;;  ___        _         _   _
 ;; | _ \___ __| |_  _ __| |_(_)___ _ _
 ;; |   / -_) _` | || / _|  _| / _ \ ' \
@@ -310,6 +329,10 @@
 ;; -+-+-+-+-+-+-+-+-
 ;;  M a t c h i n g
 ;; -+-+-+-+-+-+-+-+-
+
+
+(defn find-outermost-par [kit]
+  )
 
 
 ;; -+-+-+-+-+-+-+-+-
