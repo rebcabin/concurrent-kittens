@@ -660,7 +660,7 @@ all one has so far: channels, known or unknown.
 Here are the stages in a reduction:
 
 1. \textbf{Matching} --- a free channel $x$ in a hear-prefix
-   $x(y)$ equals a free channel $\bar{x}$ in a say-prefix
+   $x(y)$ is identical to a free channel $\bar{x}$ in a say-prefix
    $\bar{x}\langle{z}\rangle$. Exactly one of the matching
    hear-prefixes is chosen, non-deterministically. It is noted
    that $z$ will replace $x$.
