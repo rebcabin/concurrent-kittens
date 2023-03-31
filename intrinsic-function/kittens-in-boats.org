@@ -211,6 +211,12 @@ checking. Plus Clojure /looks like/ little boats to save
 the drowning kittens. It's important for programs to look good.
 Mathematics and programming /are visual arts/.
 
+** "Why are you doing this?"
+
+This is the first step in a journey toward compilers that detect
+race conditions, deadlocks, starvation, and other concurrency ills
+at compile time, in a type checker!
+
 # Clojure expressions look like little boats containing kittens or
 # other little boats, with the first one being the captain of its
 # boat.
@@ -523,6 +529,12 @@ terminology to be clarified:
   are two or more listeners on $x$, the results are non-deterministic.
   $\blacksquare$
 \end{definition}
+
+Hiding in that little word "non-deterministic" is the whole value
+proposition of this exercise: we're going to write programs that
+can detect race conditions at compile time, in a type checker!
+The compiler can warn the user. Sometimes, race conditions are
+desired, but usually they're not.
 
 ** Renaming
 <<renaming>> What if there were already some bound $z$'s
