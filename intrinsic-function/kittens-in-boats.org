@@ -878,8 +878,8 @@ names subject to substitution, are the empty set/:
 # in a =say= boat.
 
 In fact, the names that =kit-1= will eventually know about while
-napping, the /bound names, subject to renaming/, are also the
-empty set:
+napping, the /bound names, the names subject to renaming, are also the
+empty set/:
 
 \vskip 0.26cm
 #+begin_src clojure :exports both
