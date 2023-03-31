@@ -381,9 +381,9 @@ We'll get there.]
 Kitten One, $\kitOne$, chats on $x$, "Hey, let's continue chatting
 on $z$!" Then she takes a nap. Only one of the other kittens,
 Kitten Two, $\kitTwo$, listens on $x$.[fn:: If more than one
-kitten listens on the same channel, one sees a classic race
-condition. A compiler can detect this directly from the syntax of
-the program! At run time, only one will hear and the other will
+kitten listens on the same channel, that is a classic race
+condition. A compiler can warn about this directly from the syntax
+of the program! At run time, only one will hear and the other will
 starve, at least for a while.] She thinks, "Oy! Here I am waiting
 on $x$ for someone to tell me where (on what channel) to continue,
 and I just heard 'continue on $z$,' so I'll switch to $z$. After I
