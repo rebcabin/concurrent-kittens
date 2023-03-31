@@ -996,6 +996,7 @@ Kitten Two will know what $y$ is, so it is bound:
 #+RESULTS:
 : #{y}
 
+\newpage
 Kit-2 never uses $x$. She just passes $x$ along, so it's free:
 
 \vskip 0.26cm
