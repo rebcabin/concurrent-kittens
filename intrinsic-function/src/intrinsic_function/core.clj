@@ -36,6 +36,24 @@
   (subst    [this x y]))
 
 
+;;  ___ _      _   _                           _               _
+;; | __| |__ _| |_| |_ ___ _ _    _ __ _ _ ___| |_ ___  __ ___| |
+;; | _|| / _` |  _|  _/ -_) ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
+;; |_| |_\__,_|\__|\__\___|_||_| | .__/_| \___/\__\___/\__\___/_|
+;;                               |_|
+
+
+(defprotocol Flatten
+  (par->vec [this])
+  (repars   [this]))
+
+
+(defn flatten- [kit]
+  (-> kit
+      par->vec
+      repars))
+
+
 ;;  _   _ _   _                      _         _
 ;; | |_(_) |_| |_ ___ _ _    __ __ _| |__ _  _| |_  _ ___
 ;; | / / |  _|  _/ -_) ' \  / _/ _` | / _| || | | || (_-<
@@ -43,16 +61,63 @@
 
 
 (defrecord nap     []
-  Names
-  (free-names  [_] #{})
-  (bound-names [_] #{})
+
+  Names  (free-names  [_] #{})  (bound-names [_] #{})
+
+  Flatten  (par->vec [this]    this)
+  (repars   [this]    this)
+
   Subst
+
   (subst    [this _ _] this)
   (patch-up [this _]   this))
 
 
-(defrecord hear    [chan msg K]
+(defrecord pars    [kits]
+
   Names
+
+  (recursor [_ bf]
+    (loop [result #{}, forms kits]
+      (if (not (empty? forms))          ; "if forms" does not work
+        (recur (into result (bf (first forms)))
+               (rest forms))
+        result)))
+
+  (free-names  [this]  (recursor this free-names))
+  (bound-names [this]  (recursor this bound-names))
+
+  Flatten
+
+  (par->vec [this]  (flatten (vec (map par->vec kits))))
+  (repars   [_]     (throw (java.lang.UnsupportedOperationException.
+                            "can't repars a pars"))))
+
+
+(defrecord par     [K L]
+
+  Names
+
+  (free-names [_]
+    (set/union
+     (free-names K)
+     (free-names L)))
+  (bound-names [_]
+    (set/union
+     (bound-names K)
+     (bound-names L)))
+
+  Flatten
+
+  (par->vec [_]    (flatten [(par->vec K) (par->vec L)]))
+  (repars   [_]    (throw (java.lang.UnsupportedOperationException.
+                           "can't repars a par"))))
+
+
+(defrecord hear    [chan msg K]
+
+  Names
+
   (free-names [_]
     (set/union
      #{chan}
@@ -63,8 +128,15 @@
     (set/union
      #{msg}
      (bound-names K)))
-  Subst
-  (patch-up [this x]))
+
+  Subst  (patch-up [this x])
+
+  Flatten
+
+  (par->vec [_]    (->hear chan msg (par->vec K)))
+  (repars   [this] (if (seq? K)
+                     (->hear chan msg (->pars K))
+                     this)))
 
 
 (defrecord say     [chan msg K]
@@ -74,37 +146,20 @@
      (set [chan msg])
      (free-names K)))
   (bound-names [_]
-    (bound-names K)))
+    (bound-names K))
 
+  Flatten
 
-(defrecord par     [K L]
-  Names
-  (free-names [_]
-    (set/union
-     (free-names K)
-     (free-names L)))
-  (bound-names [_]
-    (set/union
-     (bound-names K)
-     (bound-names L))))
-
-
-(defrecord pars    [kits]
-  Names
-  (recursor [_ bf]
-    (loop [result #{}, forms kits]
-      (if (not (empty? forms)) ; "if forms" does not work
-        (recur (into result (bf (first forms)))
-               (rest forms))
-        result)))
-  (free-names [this]
-    (recursor this free-names))
-  (bound-names [this]
-    (recursor this bound-names)))
+  (par->vec [_]    (->say chan msg (par->vec K)))
+  (repars   [this] (if (seq? K)
+                     (->say chan msg (->pars K))
+                     this)))
 
 
 (defrecord channel [x K]                ; like nu in the pi calculus
+
   Names
+
   (free-names [_]
     (set/difference
      (free-names K)
@@ -112,15 +167,29 @@
   (bound-names [_]
     (set/union
      #{x}
-     (bound-names K))))
+     (bound-names K)))
+
+  Flatten
+
+  (par->vec [_]     (->channel x (par->vec K)))
+  (repars   [this]  (if (seq? K)
+                      (->channel x (->pars K))
+                      this)))
 
 
-(defrecord repeat- [K]  ; without hyphen, collides with built-in "repeat"
+(defrecord repeat- [K]         ; without hyphen, collides with built-in "repeat"
+
   Names
-  (free-names [_]
-    (free-names K))
-  (bound-names [_]
-    (bound-names K)))
+
+  (free-names  [_] (free-names K))
+  (bound-names [_] (bound-names K))
+
+  Flatten
+
+  (par->vec [_]     (->repeat- (par->vec K)))
+  (repars   [this]  (if (seq? K)
+                      (->repeat- (->pars K))
+                      this)))
 
 
 ;; __      ___ _
@@ -129,12 +198,13 @@
 ;;   \_/\_/ |_|\__|_||_\___/__/__/\___/__/
 
 
-;; One apparently needs the following witnesses for org-babel
+;; Apparently need the following witnesses for org-babel
 ;; (org-latex-export-to-pdf doesn't work well without them).
 
 
 (def kit-1
   (say. 'x 'z (nap.)))
+        ;; => {}))
 
 
 (def kit-2
@@ -188,6 +258,10 @@
 ;; -+-+-+-+-+-+-+-+-+-+-+-+-+-
 
 
+;; Confer Clojure's magnificent destructuring:
+;; https://gist.github.com/john2x/e1dca953548bfdfb9844
+
+
 (defn parl?
   "left-hugging par's"
   [{:keys [K L]}]
@@ -209,6 +283,48 @@
         (let [{Kr :K, Lr :L} L]
           (par. (par. K Kr) Lr))
         :else input))
+
+
+;; -+-+-+-+-+-+-+-+-+-+-+-
+;;  u n - n e s t   p a r
+;; -+-+-+-+-+-+-+-+-+-+-+-
+
+
+(defn unnest-pars
+  [{:keys [K L] :as input}]
+  (cond (parl? input)
+        (let [{Kl :K, Ll :L} K]
+          (pars. Kl Ll L))
+        (parr? input)
+        (let [{Kr :K, Lr :L} L]
+          (pars. K Kr Lr))
+        :else input))
+
+
+;;  ___        _         _   _
+;; | _ \___ __| |_  _ __| |_(_)___ _ _
+;; |   / -_) _` | || / _|  _| / _ \ ' \
+;; |_|_\___\__,_|\_,_\__|\__|_\___/_||_|
+
+
+;; -+-+-+-+-+-+-+-+-
+;;  M a t c h i n g
+;; -+-+-+-+-+-+-+-+-
+
+
+;; -+-+-+-+-+-+-+-+-
+;;  R e n a m i n g
+;; -+-+-+-+-+-+-+-+-
+
+
+;; -+-+-+-+-+-+-+-+-+-+-+-+-
+;;  S u b s t i t u t i o n
+;; -+-+-+-+-+-+-+-+-+-+-+-+-
+
+
+;; -+-+-+-+-+-+-+-+-
+;;  G o b b l i n g
+;; -+-+-+-+-+-+-+-+-
 
 
 (defn -main

@@ -6,6 +6,7 @@
             hear
             say
             par
+            pars
             channel
             repeat-]))
 
@@ -164,6 +165,17 @@
                          'x
                          (->pars [(par. -kit-1 -kit-2)
                                   -kit-3])))))))
+
+
+(deftest flatten--test
+  (testing "flatten- on our witnesses"
+    (is (instance? par  (:K whisper-boat)))
+    (is (instance? pars (:K (flatten- whisper-boat))))
+    (is (instance? pars (:K whisper-boat-2)))
+    (is (instance? pars (:K (flatten- whisper-boat-2))))
+    (is (= whisper-boat-2 (flatten- whisper-boat-2)))
+    (is (= (flatten- whisper-boat) (flatten- whisper-boat-2)))))
+
 
 ;; UNEXPLAINED: "pars." syntax does not work in test,
 ;;              but it does work in core. Here, it throws
