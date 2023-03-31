@@ -618,16 +618,17 @@ your mind's eye, animate it on paper.
 ** Something Weird Happened
 
 In your animation, you'll see that Kitten Three becomes $x(x)$
-after "matching up" and before "renaming" and "substitution." This
+after /matching up/ and before /renaming/ and /substitution/. This
 temporary condition appears to state that $x$ is both bound and
 free in the same prefix, and that can't be!
 
 The resolution is that the two $x$'s are different $x$'s! The
 first $x$, outside the parentheses, is a real, free name of a
 real channel --- in fact, the channel furnished by and bound
-in the whispering Kitten Zero $(\nu\,x)$. That $x$ is subject
+in the whispering Kitten Zero, $(\nu\,x)$. That $x$ is subject
 to /matching up/ with a say-prefix on $\bar{x}$. The second
-$x$, inside the parentheses, is a bound stand-in for the real
+$x$, inside the parentheses, is a bound stand-in for
+/whatever-x-will-become/, this time, the real
 $x$ said by  $\bar{x}\langle{x}\rangle$. That real $x$ gets
 substituted for stand-in $x$ in the suffix, which happens to
 be $0$, don't worry.
