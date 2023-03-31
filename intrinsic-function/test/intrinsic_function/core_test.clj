@@ -28,21 +28,27 @@
                  (hear. 'x 'y 'p)))))
 
 
-;; __   __               _      ___            _
-;; \ \ / /__ _ _ _  _ __( )___ | _ ) ___  __ _| |_ ___
-;;  \ V / -_) ' \ || (_-</(_-< | _ \/ _ \/ _` |  _(_-<
-;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__/__/
+;;  ___                         _   ___
+;; | _ \__ _ _ _   __ _ _ _  __| | | _ \__ _ _ _ ___
+;; |  _/ _` | '_| / _` | ' \/ _` | |  _/ _` | '_(_-<
+;; |_| \__,_|_|   \__,_|_||_\__,_| |_| \__,_|_| /__/
+
+
+;; UNEXPLAINED: "pars." syntax does not work in test,
+;;              but it does work in core. Here, it throws
+;;              a compile-time IllegalArgumentException.
+#_(bound-names (channel. 'x (pars. [kit-1 kit-2 kit-3])))
+#_(free-names (pars.  [kit-1 kit-2 kit-3]))
 
 
 (def parl-123 (par. (par. kit-1 kit-2) kit-3))
 (def parr-123 (par. kit-1 (par. kit-2 kit-3)))
 
 
-;;   ___                     _   _
-;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
-;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
-;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
-;;       |_|
+;;  _  _
+;; | \| |__ _ _ __  ___ ___
+;; | .` / _` | '  \/ -_|_-<
+;; |_|\_\__,_|_|_|_\___/__/
 
 
 (deftest parlparr-test
@@ -64,6 +70,7 @@
     (is (= #{'x}    (free-names kit-2)))
     (is (= #{'z}    (free-names kit-3)))
     (is (= #{'z}    (free-names whisper-boat)))
+    (is (= #{'z}    (free-names whisper-boat-2)))
     (is (= #{}      (free-names (->pars []))))
     (is (= (free-names whisper-boat)
            (free-names (channel. 'x (->pars [kit-1 kit-2 kit-3])))))
@@ -107,6 +114,7 @@
     (is (= #{'y}       (bound-names kit-2)))
     (is (= #{'v}       (bound-names kit-3)))
     (is (= #{'x 'y 'v} (bound-names whisper-boat)))
+    (is (= #{'x 'y 'v} (bound-names whisper-boat-2)))
     (is (= #{}         (bound-names (->pars []))))
     (is (= (bound-names whisper-boat)
            (bound-names (channel. 'x (->pars [kit-1 kit-2 kit-3])))))
@@ -146,6 +154,13 @@
                                   kit-3])))))))
 
 
+;;   ___                     _   _
+;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
+;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
+;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
+;;       |_|
+
+
 (deftest flatten--test
   (testing "flatten- on our witnesses"
     (is (instance? par  (:K whisper-boat)))
@@ -154,32 +169,3 @@
     (is (instance? pars (:K (flatten- whisper-boat-2))))
     (is (= whisper-boat-2 (flatten- whisper-boat-2)))
     (is (= (flatten- whisper-boat) (flatten- whisper-boat-2)))))
-
-
-;; UNEXPLAINED: "pars." syntax does not work in test,
-;;              but it does work in core. Here, it throws
-;;              a compile-time IllegalArgumentException.
-#_(bound-names (channel. 'x (pars. [kit-1 kit-2 kit-3])))
-#_(free-names (pars.  [kit-1 kit-2 kit-3]))
-
-
-;;  _    ___                      _     _             _         _
-;; ( )  / _ \ __ __ _  _ _ _ ___ ( )   /_\  _ _  __ _| |_  _ __(_)___
-;; |/  | (_) / _/ _| || | '_(_-< |/   / _ \| ' \/ _` | | || (_-< (_-<
-;;      \___/\__\__|\_,_|_| /__/     /_/ \_\_||_\__,_|_|\_, /__/_/__/
-;;                                                      |__/
-
-
-(deftest names-test
-  (testing "bound names"
-    (is (= #{}         (bound-names kit-1)))
-    (is (= #{'y}       (bound-names kit-2)))
-    (is (= #{'v}       (bound-names kit-3)))
-    (is (= #{'x 'y 'v} (bound-names whisper-boat)))
-    (is (= #{'x 'y 'v} (bound-names whisper-boat-2))))
-  (testing "free names"
-    (is (= #{'x 'z}    (free-names kit-1)))
-    (is (= #{'x}       (free-names kit-2)))
-    (is (= #{'z}       (free-names kit-3)))
-    (is (= #{'z}       (free-names whisper-boat)))
-    (is (= #{'z}       (free-names whisper-boat-2)))))
