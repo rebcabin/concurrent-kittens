@@ -764,8 +764,9 @@ and gobble up one =say= and its matching =hear=:
                (say v v 0))))
 #+end_src
 
-Darn it! Venus! Rearrange the =par= boats again, (it's always OK to do
-that):
+Darn it! Venus! Rearrange the =par= boats again, (it's always OK
+to do that. In the code-base that accompanies this article,
+"rearranging the pars" is called "convolving."):
 
 \vskip 0.26cm
 #+begin_src clojure :eval never
@@ -793,6 +794,7 @@ One more time:
     (par 0 (par 0 0)))
 #+end_src
 
+\newpage
 Inside a =par= boat, it doesn't matter whether you write
 =hear= before =say= or =say= before =hear= --- =par= is the
 captain and doesn't care; =par= is commutative. Also, because
