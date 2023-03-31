@@ -1,24 +1,23 @@
 (ns intrinsic-function.core-test
   (:require [clojure.test :refer :all]
             [intrinsic-function.core :refer :all])
-  (:import [intrinsic_function.core
+  (:import [intrinsic_function.core   ;; note underscore!
             nap
             hear
             say
             par
             channel
-            repeat-])  ;; note underscore!
-  )
+            repeat-]))
 
 
 (deftest construct-par
-  (testing "constructing a par (see https://stackoverflow.com/questions/9229434/maps-and-records-equality-in-clojure)."
+  (testing "constructing a par, two different ways (see https://stackoverflow.com/questions/9229434/maps-and-records-equality-in-clojure)."
     (is (= {:K 'P, :L 'Q}
            {:K 'P, :L 'Q}))
     (is (.equals {:K 'P, :L 'Q}
-                 (->par 'P 'Q)))
+                 (->par 'P 'Q)))  ; one way
     (is (.equals {:K 'P, :L 'Q}
-                 (par. 'P 'Q)))))
+                 (par. 'P 'Q))))) ; another way
 
 
 (deftest construct-others
@@ -79,12 +78,98 @@
 
 (deftest free-names-test
   (testing "free names"
-    (is (= #{} (free-names (nap.))))
+    (is (= #{}      (free-names (nap.))))
     (is (= #{'x 'y} (free-names (say. 'x 'y (nap.)))))
     (is (= #{'x 'z} (free-names -kit-1)))
     (is (= #{'x}    (free-names -kit-2)))
     (is (= #{'z}    (free-names -kit-3)))
-    (is (= #{'z}    (free-names -whisper-boat)))))
+    (is (= #{'z}    (free-names -whisper-boat)))
+    (is (= #{}      (free-names (->pars []))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-1 -kit-2 -kit-3])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-2 -kit-3 -kit-1])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-3 -kit-1 -kit-2])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-2 -kit-1 -kit-3])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-1 -kit-3 -kit-2])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel. 'x (->pars [-kit-3 -kit-2 -kit-1])))))
+
+    (is (= (free-names -whisper-boat)
+           (free-names (channel.
+                        'x
+                        (->pars [-kit-1
+                                 (->pars [-kit-2 -kit-3])])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel.
+                        'x
+                        (->pars [-kit-1
+                                 (par. -kit-2 -kit-3)])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel.
+                        'x
+                        (->pars [(->pars [-kit-1 -kit-2])
+                                 -kit-3])))))
+    (is (= (free-names -whisper-boat)
+           (free-names (channel.
+                        'x
+                        (->pars [(par. -kit-1 -kit-2)
+                                 -kit-3])))))))
+
+(deftest bound-names-test
+  (testing "bound names"
+    (is (= #{}         (bound-names (nap.))))
+    (is (= #{}         (bound-names (say. 'x 'y (nap.)))))
+    (is (= #{}         (bound-names -kit-1)))
+    (is (= #{'y}       (bound-names -kit-2)))
+    (is (= #{'v}       (bound-names -kit-3)))
+    (is (= #{'x 'y 'v} (bound-names -whisper-boat)))
+    (is (= #{}         (bound-names (->pars []))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-1 -kit-2 -kit-3])))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-2 -kit-3 -kit-1])))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-3 -kit-1 -kit-2])))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-2 -kit-1 -kit-3])))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-1 -kit-3 -kit-2])))))
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel. 'x (->pars [-kit-3 -kit-2 -kit-1])))))
+
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel.
+                        'x
+                        (->pars [-kit-1
+                                 (->pars [-kit-2 -kit-3])])))))
+
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel.
+                         'x
+                         (->pars [-kit-1
+                                  (par. -kit-2 -kit-3)])))))
+
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel.
+                        'x
+                        (->pars [(->pars [-kit-1 -kit-2])
+                                 -kit-3])))))
+
+    (is (= (bound-names -whisper-boat)
+           (bound-names (channel.
+                         'x
+                         (->pars [(par. -kit-1 -kit-2)
+                                  -kit-3])))))))
+
+;; UNEXPLAINED: "pars." syntax does not work in test,
+;;              but it does work in core. Here, it throws
+;;              a compile-time IllegalArgumentException.
+#_(bound-names (channel. 'x (pars. [-kit-1 -kit-2 -kit-3])))
+#_(free-names (pars.  [-kit-1 -kit-2 -kit-3]))
 
 
 ;;  _    ___                      _     _             _         _

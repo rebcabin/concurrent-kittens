@@ -20,7 +20,8 @@
 
 (defprotocol Names
   (free-names  [this])
-  (bound-names [this]))
+  (bound-names [this])
+  (recursor    [this bound-or-free]))
 
 
 ;;  ___      _       _                  _               _
@@ -85,11 +86,24 @@
   (bound-names [_]
     (set/union
      (bound-names K)
-     (bound-names L)))
-  )
+     (bound-names L))))
 
 
-(defrecord channel [x K]  ; like nu in the pi calculus
+(defrecord pars    [kits]
+  Names
+  (recursor [_ bf]
+    (loop [result #{}, forms kits]
+      (if (not (empty? forms)) ; "if forms" does not work
+        (recur (into result (bf (first forms)))
+               (rest forms))
+        result)))
+  (free-names [this]
+    (recursor this free-names))
+  (bound-names [this]
+    (recursor this bound-names)))
+
+
+(defrecord channel [x K]                ; like nu in the pi calculus
   Names
   (free-names [_]
     (set/difference
@@ -130,10 +144,6 @@
   ;; => {:chan x, :msg y, :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}})
 
 
-(bound-names kit-2)
-;; => #{y}
-
-
 (def kit-3
   (hear. 'z 'v
          (say. 'v 'v (nap.))))
@@ -152,11 +162,30 @@
   ;;       :L {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}}}})
 
 
+;; UNEXPLAINED: "pars." syntax does not work in test,
+;;              but it does work in core. In test, it throws
+;;              a compile-time IllegalArgumentException.
+(def whisper-boat-2
+  (channel. 'x
+            (pars. [kit-1 kit-2 kit-3])))
+  ;; => {:x x,
+  ;;     :K
+  ;;     {:kits
+  ;;      [{:chan x, :msg z, :K {}}
+  ;;       {:chan x, :msg y, :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+  ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}})
+
+
 ;;   ___                     _   _
 ;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
 ;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
 ;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
 ;;       |_|
+
+
+;; -+-+-+-+-+-+-+-+-+-+-+-+-+-
+;;  c o n v o l v e - p a r s
+;; -+-+-+-+-+-+-+-+-+-+-+-+-+-
 
 
 (defn parl?

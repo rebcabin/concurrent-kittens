@@ -5,6 +5,8 @@ Pi and Rho calculi in a story about saving the kittens.
 
 - Install Leiningen
 
+- `cd intrinsic-function`
+
 - Type `lein test` at the terminal.
 
 # Read
