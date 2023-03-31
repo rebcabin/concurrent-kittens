@@ -650,7 +650,7 @@ about that later.
 ** All Names are Channels
 
 Every variable, $x$, $y$, $z$, $v$, stands in for a
-communication channel. Sometimes one knows what channel a
+communication channel. Sometimes one knows the channel that a
 variable stands for, say a bound variable in a whisper or a
 free variable before matching or after substitution. Other
 times, a variable stands for a channel we'll find out about
