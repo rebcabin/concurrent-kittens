@@ -616,7 +616,7 @@ your mind's eye, animate it on paper.
 #+end_export
 
 ** Something Weird Happened
-
+<<weird>>
 In your animation, you'll see that Kitten Three becomes $x(x)$
 after /matching up/ and before /renaming/ and /substitution/. This
 temporary condition appears to state that $x$ is both bound and
@@ -675,8 +675,9 @@ Here are the stages in a reduction:
 4. \textbf{Gobbling} --- $x(y)$ and $\bar{x}\langle{z}\rangle$
    are removed, exposing the first prefix of their suffixes.
 
-Sidestep the "funny" problem of $x(x)$; never construct it.
-Just gobble its predecessor hear-prefix.
+Sidestep the "weird" problem of $x(x)$ (Section [[weird]] above).
+Never construct $x(x)$. Just gobble its predecessor hear-prefix,
+$x(y)$.
 
 ** Bail the Boats!
 
