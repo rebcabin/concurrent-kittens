@@ -346,7 +346,7 @@ showing a reduction similar to an \eta\nobreakdash-reduction in
 
 #+LaTeX_HEADER: \newcommand{\wkit}{\whispering{x}{P}}
 
-I see have four drowning kittens. Kitten Zero is a whispering
+I see four drowning kittens. Kitten Zero is a whispering
 kitten $\wkit$. She whispers "$x$" to the other kittens,
 meaning "let's talk on channel $x$!" One might write:
 
