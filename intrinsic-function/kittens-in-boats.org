@@ -1057,6 +1057,7 @@ Can you write down the free and bound names in her last activity,
 : #{v}
 : #{}
 
+\newpage
 ** Kitten Zero --- the Whisper Boat
 
 The bound names of Kitten Zero, captain of the Whisper Boat,
@@ -1074,6 +1075,7 @@ $x$ for her own, $y$ from Kitten Two, and $v$ from kitten Three:
 
 #+RESULTS:
 : #{x y v}
+
 
 Can you write out her free names? Here is a spoiler:
 
@@ -1110,12 +1112,12 @@ jump ahead and try Clojure's very blue-collar
 
 * Change Log
 
+2023-31-Mar :: lots of small improvements
+
 2023-30-Mar :: weeding out the "we's"
 
-2023-29-Mar :: Many small corrections.
+2023-29-Mar :: many small corrections
 
 2023-28-Mar :: Done building boats.
-
-2023-26-Mar :: Current version.
 
 2023-22-Mar :: Start.
