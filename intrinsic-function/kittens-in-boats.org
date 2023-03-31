@@ -513,7 +513,8 @@ $\bar{x}\langle{z}\rangle$.
 This usage of the word
 /bound/ means /eventually bound to something/. The term
 /bound/ by itself can be ambiguous, because one might say
-/bound/ when we do or when we do not know /bound to what/.
+/bound/ either when we already do know /bound to what/ or when we
+might only eventually know.
 
 ** Substitution
 
