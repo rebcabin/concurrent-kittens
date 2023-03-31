@@ -618,9 +618,9 @@ your mind's eye, animate it on paper.
 ** Something Weird Happened
 
 In your animation, you'll see that Kitten Three becomes $x(x)$
-after matching up and before renaming and substitution. This
-temporary condition appears to state that $x$ is both bound
-and free in the same prefix, and that can't be!
+after "matching up" and before "renaming" and "substitution." This
+temporary condition appears to state that $x$ is both bound and
+free in the same prefix, and that can't be!
 
 The resolution is that the two $x$'s are different $x$'s! the
 first $x$, outside the parentheses, is a real, free name of a
