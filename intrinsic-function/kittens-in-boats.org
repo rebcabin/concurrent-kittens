@@ -615,6 +615,8 @@ your mind's eye, animate it on paper.
 \end{equation}
 #+end_export
 
+** Something Weird Happened
+
 In your animation, you'll see that Kitten Three becomes $x(x)$
 after matching up and before renaming and substitution. This
 temporary condition appears to state that $x$ is both bound
@@ -643,7 +645,6 @@ telepathic and then they know some temporary names that other
 kittens are thinking about. Those are /free variables/. Sometimes,
 telepathic kittens have some patching up to do, also. Let's talk
 about that later.
-
 
 ** All Names are Channels
 
