@@ -2,13 +2,28 @@
   (:gen-class)
   (:require [clojure.spec.alpha            :as    s       ]
             [clojure.pprint                :refer [pprint]]
-            [clojure.set                   :as    set]
+            [clojure.set                   :as    set     ]
+            [clojure.zip                   :as    z       ]
+            #_[clojure.data.zip              :as    dz      ]
             #_[clojure.spec.gen.alpha        :as    gen     ]
             #_[clojure.spec.test.alpha       :as    stest   ]
             #_[clojure.test.check.generators :as    tgen    ]
             #_[clojure.set                   :as    set     ]
             #_[pathetic.core                 :as    path    ]
             #_[asr.lpython                   :as    lpython]))
+
+
+;; __   __                     _               _
+;; \ \ / /__ __   _ __ _ _ ___| |_ ___  __ ___| |
+;;  \ V / -_) _| | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
+;;   \_/\___\__| | .__/_| \___/\__\___/\__\___/_|
+;;               |_|
+;;
+;; to support zippers
+
+
+(defprotocol Vec
+  (->vec [this]))
 
 
 ;;  _  _                                  _               _
@@ -22,6 +37,18 @@
   (free-names  [this])
   (bound-names [this])
   (recursor    [this bound-or-free]))
+
+
+;;  __  __      _      _    _
+;; |  \/  |__ _| |_ __| |_ (_)_ _  __ _
+;; | |\/| / _` |  _/ _| ' \| | ' \/ _` |
+;; |_|  |_\__,_|\__\__|_||_|_|_||_\__, |
+;;                                |___/
+
+
+(defn match-up
+  [say, hear]
+  (= (:chan say) (:chan hear)))
 
 
 ;;  ___      _       _                  _               _
@@ -67,9 +94,16 @@
 
 (defrecord nap     []
 
+  Vec
+
+  (->vec [this]
+    (conj (vec this) [:kit 'nap]))
+
   Names  (free-names  [_] #{})  (bound-names [_] #{})
 
-  Flatten  (par->vec [this]    this)
+  Flatten
+
+  (par->vec [this]    this)
   (repars   [this]    this)
 
   Subst
@@ -81,9 +115,17 @@
 ;; -+-+-+-+-
 ;;  p a r s
 ;; -+-+-+-+-
+;; variadic par
 
 
 (defrecord pars    [kits]
+
+  Vec
+
+  (->vec [_]
+    (conj [[:kits (map
+                   ->vec kits)]]
+          [:kit  'pars]))
 
   Names
 
@@ -107,9 +149,16 @@
 ;; -+-+-+-
 ;;  p a r
 ;; -+-+-+-
+;; dyadic (canonical) par
 
 
 (defrecord par     [K L]
+
+  Vec
+
+  (->vec [this]
+    (conj [[:K (->vec K)] [:L (->vec L)]]
+          [:kit 'par]))
 
   Names
 
@@ -135,6 +184,12 @@
 
 
 (defrecord hear    [chan msg K]
+
+  Vec
+
+  (->vec [this]
+    (conj [[:chan chan] [:msg msg] [:K (->vec K)]]
+          [:kit 'hear]))
 
   Names
 
@@ -165,7 +220,15 @@
 
 
 (defrecord say     [chan msg K]
+
+  Vec
+
+  (->vec [this]
+    (conj [[:chan chan] [:msg msg] [:K (->vec K)]]
+          [:kit 'say]))
+
   Names
+
   (free-names [_]
     (set/union
      (set [chan msg])
@@ -187,6 +250,12 @@
 
 
 (defrecord channel [x K]                ; like nu in the pi calculus
+
+  Vec
+
+  (->vec [this]
+    (conj [[:x x] [:K (->vec K)]]
+          [:kit 'say]))
 
   Names
 
@@ -213,6 +282,11 @@
 
 
 (defrecord repeat- [K]         ; without hyphen, collides with built-in "repeat"
+
+  Vec
+  (->vec [this]
+    (conj [[:K (->vec K)]]
+          [:kit 'repeat-]))
 
   Names
 
@@ -267,9 +341,6 @@
   ;;       :L {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}}}})
 
 
-;; UNEXPLAINED: "pars." syntax does not work in test,
-;;              but it does work in core. In test, it throws
-;;              a compile-time IllegalArgumentException.
 (def whisper-boat-2
   (channel. 'x
             (pars. [kit-1 kit-2 kit-3])))
@@ -279,6 +350,81 @@
   ;;      [{:chan x, :msg z, :K {}}
   ;;       {:chan x, :msg y, :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
   ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}})
+
+
+;;  _____
+;; |_  (_)_ __ _ __  ___ _ _ ___
+;;  / /| | '_ \ '_ \/ -_) '_(_-<
+;; /___|_| .__/ .__/\___|_| /__/
+;;       |_|  |_|
+;;
+;; https://clojuredocs.org/clojure.zip/zipper
+
+
+(->vec kit-1)
+;; => [[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]
+
+
+(->vec kit-2)
+;; => [[:chan x]
+;;     [:msg y]
+;;     [:K
+;;      [[:chan y]
+;;       [:msg x]
+;;       [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+;;       [:kit say]]]
+;;     [:kit hear]]
+
+
+(->vec kit-3)
+;; => [[:chan z]
+;;     [:msg v]
+;;     [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+;;     [:kit hear]]
+
+
+(->vec whisper-boat)
+;; => [[:x x]
+;;     [:K
+;;      [[:K [[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]]
+;;       [:L
+;;        [[:K
+;;          [[:chan x]
+;;           [:msg y]
+;;           [:K
+;;            [[:chan y]
+;;             [:msg x]
+;;             [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+;;             [:kit say]]]
+;;           [:kit hear]]]
+;;         [:L
+;;          [[:chan z]
+;;           [:msg v]
+;;           [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+;;           [:kit hear]]]
+;;         [:kit par]]]
+;;       [:kit par]]]
+;;     [:kit say]]
+
+
+(->> whisper-boat-2
+     :K
+     :kits
+     seq
+     (map ->vec))
+;; => ([[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]
+;;     [[:chan x]
+;;      [:msg y]
+;;      [:K
+;;       [[:chan y]
+;;        [:msg x]
+;;        [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+;;        [:kit say]]]
+;;      [:kit hear]]
+;;     [[:chan z]
+;;      [:msg v]
+;;      [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+;;      [:kit hear]])
 
 
 ;;   ___                     _   _
