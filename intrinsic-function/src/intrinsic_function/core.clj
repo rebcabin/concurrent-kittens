@@ -75,7 +75,7 @@
   (repars   [this]))
 
 
-(defn flatten- [kit]
+(defn flatten-pars [kit]
   (-> kit
       par->vec
       repars))
@@ -404,6 +404,27 @@
 ;;           [:kit hear]]]
 ;;         [:kit par]]]
 ;;       [:kit par]]]
+;;     [:kit say]]
+
+
+(->vec whisper-boat-2)
+;; => [[:x x]
+;;     [:K
+;;      [[:kits
+;;        ([[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]
+;;         [[:chan x]
+;;          [:msg y]
+;;          [:K
+;;           [[:chan y]
+;;            [:msg x]
+;;            [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+;;            [:kit say]]]
+;;          [:kit hear]]
+;;         [[:chan z]
+;;          [:msg v]
+;;          [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+;;          [:kit hear]])]
+;;       [:kit pars]]]
 ;;     [:kit say]]
 
 

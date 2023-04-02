@@ -108,6 +108,7 @@
                         (pars. [(par. kit-1 kit-2)
                                 kit-3])))))))
 
+
 (deftest bound-names-test
   (testing "bound names"
     (is (= #{}         (bound-names (nap.))))
@@ -169,11 +170,11 @@
 ;;       |_|
 
 
-(deftest flatten--test
-  (testing "flatten- on our witnesses"
+(deftest flatten-pars-test
+  (testing "flatten-pars on our witnesses"
     (is (instance? par  (:K whisper-boat)))
-    (is (instance? pars (:K (flatten- whisper-boat))))
+    (is (instance? pars (:K (flatten-pars whisper-boat))))
     (is (instance? pars (:K whisper-boat-2)))
-    (is (instance? pars (:K (flatten- whisper-boat-2))))
-    (is (= whisper-boat-2 (flatten- whisper-boat-2)))
-    (is (= (flatten- whisper-boat) (flatten- whisper-boat-2)))))
+    (is (instance? pars (:K (flatten-pars whisper-boat-2))))
+    (is (= whisper-boat-2 (flatten-pars whisper-boat-2)))
+    (is (= (flatten-pars whisper-boat) (flatten-pars whisper-boat-2)))))
