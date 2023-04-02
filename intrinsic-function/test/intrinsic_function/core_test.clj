@@ -322,6 +322,186 @@
             (map ->vec)))))
 
 
+;; __   __
+;; \ \ / /__ __   _ _ ___ _ __ ___
+;;  \ V / -_) _| | '_/ -_) '_ (_-<
+;;   \_/\___\__| |_| \___| .__/__/
+;;                       |_|
+
+
+(deftest vec-reps-test
+  (testing "vec reps"
+    (is (= (->vec kit-1))
+        '[[:chan [[:name x] [:kit name]]]
+          [:msg [[:name z] [:kit name]]]
+          [:K [[:kit nap]]]
+          [:kit say]])
+    (is (= (->vec kit-2)
+           '[[:chan [[:name x] [:kit name]]]
+             [:msg [[:name y] [:kit name]]]
+             [:K
+              [[:chan [[:name y] [:kit name]]]
+               [:msg [[:name x] [:kit name]]]
+               [:K
+                [[:chan [[:name x] [:kit name]]]
+                 [:msg [[:name y] [:kit name]]]
+                 [:K [[:kit nap]]]
+                 [:kit hear]]]
+               [:kit say]]]
+             [:kit hear]]))
+    (is (= (->vec kit-3)
+           '[[:chan [[:name z] [:kit name]]]
+             [:msg [[:name v] [:kit name]]]
+             [:K
+              [[:chan [[:name v] [:kit name]]]
+               [:msg [[:name v] [:kit name]]]
+               [:K [[:kit nap]]]
+               [:kit say]]]
+             [:kit hear]]))
+    (is (= (->vec whisper-boat)
+           '[[:x [[:name x] [:kit name]]]
+             [:K
+              [[:K
+                [[:chan [[:name x] [:kit name]]]
+                 [:msg [[:name z] [:kit name]]]
+                 [:K [[:kit nap]]]
+                 [:kit say]]]
+               [:L
+                [[:K
+                  [[:chan [[:name x] [:kit name]]]
+                   [:msg [[:name y] [:kit name]]]
+                   [:K
+                    [[:chan [[:name y] [:kit name]]]
+                     [:msg [[:name x] [:kit name]]]
+                     [:K
+                      [[:chan [[:name x] [:kit name]]]
+                       [:msg [[:name y] [:kit name]]]
+                       [:K [[:kit nap]]]
+                       [:kit hear]]]
+                     [:kit say]]]
+                   [:kit hear]]]
+                 [:L
+                  [[:chan [[:name z] [:kit name]]]
+                   [:msg [[:name v] [:kit name]]]
+                   [:K
+                    [[:chan [[:name v] [:kit name]]]
+                     [:msg [[:name v] [:kit name]]]
+                     [:K [[:kit nap]]]
+                     [:kit say]]]
+                   [:kit hear]]]
+                 [:kit par]]]
+               [:kit par]]]
+             [:kit channel]]))
+    (is (= (->vec whisper-boat-2)
+           '[[:x [[:name x] [:kit name]]]
+             [:K
+              [[:kits
+                ([[:chan [[:name x] [:kit name]]]
+                  [:msg [[:name z] [:kit name]]]
+                  [:K [[:kit nap]]]
+                  [:kit say]]
+                 [[:chan [[:name x] [:kit name]]]
+                  [:msg [[:name y] [:kit name]]]
+                  [:K
+                   [[:chan [[:name y] [:kit name]]]
+                    [:msg [[:name x] [:kit name]]]
+                    [:K
+                     [[:chan [[:name x] [:kit name]]]
+                      [:msg [[:name y] [:kit name]]]
+                      [:K [[:kit nap]]]
+                      [:kit hear]]]
+                    [:kit say]]]
+                  [:kit hear]]
+                 [[:chan [[:name z] [:kit name]]]
+                  [:msg [[:name v] [:kit name]]]
+                  [:K
+                   [[:chan [[:name v] [:kit name]]]
+                    [:msg [[:name v] [:kit name]]]
+                    [:K [[:kit nap]]]
+                    [:kit say]]]
+                  [:kit hear]])]
+               [:kit pars]]]
+             [:kit channel]]))
+    (is (= (->> whisper-boat-2
+                :K
+                :kits
+                (map ->vec))
+           (->> whisper-boat-2
+                ->vec
+                (into {})
+                :K
+                (into {})
+                :kits)))))
+
+(->> whisper-boat-2
+     :K
+     :kits
+     (map ->vec))
+;; => ([[:chan [[:name x] [:kit name]]]
+;;      [:msg [[:name z] [:kit name]]]
+;;      [:K [[:kit nap]]]
+;;      [:kit say]]
+;;     [[:chan [[:name x] [:kit name]]]
+;;      [:msg [[:name y] [:kit name]]]
+;;      [:K
+;;       [[:chan [[:name y] [:kit name]]]
+;;        [:msg [[:name x] [:kit name]]]
+;;        [:K
+;;         [[:chan [[:name x] [:kit name]]]
+;;          [:msg [[:name y] [:kit name]]]
+;;          [:K [[:kit nap]]]
+;;          [:kit hear]]]
+;;        [:kit say]]]
+;;      [:kit hear]]
+;;     [[:chan [[:name z] [:kit name]]]
+;;      [:msg [[:name v] [:kit name]]]
+;;      [:K
+;;       [[:chan [[:name v] [:kit name]]]
+;;        [:msg [[:name v] [:kit name]]]
+;;        [:K [[:kit nap]]]
+;;        [:kit say]]]
+;;      [:kit hear]])
+
+
+(->> whisper-boat-2
+     ->vec
+     (into {})
+     :K
+     (into {})
+     :kits)
+;; => ([[:chan [[:name x] [:kit name]]]
+;;      [:msg [[:name z] [:kit name]]]
+;;      [:K [[:kit nap]]]
+;;      [:kit say]]
+;;     [[:chan [[:name x] [:kit name]]]
+;;      [:msg [[:name y] [:kit name]]]
+;;      [:K
+;;       [[:chan [[:name y] [:kit name]]]
+;;        [:msg [[:name x] [:kit name]]]
+;;        [:K
+;;         [[:chan [[:name x] [:kit name]]]
+;;          [:msg [[:name y] [:kit name]]]
+;;          [:K [[:kit nap]]]
+;;          [:kit hear]]]
+;;        [:kit say]]]
+;;      [:kit hear]]
+;;     [[:chan [[:name z] [:kit name]]]
+;;      [:msg [[:name v] [:kit name]]]
+;;      [:K
+;;       [[:chan [[:name v] [:kit name]]]
+;;        [:msg [[:name v] [:kit name]]]
+;;        [:K [[:kit nap]]]
+;;        [:kit say]]]
+;;      [:kit hear]])
+
+
+;;  _____
+;; |_  (_)_ __ _ __  ___ _ _ ___
+;;  / /| | '_ \ '_ \/ -_) '_(_-<
+;; /___|_| .__/ .__/\___|_| /__/
+;;       |_|  |_|
+
+
 (deftest a-zipper-test
   (testing "equality of zippers with and without par-flattening"
     (is (= (->zip whisper-boat)

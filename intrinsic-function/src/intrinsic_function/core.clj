@@ -4,7 +4,7 @@
             [clojure.pprint                :refer [pprint]]
             [clojure.set                   :as    set     ]
             [clojure.zip                   :as    z       ]
-            [blaster.clj-fstring :refer [f-str] ]
+            [blaster.clj-fstring           :refer [f-str] ]
             #_[clojure.data.zip              :as    dz      ]
             #_[clojure.spec.gen.alpha        :as    gen     ]
             #_[clojure.spec.test.alpha       :as    stest   ]
@@ -415,13 +415,11 @@ whisper-boat-2
 ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
 
 
-;;  _____
-;; |_  (_)_ __ _ __  ___ _ _ ___
-;;  / /| | '_ \ '_ \/ -_) '_(_-<
-;; /___|_| .__/ .__/\___|_| /__/
-;;       |_|  |_|
-;;
-;; https://clojuredocs.org/clojure.zip/zipper
+;; __   __
+;; \ \ / /__ __   _ _ ___ _ __ ___
+;;  \ V / -_) _| | '_/ -_) '_ (_-<
+;;   \_/\___\__| |_| \___| .__/__/
+;;                       |_|
 
 
 (->vec kit-1)
@@ -490,7 +488,7 @@ whisper-boat-2
 ;;           [:kit hear]]]
 ;;         [:kit par]]]
 ;;       [:kit par]]]
-;;     [:kit say]]
+;;     [:kit channel]]
 
 
 (->vec whisper-boat-2)
@@ -522,7 +520,7 @@ whisper-boat-2
 ;;            [:kit say]]]
 ;;          [:kit hear]])]
 ;;       [:kit pars]]]
-;;     [:kit say]]
+;;     [:kit channel]]
 
 
 (->> whisper-boat-2
@@ -553,6 +551,48 @@ whisper-boat-2
 ;;        [:K [[:kit nap]]]
 ;;        [:kit say]]]
 ;;      [:kit hear]])
+
+
+(->> whisper-boat-2
+     ->vec
+     (into {})
+     :K
+     :kits)
+;; => [[:kits
+;;      ([[:chan [[:name x] [:kit name]]]
+;;        [:msg [[:name z] [:kit name]]]
+;;        [:K [[:kit nap]]]
+;;        [:kit say]]
+;;       [[:chan [[:name x] [:kit name]]]
+;;        [:msg [[:name y] [:kit name]]]
+;;        [:K
+;;         [[:chan [[:name y] [:kit name]]]
+;;          [:msg [[:name x] [:kit name]]]
+;;          [:K
+;;           [[:chan [[:name x] [:kit name]]]
+;;            [:msg [[:name y] [:kit name]]]
+;;            [:K [[:kit nap]]]
+;;            [:kit hear]]]
+;;          [:kit say]]]
+;;        [:kit hear]]
+;;       [[:chan [[:name z] [:kit name]]]
+;;        [:msg [[:name v] [:kit name]]]
+;;        [:K
+;;         [[:chan [[:name v] [:kit name]]]
+;;          [:msg [[:name v] [:kit name]]]
+;;          [:K [[:kit nap]]]
+;;          [:kit say]]]
+;;        [:kit hear]])]
+;;     [:kit pars]]
+
+
+;;  _____
+;; |_  (_)_ __ _ __  ___ _ _ ___
+;;  / /| | '_ \ '_ \/ -_) '_(_-<
+;; /___|_| .__/ .__/\___|_| /__/
+;;       |_|  |_|
+;;
+;; https://clojuredocs.org/clojure.zip/zipper
 
 
 ;;   ___                     _   _
