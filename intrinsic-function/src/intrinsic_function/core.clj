@@ -304,7 +304,7 @@
   (->vec [this]
     (conj [[:x (->vec (name-. x))]
            [:K (->vec K)]]
-          [:kit 'say]))
+          [:kit 'channel]))
 
   Names
 

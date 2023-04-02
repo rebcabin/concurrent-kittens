@@ -238,7 +238,7 @@
                    [:kit hear]]]
                  [:kit par]]]
                [:kit par]]]
-             [:kit say]]))
+             [:kit channel]]))
 
     (is (= (->vec whisper-boat-2)
            '[[:x [[:name x] [:kit name]]]
@@ -269,7 +269,7 @@
                     [:kit say]]]
                   [:kit hear]])]
                [:kit pars]]]
-             [:kit say]]))))
+             [:kit channel]]))))
 
 
 (deftest ->vec-extract-topmost-pars
