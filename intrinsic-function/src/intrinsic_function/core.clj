@@ -4,6 +4,7 @@
             [clojure.pprint                :refer [pprint]]
             [clojure.set                   :as    set     ]
             [clojure.zip                   :as    z       ]
+            [blaster.clj-fstring :refer [f-str] ]
             #_[clojure.data.zip              :as    dz      ]
             #_[clojure.spec.gen.alpha        :as    gen     ]
             #_[clojure.spec.test.alpha       :as    stest   ]
