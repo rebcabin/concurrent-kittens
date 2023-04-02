@@ -3,10 +3,10 @@
             [intrinsic-function.core :refer :all])
   (:import [intrinsic_function.core   ;; note underscore!
             nap
+            pars
+            par
             hear
             say
-            par
-            pars
             channel
             repeat-]))
 
@@ -161,6 +161,106 @@
                          'x
                          (pars. [(par. kit-1 kit-2)
                                  kit-3])))))))
+
+
+;;  _____
+;; |_  (_)_ __ _ __  ___ _ _ ___
+;;  / /| | '_ \ '_ \/ -_) '_(_-<
+;; /___|_| .__/ .__/\___|_| /__/
+;;       |_|  |_|
+;;
+;; https://clojuredocs.org/clojure.zip/zipper
+
+
+(deftest ->vec-test
+  (testing "conversion to vectors"
+
+    (is (= (->vec kit-1)
+           '[[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]))
+
+    (is (= (->vec kit-2)
+           '[[:chan x]
+             [:msg y]
+             [:K
+              [[:chan y]
+               [:msg x]
+               [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+               [:kit say]]]
+             [:kit hear]]))
+
+    (is (= (->vec kit-3)
+           '[[:chan z]
+             [:msg v]
+             [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+             [:kit hear]]))
+
+    (is (= (->vec whisper-boat)
+           '[[:x x]
+             [:K
+              [[:K [[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]]
+               [:L
+                [[:K
+                  [[:chan x]
+                   [:msg y]
+                   [:K
+                    [[:chan y]
+                     [:msg x]
+                     [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+                     [:kit say]]]
+                   [:kit hear]]]
+                 [:L
+                  [[:chan z]
+                   [:msg v]
+                   [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+                   [:kit hear]]]
+                 [:kit par]]]
+               [:kit par]]]
+             [:kit say]]))
+
+    (is (= (->vec whisper-boat-2)
+           '[[:x x]
+             [:K
+              [[:kits
+                ([[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]
+                 [[:chan x]
+                  [:msg y]
+                  [:K
+                   [[:chan y]
+                    [:msg x]
+                    [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+                    [:kit say]]]
+                  [:kit hear]]
+                 [[:chan z]
+                  [:msg v]
+                  [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+                  [:kit hear]])]
+               [:kit pars]]]
+             [:kit say]]))))
+
+
+(deftest ->vec-extract-topmost-pars
+  (testing "extraction of top-most pars from a term"
+    (is (= (->> whisper-boat-2
+                :K
+                :kits
+                seq
+                (map ->vec))
+           '([[:chan x] [:msg z] [:K [[:kit nap]]] [:kit say]]
+             [[:chan x]
+              [:msg y]
+              [:K
+               [[:chan y]
+                [:msg x]
+                [:K [[:chan x] [:msg y] [:K [[:kit nap]]] [:kit hear]]]
+                [:kit say]]]
+              [:kit hear]]
+             [[:chan z]
+              [:msg v]
+              [:K [[:chan v] [:msg v] [:K [[:kit nap]]] [:kit say]]]
+              [:kit hear]])))))
+
+
+
 
 
 ;;   ___                     _   _

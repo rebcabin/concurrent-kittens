@@ -13,6 +13,11 @@
             #_[asr.lpython                   :as    lpython]))
 
 
+;;; The main source of complexity is variadic pars. Otherwise,
+;;; this is a direct transcription of the kitten calculus from the
+;;; companion paper. See 'core-test.clj' for lots of samples.
+
+
 ;; __   __                     _               _
 ;; \ \ / /__ __   _ __ _ _ ___| |_ ___  __ ___| |
 ;;  \ V / -_) _| | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
@@ -307,8 +312,9 @@
 ;;   \_/\___|_||_\_,_/__/ /__/ |___/\___/\__,_|\__/__/
 
 
-;; Apparently need the following witnesses for org-babel
-;; (org-latex-export-to-pdf doesn't work well without them).
+;;; Support for the accompanying paper written in org-babel.
+;;; Apparently need the following witnesses for org-babel
+;;; (org-latex-export-to-pdf doesn't work well without them).
 
 
 (def kit-1
@@ -499,6 +505,7 @@
 
 
 (defn find-outermost-par [kit]
+  ()
   )
 
 
