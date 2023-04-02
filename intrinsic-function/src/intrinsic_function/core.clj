@@ -422,6 +422,34 @@ whisper-boat-2
 ;;                       |_|
 
 
+(defn ->map [kit-]
+  (->> kit-
+       ->vec
+       (into {})))
+
+
+(defn kit [kit-]
+  (->> kit-
+       ->map
+       :kit))
+
+
+(defn kits-vec [kit-]
+  (let [mk (->map kit-)]
+    (case (:kit mk)
+      name-   nil
+      nap     []
+      pars    (vec (:kits mk))
+      par     [(:K mk) (:L mk)]
+      hear    [(:K mk)]
+      say     [(:K mk)]
+      channel [(:K mk)]
+      repeat- [(:K mk)]
+      (throw (java.lang.IllegalArgumentException.
+              (f-str "{kit-} isn't a known kit.")))
+      )))
+
+
 ;;  _____
 ;; |_  (_)_ __ _ __  ___ _ _ ___
 ;;  / /| | '_ \ '_ \/ -_) '_(_-<
