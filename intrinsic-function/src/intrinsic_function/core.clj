@@ -656,32 +656,77 @@ whisper-boat-2
 ;; -+-+-+-+-+-+-+-+-
 
 
+(defn find-top-pars
+
+  ([flat-kit, path-so-far]
+   (if (instance? pars flat-kit)
+     {:path path-so-far,
+      :top-pars flat-kit}
+     (let [cs (children flat-kit)
+           ps (map #(find-top-pars % path-so-far) cs)]
+       (if (empty? cs)
+         ()
+         (let [fp (first ps)]
+           (if (and fp (not (empty? fp)))
+             {:path (conj path-so-far flat-kit)
+              :top-pars (:top-pars fp)}
+             () ))))))
+
+  ([flat-kit]
+   (find-top-pars flat-kit [])))
 
 
+(find-top-pars whisper-boat-2)
+;; => {:path
+;;     [{:x x,
+;;       :K
+;;       {:kits
+;;        [{:chan x, :msg z, :K {}}
+;;         {:chan x,
+;;          :msg y,
+;;          :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;         {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}],
+;;     :top-pars
+;;     {:kits
+;;      [{:chan x, :msg z, :K {}}
+;;       {:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
 
-(defn find-outermost-pars [flattened-kit]
-  (if (instance? pars flattened-kit)
-    flattened-kit
-    (let [cs (children flattened-kit)
-          ps (map find-outermost-pars cs)]
-      (if (empty? cs)
-        ()
-        (let [fp (first ps)]
-          (if (and fp (not (empty? fp)))
-            fp
-            ()))))))
+
+(defn find-top-says-and-hears
+  [flat-kit]
+  (let [fop   (find-top-pars flat-kit)
+        ps    (:kits (:top-pars fop))
+        says  (filter (partial instance? say)  ps)
+        hears (filter (partial instance? hear) ps)]
+    (assoc fop :says says, :hears hears)))
 
 
-(find-outermost-pars kit-1)  ;; => ()
-(find-outermost-pars kit-2)  ;; => ()
-(find-outermost-pars kit-3)  ;; => ()
-(find-outermost-pars whisper-boat-2)
-;; => {:kits
-;;     [{:chan x, :msg z, :K {}}
-;;      {:chan x,
+(find-top-says-and-hears whisper-boat-2)
+;; => {:path
+;;     [{:x x,
+;;       :K
+;;       {:kits
+;;        [{:chan x, :msg z, :K {}}
+;;         {:chan x,
+;;          :msg y,
+;;          :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;         {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}],
+;;     :top-pars
+;;     {:kits
+;;      [{:chan x, :msg z, :K {}}
+;;       {:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]},
+;;     :says ({:chan x, :msg z, :K {}}),
+;;     :hears
+;;     ({:chan x,
 ;;       :msg y,
 ;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}
+;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}})}
 
 
 ;; -+-+-+-+-+-+-+-+-

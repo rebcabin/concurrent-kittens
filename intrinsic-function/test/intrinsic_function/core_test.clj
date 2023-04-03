@@ -37,13 +37,13 @@
 ;;  \___/ \_,_|\__\___|_| |_|_|_\___/__/\__| |_| \__,_|_| /__/
 
 
-(deftest outermost-pars-test
-  (testing "outermost-pars"
-    (is (empty? (find-outermost-pars kit-1)))
-    (is (empty? (find-outermost-pars kit-2)))
-    (is (empty? (find-outermost-pars kit-3)))
+(deftest top-pars-test
+  (testing "top-pars"
+    (is (empty? (find-top-pars kit-1)))
+    (is (empty? (find-top-pars kit-2)))
+    (is (empty? (find-top-pars kit-3)))
     (is (= (:K whisper-boat-2)
-           (find-outermost-pars whisper-boat-2)))))
+           (:top-pars (find-top-pars whisper-boat-2))))))
 
 
 ;;   ___             _               _
