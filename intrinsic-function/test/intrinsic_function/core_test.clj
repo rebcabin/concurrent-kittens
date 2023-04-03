@@ -29,7 +29,9 @@
     (is (= 1 (count (children (hear. 'x 'y (nap.))))))
     (is (= 1 (count (children (say.  'z 'v (nap.))))))
     (is (= 1 (count (children (channel. 'x (nap.))))))
-    (is (= 1 (count (children (repeat-. (nap.))))))))
+    (is (= 1 (count (children (repeat-. (nap.))))))
+    (is (= 0 (count (children (pars. [])))))
+    (is (= 1 (count (children (pars. [(nap.)])))))))
 
 
 ;;  ___               ___
@@ -75,12 +77,6 @@
     (is (->> [kit-1 kit-2 kit-3]
              (map find-top-says-and-hears)
              (every? empty?)))))
-
-
-(find-top-says-and-hears (pars. (say. 'x 'y (nap.))))
-;; => {:path [], :top-pars {:kits {:chan x, :msg y, :K {}}}, :says (), :hears ()}
-;; => Syntax error compiling at (/Users/brian/Documents/GitHub/concurrent-kittens/intrinsic-function/test/intrinsic_function/core_test.clj:59:33).
-;;    Expecting var, but say is mapped to class intrinsic_function.core.say
 
 
 ;;   ___             _               _
@@ -382,8 +378,8 @@
               [:kit hear]])))))
 
 
-(deftest flattening-idempotency-test
-  (testing "idempotency of flattening"
+(deftest flatten-vec-idempotency-test
+  (testing "idempotency of flattening and vec'cing"
     (= (->> whisper-boat-2
             :K
             :kits
@@ -717,11 +713,10 @@
 ;;       [:kit channel])}]
 
 
-;;   ___                     _   _
-;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
-;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
-;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
-;;       |_|
+;;  ___ _      _   _              ___
+;; | __| |__ _| |_| |_ ___ _ _   | _ \__ _ _ _ ___
+;; | _|| / _` |  _|  _/ -_) ' \  |  _/ _` | '_(_-<
+;; |_| |_\__,_|\__|\__\___|_||_| |_| \__,_|_| /__/
 
 
 (deftest flatten-pars-test
@@ -730,5 +725,28 @@
     (is (instance? pars (:K (flatten-pars whisper-boat))))
     (is (instance? pars (:K whisper-boat-2)))
     (is (instance? pars (:K (flatten-pars whisper-boat-2))))
-    (is (= whisper-boat-2 (flatten-pars whisper-boat-2)))
-    (is (= (flatten-pars whisper-boat) (flatten-pars whisper-boat-2)))))
+    (testing "idempotency"
+      (is (= whisper-boat-2
+             (flatten-pars whisper-boat-2)))
+      (is (= (flatten-pars whisper-boat)
+             (flatten-pars whisper-boat-2))))
+    (is (= kit-1  (flatten-pars kit-1)))
+    (is (= kit-2  (flatten-pars kit-2)))
+    (is (= kit-3  (flatten-pars kit-3)))
+    (is (= (nap.) (flatten-pars (nap.))))))
+
+;; (flatten-pars (say. 'x 'y (nap.)))
+;; (flatten-pars (flatten-pars (say. 'x 'y (nap.))))
+;; (flatten-pars (par. (say.  'x 'y (nap.))
+;;                     (hear. 'x 'z (nap.))))
+;; (par->vec (par. (say.  'x 'y (nap.))
+;;                 (hear. 'x 'z (nap.))))
+;; (channel. 'x (par. (say.  'x 'y (nap.))
+;;                    (hear. 'x 'z (nap.))))
+;; (flatten-pars (channel. 'x (par. (say.  'x 'y (nap.))
+;;                                  (hear. 'x 'z (nap.)))))
+;; (-> (channel. 'x (par. (say.  'x 'y (nap.))
+;;                        (hear. 'x 'z (nap.))))
+;;     par->vec
+;;     :K
+;;     seq?)

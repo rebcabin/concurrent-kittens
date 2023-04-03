@@ -209,7 +209,7 @@
 
   Flatten
 
-  (par->vec [this]  (flatten (vec (map par->vec kits))))
+  (par->vec [this]  (flatten (vec (map par->vec kits)))) ; produces seq
   (repars   [_]     (throw (java.lang.UnsupportedOperationException.
                             "can't repars a pars"))))
 
@@ -251,7 +251,7 @@
 
   Flatten
 
-  (par->vec [_]    (flatten [(par->vec K) (par->vec L)]))
+  (par->vec [_]    (flatten [(par->vec K) (par->vec L)])) ; produces seq
   (repars   [_]    (throw (java.lang.UnsupportedOperationException.
                            "can't repars a par"))))
 
@@ -293,7 +293,7 @@
   Flatten
 
   (par->vec [_]    (hear. chan msg (par->vec K)))
-  (repars   [this] (if (seq? K)
+  (repars   [this] (if (seq? K) ; output of flattening pars or par
                      (hear. chan msg (pars. K))
                      this)))
 
@@ -366,7 +366,7 @@
   Flatten
 
   (par->vec [_]     (channel. x (par->vec K)))
-  (repars   [this]  (if (seq? K)
+  (repars   [this]  (if (seq? K)  ; output of flattening pars or par
                       (channel. x (pars. K))
                       this)))
 
@@ -395,7 +395,7 @@
   Flatten
 
   (par->vec [_]     (repeat-. (par->vec K)))
-  (repars   [this]  (if (seq? K)
+  (repars   [this]  (if (seq? K) ; output of flattening pars or par
                       (repeat-. (pars. K))
                       this)))
 
@@ -464,9 +464,6 @@ whisper-boat-2
 ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
 
 
-
-
-
 ;; __   __
 ;; \ \ / /__ __   _ _ ___ _ __ ___
 ;;  \ V / -_) _| | '_/ -_) '_ (_-<
@@ -524,9 +521,6 @@ whisper-boat-2
        flatten-pars
        ->vec
        z/vector-zip))
-
-
-
 
 
 ;;   ___                     _   _
@@ -660,6 +654,13 @@ whisper-boat-2
 ;; -+-+-+-+-+-+-+-+-
 ;;  M a t c h i n g
 ;; -+-+-+-+-+-+-+-+-
+
+
+;;  __  __      _      _    _
+;; |  \/  |__ _| |_ __| |_ (_)_ _  __ _
+;; | |\/| / _` |  _/ _| ' \| | ' \/ _` |
+;; |_|  |_\__,_|\__\__|_||_|_|_||_\__, |
+;;                                |___/
 
 
 (defn find-top-pars
