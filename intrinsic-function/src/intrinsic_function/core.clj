@@ -77,14 +77,7 @@
 
 
 (defprotocol Flatten
-  (par->vec [this])
-  (repars   [this]))
-
-
-(defn flatten-pars [kit]
-  (-> kit
-      par->vec
-      repars))
+  (flatten-pars [this]))
 
 
 ;;   ___ _    _ _    _                             _               _
@@ -120,6 +113,21 @@
 ;; the "kludge" that RhoLang solves.
 
 
+;; -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+;;  f o r w a r d   r e f e r e n c e s
+;; -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+
+(def name-?   nil)
+(def nap?     nil)
+(def par?     nil)
+(def pars?    nil)
+(def hear?    nil)
+(def say?     nil)
+(def channel? nil)
+(def repeat-? nil)
+
+
 ;; -+-+-+-+-+-
 ;;  n a m e -
 ;; -+-+-+-+-+-
@@ -139,8 +147,7 @@
 
   Flatten
 
-  (par->vec [this]    this)
-  (repars   [this]    this)
+  (flatten-pars [this] this)
 
   Subst
 
@@ -168,8 +175,7 @@
 
   Flatten
 
-  (par->vec [this]    this)
-  (repars   [this]    this)
+  (flatten-pars [this] this)
 
   Subst
 
@@ -209,9 +215,8 @@
 
   Flatten
 
-  (par->vec [this]  (flatten (vec (map par->vec kits)))) ; produces seq
-  (repars   [_]     (throw (java.lang.UnsupportedOperationException.
-                            "can't repars a pars"))))
+  (flatten-pars [this]
+    (pars. (vec (flatten (map flatten-pars kits))))))
 
 
 ;;; See https://clojure.org/guides/spec.
@@ -251,9 +256,27 @@
 
   Flatten
 
-  (par->vec [_]    (flatten [(par->vec K) (par->vec L)])) ; produces seq
-  (repars   [_]    (throw (java.lang.UnsupportedOperationException.
-                           "can't repars a par"))))
+  ;; To flatten a par:
+  ;; 1. Flatten each of its children, K & L, removing every par.
+  ;; 2. Each child is either a pars or not. Iff a pars, its :kits
+  ;;    are non-nil.
+  ;; 3. Iff both are pars, concat their kits into a new pars.
+  ;; 4. Iff one is pars and the other not, concat the non-pars
+  ;;    with the kits of the pars.
+  ;; 5. Else, kits are a vector of the two parts
+
+  (flatten-pars [this]
+    (let [kf  (flatten-pars K)   ; everything under is converted
+          kfk (:kits kf)
+          lf  (flatten-pars L)
+          lfk (:kits lf)
+          new-kits
+          (cond
+            (and (nil? kfk) (nil? lfk)) [kf lf]
+            (nil? kfk)                  (vec (concat [kf] lfk))
+            (nil? lfk)                  (vec (concat kfk [lf]))
+            :else                       (vec (concat kfk lfk)))]
+      (pars. new-kits))))
 
 
 ;; -+-+-+-+-
@@ -292,10 +315,8 @@
 
   Flatten
 
-  (par->vec [_]    (hear. chan msg (par->vec K)))
-  (repars   [this] (if (seq? K) ; output of flattening pars or par
-                     (hear. chan msg (pars. K))
-                     this)))
+  (flatten-pars [_]
+    (hear. chan msg (flatten-pars K))))
 
 
 ;; -+-+-+-
@@ -328,10 +349,8 @@
 
   Flatten
 
-  (par->vec [_]    (say. chan msg (par->vec K)))
-  (repars   [this] (if (seq? K)
-                     (say. chan msg (pars. K))
-                     this)))
+  (flatten-pars [_]
+    (say. chan msg (flatten-pars K))))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -365,10 +384,8 @@
 
   Flatten
 
-  (par->vec [_]     (channel. x (par->vec K)))
-  (repars   [this]  (if (seq? K)  ; output of flattening pars or par
-                      (channel. x (pars. K))
-                      this)))
+  (flatten-pars [_]
+    (channel. x (flatten-pars K))))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -394,11 +411,18 @@
 
   Flatten
 
-  (par->vec [_]     (repeat-. (par->vec K)))
-  (repars   [this]  (if (seq? K) ; output of flattening pars or par
-                      (repeat-. (pars. K))
-                      this)))
+  (flatten-pars [_]
+    (repeat-. (flatten-pars K))))
 
+
+(def name-?   (partial instance? name-))
+(def nap?     (partial instance? nap))
+(def par?     (partial instance? par))
+(def pars?    (partial instance? pars))
+(def hear?    (partial instance? hear))
+(def say?     (partial instance? say))
+(def channel? (partial instance? channel))
+(def repeat-? (partial instance? repeat-))
 
 ;; __   __               _      ___            _
 ;; \ \ / /__ _ _ _  _ __( )___ | _ ) ___  __ _| |_ ___
@@ -462,6 +486,38 @@ whisper-boat-2
 ;;        :msg y,
 ;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
 ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+
+
+(let [pr (pars. [kit-1
+                 (pars. [kit-2 kit-3])])
+      mpr (mapcat :kits (:kits pr))
+      pl (pars. [(pars. [kit-1 kit-2])
+                 kit-3])
+      mpl (mapcat :kits (:kits pl))
+      ]
+  {:mpr mpr, :mpl mpl})
+;; => {:mpr
+;;     ({:chan x,
+;;       :msg y,
+;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}),
+;;     :mpl
+;;     ({:chan x, :msg z, :K {}}
+;;      {:chan x,
+;;       :msg y,
+;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}})}
+;; => {:mpr
+;;     (nil
+;;      [{:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]),
+;;     :mpl
+;;     ([{:chan x, :msg z, :K {}}
+;;       {:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}]
+;;      nil)}
 
 
 ;; __   __

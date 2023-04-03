@@ -380,20 +380,20 @@
 
 (deftest flatten-vec-idempotency-test
   (testing "idempotency of flattening and vec'cing"
-    (= (->> whisper-boat-2
-            :K
-            :kits
-            (map ->vec))
-       (->> whisper-boat-2
-            flatten-pars
-            :K
-            :kits
-            (map ->vec))
-       (->> whisper-boat
-            flatten-pars
-            :K
-            :kits
-            (map ->vec)))))
+    (is (= (->> whisper-boat-2
+                :K
+                :kits
+                (map ->vec))
+           (->> whisper-boat-2
+                flatten-pars
+                :K
+                :kits
+                (map ->vec))
+           (->> whisper-boat
+                flatten-pars
+                :K
+                :kits
+                (map ->vec))))))
 
 
 ;; __   __
@@ -721,10 +721,10 @@
 
 (deftest flatten-pars-test
   (testing "flatten-pars on our witnesses"
-    (is (instance? par  (:K whisper-boat)))
-    (is (instance? pars (:K (flatten-pars whisper-boat))))
-    (is (instance? pars (:K whisper-boat-2)))
-    (is (instance? pars (:K (flatten-pars whisper-boat-2))))
+    (is (par?  (:K whisper-boat)))
+    (is (pars? (:K (flatten-pars whisper-boat))))
+    (is (pars? (:K whisper-boat-2)))
+    (is (pars? (:K (flatten-pars whisper-boat-2))))
     (testing "idempotency"
       (is (= whisper-boat-2
              (flatten-pars whisper-boat-2)))
@@ -733,20 +733,17 @@
     (is (= kit-1  (flatten-pars kit-1)))
     (is (= kit-2  (flatten-pars kit-2)))
     (is (= kit-3  (flatten-pars kit-3)))
-    (is (= (nap.) (flatten-pars (nap.))))))
-
-;; (flatten-pars (say. 'x 'y (nap.)))
-;; (flatten-pars (flatten-pars (say. 'x 'y (nap.))))
-;; (flatten-pars (par. (say.  'x 'y (nap.))
-;;                     (hear. 'x 'z (nap.))))
-;; (par->vec (par. (say.  'x 'y (nap.))
-;;                 (hear. 'x 'z (nap.))))
-;; (channel. 'x (par. (say.  'x 'y (nap.))
-;;                    (hear. 'x 'z (nap.))))
-;; (flatten-pars (channel. 'x (par. (say.  'x 'y (nap.))
-;;                                  (hear. 'x 'z (nap.)))))
-;; (-> (channel. 'x (par. (say.  'x 'y (nap.))
-;;                        (hear. 'x 'z (nap.))))
-;;     par->vec
-;;     :K
-;;     seq?)
+    (is (= (nap.) (flatten-pars (nap.))))
+    (is (= (let [b (par. (par. kit-1 kit-2) kit-3)]
+             (flatten-pars b))
+           (let [b (par. kit-1 (par. kit-2 kit-3))]
+             (flatten-pars b))
+           (let [a (pars. [kit-1 kit-2 kit-3])]
+             (flatten-pars a))))
+    (let [k (say. 'x 'y (nap.))]
+      (is (= k (flatten-pars k)))
+      (is (= k (flatten-pars (flatten-pars k))))
+      (let [l (hear. 'x 'z (nap.))]
+        (is (= (pars. [k l])
+               (flatten-pars (par. k l))))))
+    ))
