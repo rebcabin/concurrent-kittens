@@ -87,6 +87,17 @@
       repars))
 
 
+;;   ___ _    _ _    _                             _               _
+;;  / __| |_ (_) |__| |_ _ ___ _ _    _ __ _ _ ___| |_ ___  __ ___| |
+;; | (__| ' \| | / _` | '_/ -_) ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
+;;  \___|_||_|_|_\__,_|_| \___|_||_| | .__/_| \___/\__\___/\__\___/_|
+;;                                   |_|
+
+
+(defprotocol Children
+  (children [this]))
+
+
 ;;  _   _ _   _                      _         _
 ;; | |_(_) |_| |_ ___ _ _    __ __ _| |__ _  _| |_  _ ___
 ;; | / / |  _|  _/ -_) ' \  / _/ _` | / _| || | | || (_-<
@@ -116,6 +127,10 @@
 
 (defrecord name-   [sym]
 
+  Children
+
+  (children [_]    [])
+
   Vec
 
   (->vec [_]    [[:name sym] [:kit 'name]])
@@ -139,6 +154,10 @@
 
 
 (defrecord nap     []
+
+  Children
+
+  (children [_]    [])
 
   Vec
 
@@ -165,6 +184,10 @@
 
 
 (defrecord pars    [kits]
+
+  Children
+
+  (children [_]    kits)
 
   Vec
 
@@ -199,6 +222,10 @@
 
 (defrecord par     [K L]
 
+  Children
+
+  (children [_]    [K L])
+
   Vec
 
   (->vec [this]
@@ -229,6 +256,10 @@
 
 
 (defrecord hear    [chan msg K]
+
+  Children
+
+  (children [_]    [K])
 
   Vec
 
@@ -268,6 +299,10 @@
 
 (defrecord say     [chan msg K]
 
+  Children
+
+  (children [_]    [K])
+
   Vec
 
   (->vec [this]
@@ -300,6 +335,10 @@
 
 (defrecord channel [x K]                ; like nu in the pi calculus
 
+  Children
+
+  (children [_]    [K])
+
   Vec
 
   (->vec [this]
@@ -331,7 +370,11 @@
 ;; -+-+-+-+-+-+-+-
 
 
-(defrecord repeat- [K]         ; without hyphen, collides with built-in "repeat"
+(defrecord repeat- [K]  ; without hyphen, collides with built-in "repeat"
+
+  Children
+
+  (children [_]    [K])
 
   Vec
   (->vec [this]
@@ -415,6 +458,9 @@ whisper-boat-2
 ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
 
 
+
+
+
 ;; __   __
 ;; \ \ / /__ __   _ _ ___ _ __ ___
 ;;  \ V / -_) _| | '_/ -_) '_ (_-<
@@ -422,20 +468,20 @@ whisper-boat-2
 ;;                       |_|
 
 
-(defn ->map [kit-]
-  (->> kit-
+(defn ->map [kit]
+  (->> kit
        ->vec
        (into {})))
 
 
-(defn kit [kit-]
-  (->> kit-
+(defn kit [kit]
+  (->> kit
        ->map
        :kit))
 
 
-(defn kits-vec [kit-]
-  (let [mk (->map kit-)]
+(defn kits-vec [kit]
+  (let [mk (->map kit)]
     (case (:kit mk)
       name-   nil
       nap     []
@@ -446,7 +492,7 @@ whisper-boat-2
       channel [(:K mk)]
       repeat- [(:K mk)]
       (throw (java.lang.IllegalArgumentException.
-              (f-str "{kit-} isn't a known kit.")))
+              (f-str "{kit} isn't a known kit.")))
       )))
 
 
@@ -457,6 +503,24 @@ whisper-boat-2
 ;;       |_|  |_|
 ;;
 ;; https://clojuredocs.org/clojure.zip/zipper
+
+
+(defn lkup
+  "flat lookup: careful! lest you re-invent lenses!"
+  [key kit-vec]
+  (->> kit-vec
+       (into {})
+       key))
+
+
+(defn ->zip [kit]
+  (->> kit
+       flatten-pars
+       ->vec
+       z/vector-zip))
+
+
+
 
 
 ;;   ___                     _   _
@@ -592,13 +656,32 @@ whisper-boat-2
 ;; -+-+-+-+-+-+-+-+-
 
 
-(defn find-outermost-par [kit]
-  (let [zk (->zip kit)]
-    )
-  )
 
 
-(find-outermost-par whisper-boat)
+
+(defn find-outermost-pars [flattened-kit]
+  (if (instance? pars flattened-kit)
+    flattened-kit
+    (let [cs (children flattened-kit)
+          ps (map find-outermost-pars cs)]
+      (if (empty? cs)
+        ()
+        (let [fp (first ps)]
+          (if (and fp (not (empty? fp)))
+            fp
+            ()))))))
+
+
+(find-outermost-pars kit-1)  ;; => ()
+(find-outermost-pars kit-2)  ;; => ()
+(find-outermost-pars kit-3)  ;; => ()
+(find-outermost-pars whisper-boat-2)
+;; => {:kits
+;;     [{:chan x, :msg z, :K {}}
+;;      {:chan x,
+;;       :msg y,
+;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}
 
 
 ;; -+-+-+-+-+-+-+-+-
