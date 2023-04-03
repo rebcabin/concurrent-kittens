@@ -1,7 +1,8 @@
 (ns intrinsic-function.core-test
   (:require [clojure.test :refer :all]
             [intrinsic-function.core :refer :all]
-            [clojure.zip :as z])
+            [clojure.zip :as z]
+            [clojure.spec.alpha :as s])
   (:import [intrinsic_function.core   ;; note underscore!
             name-
             nap
@@ -31,6 +32,26 @@
     (is (= 1 (count (children (repeat-. (nap.))))))))
 
 
+;;  ___               ___
+;; | _ \__ _ _ _ ___ / __|_ __  ___ __
+;; |  _/ _` | '_(_-< \__ \ '_ \/ -_) _|
+;; |_| \__,_|_| /__/ |___/ .__/\___\__|
+;;                       |_|
+
+
+(deftest pars-spec-test
+  (testing "spec of pars"
+    (let [ifc-pars :intrinsic-function.core/pars]
+      (is (s/valid? ifc-pars (pars. [])))
+      (is (s/valid? ifc-pars (pars. [(nap.)])))
+      (is (not (s/valid? ifc-pars (pars. (nap.)))))
+      (let [pnap (pars. [(nap.)])]
+        (is (= pnap
+               (s/conform ifc-pars pnap))))
+      (is (s/invalid?
+           (s/conform ifc-pars (pars. (nap.))))))))
+
+
 ;;   ___       _                        _     ___
 ;;  / _ \ _  _| |_ ___ _ _ _ __  ___ __| |_  | _ \__ _ _ _ ___
 ;; | (_) | || |  _/ -_) '_| '  \/ _ (_-<  _| |  _/ _` | '_(_-<
@@ -44,6 +65,22 @@
     (is (empty? (find-top-pars kit-3)))
     (is (= (:K whisper-boat-2)
            (:top-pars (find-top-pars whisper-boat-2))))))
+
+
+(deftest top-says-hears-test
+  (testing "top-says-and-hears"
+    (let [tsh-2 (find-top-says-and-hears whisper-boat-2)]
+      (is (= 2 (count (:hears tsh-2))))
+      (is (= 1 (count (:says  tsh-2)))))
+    (is (->> [kit-1 kit-2 kit-3]
+             (map find-top-says-and-hears)
+             (every? empty?)))))
+
+
+(find-top-says-and-hears (pars. (say. 'x 'y (nap.))))
+;; => {:path [], :top-pars {:kits {:chan x, :msg y, :K {}}}, :says (), :hears ()}
+;; => Syntax error compiling at (/Users/brian/Documents/GitHub/concurrent-kittens/intrinsic-function/test/intrinsic_function/core_test.clj:59:33).
+;;    Expecting var, but say is mapped to class intrinsic_function.core.say
 
 
 ;;   ___             _               _

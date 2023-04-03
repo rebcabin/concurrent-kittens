@@ -214,6 +214,12 @@
                             "can't repars a pars"))))
 
 
+;;; See https://clojure.org/guides/spec.
+(s/def ::pars
+  (s/and (s/keys :req-un [::kits])
+         #(vector? (:kits %))))
+
+
 ;; -+-+-+-
 ;;  p a r
 ;; -+-+-+-
@@ -701,7 +707,9 @@ whisper-boat-2
         ps    (:kits (:top-pars fop))
         says  (filter (partial instance? say)  ps)
         hears (filter (partial instance? hear) ps)]
-    (assoc fop :says says, :hears hears)))
+    (if (not (empty? fop))
+      (assoc fop :says says, :hears hears)
+      ())))
 
 
 (find-top-says-and-hears whisper-boat-2)
@@ -742,6 +750,15 @@ whisper-boat-2
 ;; -+-+-+-+-+-+-+-+-
 ;;  G o b b l i n g
 ;; -+-+-+-+-+-+-+-+-
+
+
+(defn non-deterministic-say-hear-match
+  [flat-kit]
+  (let [tsh (find-top-says-and-hears flat-kit)]
+    (if (not (empty? tsh))
+      true
+      )
+    ))
 
 
 (defn -main
