@@ -4,18 +4,29 @@
             [clojure.zip :as z]
             [clojure.spec.alpha :as s])
   (:import [intrinsic_function.core   ;; note underscore!
-            name-   nap     pars    par
-            hear    say     channel repeat-]))
+            nap     pars    par
+            hear    say     channel
+            repeat-]))
 
 
-;;  ___
-;; | _ \___ _ _  __ _ _ __  ___
-;; |   / -_) ' \/ _` | '  \/ -_)
-;; |_|_\___|_||_\__,_|_|_|_\___|
+;;  ___                           __       ___      _       _
+;; | _ \___ _ _  __ _ _ __  ___  / _|___  / __|_  _| |__ __| |_
+;; |   / -_) ' \/ _` | '  \/ -_) > _|_ _| \__ \ || | '_ (_-<  _|
+;; |_|_\___|_||_\__,_|_|_|_\___| \_____|  |___/\_,_|_.__/__/\__|
 
 
 (deftest renaming-test
-  (testing "renaming"))
+  (testing "renaming")
+  (is (= (rename-bound whisper-boat-2 'x 'g1234)
+         (channel.
+          'g1234
+          (pars.
+           [(say.  'g1234 'z (nap.))
+            (hear. 'g1234 'y
+                   (say. 'y 'g1234
+                         (hear. 'g1234 'y (nap.))))
+            (hear. 'z 'v
+                   (say. 'v 'v (nap.)))])))))
 
 
 ;;   ___ _    _ _    _
@@ -26,7 +37,6 @@
 
 (deftest children-test
   (testing "every 'children' is a vector"
-    (is (empty? (children (name-. 'x))))
     (is (empty? (children (nap.))))
     (is (= 2 (count (children (par. (nap.) (nap.))))))
     (is (= 3 (count (children (pars. [(nap.) (nap.) (nap.)])))))
