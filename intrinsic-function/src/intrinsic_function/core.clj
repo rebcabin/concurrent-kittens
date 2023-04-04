@@ -3,8 +3,8 @@
   (:require [clojure.spec.alpha            :as    s       ]
             [clojure.pprint                :refer [pprint]]
             [clojure.set                   :as    set     ]
-            [clojure.zip                   :as    z       ]
             [blaster.clj-fstring           :refer [f-str] ]
+            #_[clojure.zip                   :as    z       ]
             #_[clojure.data.zip              :as    dz      ]
             #_[clojure.spec.gen.alpha        :as    gen     ]
             #_[clojure.spec.test.alpha       :as    stest   ]
@@ -12,6 +12,9 @@
             #_[clojure.set                   :as    set     ]
             #_[pathetic.core                 :as    path    ]
             #_[asr.lpython                   :as    lpython]))
+
+
+(s/check-asserts true)
 
 
 ;;; The main source of complexity is variadic pars. Otherwise,
@@ -32,16 +35,15 @@
   (recursor    [this bound-or-free]))
 
 
-;;  __  __      _      _    _
-;; |  \/  |__ _| |_ __| |_ (_)_ _  __ _
-;; | |\/| / _` |  _/ _| ' \| | ' \/ _` |
-;; |_|  |_\__,_|\__\__|_||_|_|_||_\__, |
-;;                                |___/
+;;  ___                                        _               _
+;; | _ \___ _ _  __ _ _ __  ___   _ __ _ _ ___| |_ ___  __ ___| |
+;; |   / -_) ' \/ _` | '  \/ -_) | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
+;; |_|_\___|_||_\__,_|_|_|_\___| | .__/_| \___/\__\___/\__\___/_|
+;;                               |_|
 
 
-(defn match-up
-  [say, hear]
-  (= (:chan say) (:chan hear)))
+(defprotocol Rename
+  (rename [this, old-, new-]))
 
 
 ;;  ___      _       _                  _               _
@@ -131,6 +133,12 @@
   Flatten
 
   (flatten-pars [this] this)
+
+  Rename
+
+  (rename [this, old-, new-]
+    (assert (= sym old-))
+    (name-. new-))
 
   Subst
 
@@ -390,7 +398,9 @@
 
 (s/def ::flat-kit
   (s/and #(not (instance? par %))
-         #(s/valid? ::flat-kit (children %))))
+         #(every? (fn [child]
+                    (s/valid? ::flat-kit child))
+                  (children %))))
 
 
 ;;  _____                 ___            _ _         _
@@ -529,6 +539,7 @@ whisper-boat-2
              () ))))))
 
   ([flat-kit]
+   {:pre [(s/assert ::flat-kit flat-kit)]}
    (find-top-pars flat-kit [])))
 
 

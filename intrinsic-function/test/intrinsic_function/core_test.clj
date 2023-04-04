@@ -68,10 +68,11 @@
            (s/conform ifc-pars (pars. (nap.))))))))
 
 
-#_(deftest flat-kit-test
+(deftest flat-kit-test
   (testing "spec of flat-kit"
     (let [ifc-fk :intrinsic-function.core/flat-kit]
-      (is (s/valid? ifc-fk whisper-boat-2)))))
+      (is (s/valid? ifc-fk whisper-boat-2))
+      (is (not (s/valid? ifc-fk whisper-boat))))))
 
 
 ;;  _____           ___
@@ -88,6 +89,12 @@
     (is (empty? (find-top-pars kit-3)))
     (is (= (:K whisper-boat-2)
            (:top-pars (find-top-pars whisper-boat-2))))))
+
+
+(deftest flat-kit-spec-test
+  (is (thrown? java.lang.Exception
+               (find-top-pars whisper-boat)))
+  (is (find-top-pars whisper-boat-2)))
 
 
 (deftest top-says-hears-test
