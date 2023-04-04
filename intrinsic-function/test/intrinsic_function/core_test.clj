@@ -4,14 +4,18 @@
             [clojure.zip :as z]
             [clojure.spec.alpha :as s])
   (:import [intrinsic_function.core   ;; note underscore!
-            name-
-            nap
-            pars
-            par
-            hear
-            say
-            channel
-            repeat-]))
+            name-   nap     pars    par
+            hear    say     channel repeat-]))
+
+
+;;  ___
+;; | _ \___ _ _  __ _ _ __  ___
+;; |   / -_) ' \/ _` | '  \/ -_)
+;; |_|_\___|_||_\__,_|_|_|_\___|
+
+
+(deftest renaming-test
+  (testing "renaming"))
 
 
 ;;   ___ _    _ _    _
@@ -128,16 +132,6 @@
     (is (nap.))
     (is (.equals {:chan 'x, :msg 'y, :K 'p}
                  (hear. 'x 'y 'p)))))
-
-
-;;  ___                         _   ___
-;; | _ \__ _ _ _   __ _ _ _  __| | | _ \__ _ _ _ ___
-;; |  _/ _` | '_| / _` | ' \/ _` | |  _/ _` | '_(_-<
-;; |_| \__,_|_|   \__,_|_||_\__,_| |_| \__,_|_| /__/
-
-
-(def parl-123 (par. (par. kit-1 kit-2) kit-3))
-(def parr-123 (par. kit-1 (par. kit-2 kit-3)))
 
 
 ;;  _  _

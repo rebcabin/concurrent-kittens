@@ -4,7 +4,6 @@
             [clojure.pprint                :refer [pprint]]
             [clojure.set                   :as    set     ]
             [blaster.clj-fstring           :refer [f-str] ]
-            #_[clojure.zip                   :as    z       ]
             #_[clojure.data.zip              :as    dz      ]
             #_[clojure.spec.gen.alpha        :as    gen     ]
             #_[clojure.spec.test.alpha       :as    stest   ]
@@ -22,11 +21,10 @@
 ;;; companion paper. See 'core-test.clj' for lots of samples.
 
 
-;;  _  _                                  _               _
-;; | \| |__ _ _ __  ___ ___  _ __ _ _ ___| |_ ___  __ ___| |
-;; | .` / _` | '  \/ -_|_-< | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;; |_|\_\__,_|_|_|_\___/__/ | .__/_| \___/\__\___/\__\___/_|
-;;                          |_|
+;;  ___         _               _
+;; | _ \_ _ ___| |_ ___  __ ___| |___
+;; |  _/ '_/ _ \  _/ _ \/ _/ _ \ (_-<
+;; |_| |_| \___/\__\___/\__\___/_/__/
 
 
 (defprotocol Names
@@ -35,22 +33,8 @@
   (recursor    [this bound-or-free]))
 
 
-;;  ___                                        _               _
-;; | _ \___ _ _  __ _ _ __  ___   _ __ _ _ ___| |_ ___  __ ___| |
-;; |   / -_) ' \/ _` | '  \/ -_) | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;; |_|_\___|_||_\__,_|_|_|_\___| | .__/_| \___/\__\___/\__\___/_|
-;;                               |_|
-
-
 (defprotocol Rename
   (rename [this, old-, new-]))
-
-
-;;  ___      _       _                  _               _
-;; / __|_  _| |__ __| |_   _ __ _ _ ___| |_ ___  __ ___| |
-;; \__ \ || | '_ (_-<  _| | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;; |___/\_,_|_.__/__/\__| | .__/_| \___/\__\___/\__\___/_|
-;;                        |_|
 
 
 (defprotocol Subst
@@ -58,33 +42,12 @@
   (subst    [this x y]))
 
 
-;;  ___ _      _   _                           _               _
-;; | __| |__ _| |_| |_ ___ _ _    _ __ _ _ ___| |_ ___  __ ___| |
-;; | _|| / _` |  _|  _/ -_) ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;; |_| |_\__,_|\__|\__\___|_||_| | .__/_| \___/\__\___/\__\___/_|
-;;                               |_|
-
-
 (defprotocol Flatten
   (flatten-pars [this]))
 
 
-;;   ___ _    _ _    _                             _               _
-;;  / __| |_ (_) |__| |_ _ ___ _ _    _ __ _ _ ___| |_ ___  __ ___| |
-;; | (__| ' \| | / _` | '_/ -_) ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;;  \___|_||_|_|_\__,_|_| \___|_||_| | .__/_| \___/\__\___/\__\___/_|
-;;                                   |_|
-
-
 (defprotocol Children
   (children [this]))
-
-
-;;  ___      _   _                   _               _
-;; | _ \__ _| |_| |_    _ __ _ _ ___| |_ ___  __ ___| |
-;; |  _/ _` |  _| ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;; |_| \__,_|\__|_||_| | .__/_| \___/\__\___/\__\___/_|
-;;                     |_|
 
 
 (defprotocol Path
@@ -120,30 +83,18 @@
 
 (defrecord name-   [sym]
 
-  Path
-
-  (path-key [_] nil)
-
-  Children
-
-  (children [_]    [])
-
-  Names  (free-names  [_] #{})  (bound-names [_] #{})
-
-  Flatten
-
-  (flatten-pars [this] this)
+  Names     (free-names  [_] #{})  (bound-names [_] #{})
 
   Rename
-
   (rename [this, old-, new-]
     (assert (= sym old-))
     (name-. new-))
 
-  Subst
+  Flatten   (flatten-pars [this] this)
 
-  (subst    [this _ _] this)
-  (patch-up [this _]   this))
+  Children  (children [_]    [])
+
+  Path      (path-key [_] nil))
 
 
 ;; -+-+-+-
@@ -153,24 +104,15 @@
 
 (defrecord nap     []
 
-  Path
+  Names     (free-names  [_] #{})  (bound-names [_] #{})
 
-  (path-key [_] nil)
+  Rename    (rename [this, _, _] this)
 
-  Children
+  Flatten   (flatten-pars [this] this)
 
-  (children [_]    [])
+  Children  (children [_]    [])
 
-  Names  (free-names  [_] #{})  (bound-names [_] #{})
-
-  Flatten
-
-  (flatten-pars [this] this)
-
-  Subst
-
-  (subst    [this _ _] this)
-  (patch-up [this _]   this))
+  Path      (path-key [_] nil))
 
 
 ;; -+-+-+-+-
@@ -181,30 +123,20 @@
 
 (defrecord pars    [kits]
 
-  Path
-
-  (path-key [_] :kits)
-
-  Children
-
-  (children [_]    kits)
-
-  Names
-
-  (recursor [_ bf]
-    (loop [result #{}, forms kits]
-      (if (not (empty? forms))          ; "if forms" does not work
-        (recur (into result (bf (first forms)))
-               (rest forms))
-        result)))
-
+  Names     (recursor  [_ bf] (reduce #(into %1 (bf %2)) #{} kits))
   (free-names  [this]  (recursor this free-names))
   (bound-names [this]  (recursor this bound-names))
 
-  Flatten
+  Rename    (rename [_, old-, new-]
+              (pars. (vec (map #(rename % old- new-) kits))))
 
+  Flatten
   (flatten-pars [this]
-    (pars. (vec (flatten (map flatten-pars kits))))))
+    (pars. (vec (flatten (map flatten-pars kits)))))
+
+  Children  (children [_]    kits)
+
+  Path      (path-key [_] :kits))
 
 
 ;;; See https://clojure.org/guides/spec.
@@ -221,26 +153,12 @@
 
 (defrecord par     [K L]
 
-  Path
+  Names     (recursor [_ bf]  (set/union (bf K) (bf L)))
+  (free-names  [this]  (recursor this free-names))
+  (bound-names [this]  (recursor this bound-names))
 
-  (path-key [_] nil) ; can only path to pars, not par
-
-  Children
-
-  (children [_]    [K L])
-
-  Names
-
-  (free-names [_]
-    (set/union
-     (free-names K)
-     (free-names L)))
-  (bound-names [_]
-    (set/union
-     (bound-names K)
-     (bound-names L)))
-
-  Flatten
+  Rename    (rename [_, old-, new-]
+              (par. (rename K old- new-) (rename L old- new-)))
 
   ;; To flatten a par:
   ;; 1. Flatten each of its children, K & L, removing every par.
@@ -251,8 +169,9 @@
   ;;    with the kits of the pars.
   ;; 5. Else, kits are a vector of the two parts
 
+  Flatten
   (flatten-pars [this]
-    (let [kf  (flatten-pars K)   ; everything under is converted
+    (let [kf  (flatten-pars K)          ; everything under is converted
           kfk (:kits kf)
           lf  (flatten-pars L)
           lfk (:kits lf)
@@ -262,73 +181,56 @@
             (nil? kfk)                  (vec (concat [kf] lfk))
             (nil? lfk)                  (vec (concat kfk [lf]))
             :else                       (vec (concat kfk lfk)))]
-      (pars. new-kits))))
+      (pars. new-kits)))
+
+  Children  (children [_]    [K L])
+
+  Path      (path-key [_] nil))
 
 
 ;; -+-+-+-+-
 ;;  h e a r
 ;; -+-+-+-+-
 
-
-(defrecord hear    [chan msg K]
-
-  Path
-
-  (path-key [_] :K)
-
-  Children
-
-  (children [_]    [K])
+;;                  free bound continuation
+(defrecord hear    [chan msg   K]
 
   Names
+  (free-names  [_] (set/union #{chan} (set/difference (free-names K) #{msg})))
+  (bound-names [_] (set/union #{msg}  (bound-names K)))
 
-  (free-names [_]
-    (set/union
-     #{chan}
-     (set/difference
-      (free-names K)
-      #{msg})))
-  (bound-names [_]
-    (set/union
-     #{msg}
-     (bound-names K)))
-
-  Subst  (patch-up [this x])
+  Rename    (rename [_, old-, new-]
+              (hear. chan
+                     (rename msg old- new-)
+                     (rename K old- new-)))
 
   Flatten
+  (flatten-pars [_]  (hear. chan msg (flatten-pars K)))
 
-  (flatten-pars [_]
-    (hear. chan msg (flatten-pars K))))
+  Children  (children [_]    [K])
+
+  Path      (path-key [_] :K))
 
 
 ;; -+-+-+-
 ;;  s a y
 ;; -+-+-+-
 
-
-(defrecord say     [chan msg K]
-
-  Path
-
-  (path-key [_] :K)
-
-  Children
-
-  (children [_]    [K])
+;;                  free free continuation
+(defrecord say     [chan msg  K]
 
   Names
+  (free-names  [_] (set/union (set [chan msg]) (free-names K)))
+  (bound-names [_] (bound-names K))
 
-  (free-names [_]
-    (set/union
-     (set [chan msg])
-     (free-names K)))
-  (bound-names [_]
-    (bound-names K))
+  Rename    (rename [this, old-, new-]  this)
 
   Flatten
+  (flatten-pars [_]  (say. chan msg (flatten-pars K)))
 
-  (flatten-pars [_]
-    (say. chan msg (flatten-pars K))))
+  Children  (children [_]    [K])
+
+  Path      (path-key [_]    :K))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -338,29 +240,18 @@
 
 (defrecord channel [x K]                ; like nu in the pi calculus
 
-  Path
-
-  (path-key [_] :K)
-
-  Children
-
-  (children [_]    [K])
-
   Names
+  (free-names  [_] (set/difference  (free-names K)  #{x}))
+  (bound-names [_] (set/union       #{x} (bound-names K)))
 
-  (free-names [_]
-    (set/difference
-     (free-names K)
-     #{x}))
-  (bound-names [_]
-    (set/union
-     #{x}
-     (bound-names K)))
+  Rename    (rename [_, old-, new-]
+              (channel. (rename x old- new-) (rename K old- new-)))
 
-  Flatten
+  Flatten   (flatten-pars [_]  (channel. x (flatten-pars K)))
 
-  (flatten-pars [_]
-    (channel. x (flatten-pars K))))
+  Children  (children [_]    [K])
+
+  Path      (path-key [_]    :K))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -370,23 +261,18 @@
 
 (defrecord repeat- [K]  ; without hyphen, collides with built-in "repeat"
 
-  Path
-
-  (path-key [_] :K)
-
-  Children
-
-  (children [_]    [K])
-
   Names
-
   (free-names  [_] (free-names K))
   (bound-names [_] (bound-names K))
 
-  Flatten
+  Rename    (rename [this, old-, new-]  this)
 
-  (flatten-pars [_]
-    (repeat-. (flatten-pars K))))
+  Flatten
+  (flatten-pars [_]  (repeat-. (flatten-pars K)))
+
+  Children  (children [_]    [K])
+
+  Path      (path-key [_]    :K))
 
 
 ;;  ___ _      _     _  ___ _     ___
