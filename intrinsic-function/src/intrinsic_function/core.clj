@@ -19,19 +19,6 @@
 ;;; companion paper. See 'core-test.clj' for lots of samples.
 
 
-;; __   __                     _               _
-;; \ \ / /__ __   _ __ _ _ ___| |_ ___  __ ___| |
-;;  \ V / -_) _| | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
-;;   \_/\___\__| | .__/_| \___/\__\___/\__\___/_|
-;;               |_|
-;;
-;; to support zippers
-
-
-(defprotocol Vec
-  (->vec [this]))
-
-
 ;;  _  _                                  _               _
 ;; | \| |__ _ _ __  ___ ___  _ __ _ _ ___| |_ ___  __ ___| |
 ;; | .` / _` | '  \/ -_|_-< | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
@@ -91,10 +78,21 @@
   (children [this]))
 
 
-;;  _   _ _   _                      _         _
-;; | |_(_) |_| |_ ___ _ _    __ __ _| |__ _  _| |_  _ ___
-;; | / / |  _|  _/ -_) ' \  / _/ _` | / _| || | | || (_-<
-;; |_\_\_|\__|\__\___|_||_| \__\__,_|_\__|\_,_|_|\_,_/__/
+;;  ___      _   _                   _               _
+;; | _ \__ _| |_| |_    _ __ _ _ ___| |_ ___  __ ___| |
+;; |  _/ _` |  _| ' \  | '_ \ '_/ _ \  _/ _ \/ _/ _ \ |
+;; |_| \__,_|\__|_||_| | .__/_| \___/\__\___/\__\___/_|
+;;                     |_|
+
+
+(defprotocol Path
+  (path-key [this]))
+
+
+;;  _  ___ _   _               ___      _         _
+;; | |/ (_) |_| |_ ___ _ _    / __|__ _| |__ _  _| |_  _ ___
+;; | ' <| |  _|  _/ -_) ' \  | (__/ _` | / _| || | | || (_-<
+;; |_|\_\_|\__|\__\___|_||_|  \___\__,_|_\__|\_,_|_|\_,_/__/
 ;;
 ;; The "type" of a kitten is called a "kit." I didn't want the
 ;; heavily over-used words "type," "kind," "sort," etc. A "kit"
@@ -113,21 +111,6 @@
 ;; the "kludge" that RhoLang solves.
 
 
-;; -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-;;  f o r w a r d   r e f e r e n c e s
-;; -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-
-
-(def name-?   nil)
-(def nap?     nil)
-(def par?     nil)
-(def pars?    nil)
-(def hear?    nil)
-(def say?     nil)
-(def channel? nil)
-(def repeat-? nil)
-
-
 ;; -+-+-+-+-+-
 ;;  n a m e -
 ;; -+-+-+-+-+-
@@ -135,13 +118,13 @@
 
 (defrecord name-   [sym]
 
+  Path
+
+  (path-key [_] nil)
+
   Children
 
   (children [_]    [])
-
-  Vec
-
-  (->vec [_]    [[:name sym] [:kit 'name]])
 
   Names  (free-names  [_] #{})  (bound-names [_] #{})
 
@@ -162,14 +145,13 @@
 
 (defrecord nap     []
 
+  Path
+
+  (path-key [_] nil)
+
   Children
 
   (children [_]    [])
-
-  Vec
-
-  (->vec [this]
-    (conj (vec this) [:kit 'nap]))
 
   Names  (free-names  [_] #{})  (bound-names [_] #{})
 
@@ -191,15 +173,13 @@
 
 (defrecord pars    [kits]
 
+  Path
+
+  (path-key [_] :kits)
+
   Children
 
   (children [_]    kits)
-
-  Vec
-
-  (->vec [_]
-    (conj [[:kits (map ->vec kits)]]
-          [:kit  'pars]))
 
   Names
 
@@ -233,15 +213,13 @@
 
 (defrecord par     [K L]
 
+  Path
+
+  (path-key [_] nil) ; can only path to pars, not par
+
   Children
 
   (children [_]    [K L])
-
-  Vec
-
-  (->vec [this]
-    (conj [[:K (->vec K)] [:L (->vec L)]]
-          [:kit 'par]))
 
   Names
 
@@ -286,17 +264,13 @@
 
 (defrecord hear    [chan msg K]
 
+  Path
+
+  (path-key [_] :K)
+
   Children
 
   (children [_]    [K])
-
-  Vec
-
-  (->vec [this]
-    (conj [[:chan (->vec (name-. chan))]
-           [:msg  (->vec (name-. msg))]
-           [:K    (->vec K)]]
-          [:kit 'hear]))
 
   Names
 
@@ -326,17 +300,13 @@
 
 (defrecord say     [chan msg K]
 
+  Path
+
+  (path-key [_] :K)
+
   Children
 
   (children [_]    [K])
-
-  Vec
-
-  (->vec [this]
-    (conj [[:chan (->vec (name-. chan))]
-           [:msg  (->vec (name-. msg))]
-           [:K    (->vec K)]]
-          [:kit 'say]))
 
   Names
 
@@ -360,16 +330,13 @@
 
 (defrecord channel [x K]                ; like nu in the pi calculus
 
+  Path
+
+  (path-key [_] :K)
+
   Children
 
   (children [_]    [K])
-
-  Vec
-
-  (->vec [this]
-    (conj [[:x (->vec (name-. x))]
-           [:K (->vec K)]]
-          [:kit 'channel]))
 
   Names
 
@@ -395,14 +362,13 @@
 
 (defrecord repeat- [K]  ; without hyphen, collides with built-in "repeat"
 
+  Path
+
+  (path-key [_] :K)
+
   Children
 
   (children [_]    [K])
-
-  Vec
-  (->vec [this]
-    (conj [[:K (->vec K)]]
-          [:kit 'repeat-]))
 
   Names
 
@@ -413,6 +379,25 @@
 
   (flatten-pars [_]
     (repeat-. (flatten-pars K))))
+
+
+;;  ___ _      _     _  ___ _     ___
+;; | __| |__ _| |_  | |/ (_) |_  / __|_ __  ___ __
+;; | _|| / _` |  _| | ' <| |  _| \__ \ '_ \/ -_) _|
+;; |_| |_\__,_|\__| |_|\_\_|\__| |___/ .__/\___\__|
+;;                                   |_|
+
+
+(s/def ::flat-kit
+  (s/and #(not (instance? par %))
+         #(s/valid? ::flat-kit (children %))))
+
+
+;;  _____                 ___            _ _         _
+;; |_   _|  _ _ __  ___  | _ \_ _ ___ __| (_)__ __ _| |_ ___ ___
+;;   | || || | '_ \/ -_) |  _/ '_/ -_) _` | / _/ _` |  _/ -_|_-<
+;;   |_| \_, | .__/\___| |_| |_| \___\__,_|_\__\__,_|\__\___/__/
+;;       |__/|_|
 
 
 (def name-?   (partial instance? name-))
@@ -520,198 +505,6 @@ whisper-boat-2
 ;;      nil)}
 
 
-;; __   __
-;; \ \ / /__ __   _ _ ___ _ __ ___
-;;  \ V / -_) _| | '_/ -_) '_ (_-<
-;;   \_/\___\__| |_| \___| .__/__/
-;;                       |_|
-
-
-(defn ->map [kit]
-  (->> kit
-       ->vec
-       (into {})))
-
-
-(defn kit [kit]
-  (->> kit
-       ->map
-       :kit))
-
-
-(defn kits-vec [kit]
-  (let [mk (->map kit)]
-    (case (:kit mk)
-      name-   nil
-      nap     []
-      pars    (vec (:kits mk))
-      par     [(:K mk) (:L mk)]
-      hear    [(:K mk)]
-      say     [(:K mk)]
-      channel [(:K mk)]
-      repeat- [(:K mk)]
-      (throw (java.lang.IllegalArgumentException.
-              (f-str "{kit} isn't a known kit.")))
-      )))
-
-
-;;  _____
-;; |_  (_)_ __ _ __  ___ _ _ ___
-;;  / /| | '_ \ '_ \/ -_) '_(_-<
-;; /___|_| .__/ .__/\___|_| /__/
-;;       |_|  |_|
-;;
-;; https://clojuredocs.org/clojure.zip/zipper
-
-
-(defn lkup
-  "flat lookup: careful! lest you re-invent lenses!"
-  [key kit-vec]
-  (->> kit-vec
-       (into {})
-       key))
-
-
-(defn ->zip [kit]
-  (->> kit
-       flatten-pars
-       ->vec
-       z/vector-zip))
-
-
-;;   ___                     _   _
-;;  / _ \ _ __  ___ _ _ __ _| |_(_)___ _ _  ___
-;; | (_) | '_ \/ -_) '_/ _` |  _| / _ \ ' \(_-<
-;;  \___/| .__/\___|_| \__,_|\__|_\___/_||_/__/
-;;       |_|
-
-
-;; -+-+-+-+-+-+-+-+-+-+-+-+-+-
-;;  c o n v o l v e - p a r s
-;; -+-+-+-+-+-+-+-+-+-+-+-+-+-
-
-
-;; Confer Clojure's magnificent destructuring:
-;; https://gist.github.com/john2x/e1dca953548bfdfb9844
-
-
-(defn parl?
-  "left-hugging par's"
-  [{:keys [K L]}]
-  (instance? par K))
-
-
-(defn parr?
-  "right-hugging par's"
-  [{:keys [K L]}]
-  (instance? par L))
-
-
-(defn convolve-pars
-  [{:keys [K L] :as input}]
-  (cond (parl? input)
-        (let [{Kl :K, Ll :L} K]
-          (par. Kl (par. Ll L)))
-        (parr? input)
-        (let [{Kr :K, Lr :L} L]
-          (par. (par. K Kr) Lr))
-        :else input))
-
-
-;;  _____
-;; |_  (_)_ __ _ __  ___ _ _ ___
-;;  / /| | '_ \ '_ \/ -_) '_(_-<
-;; /___|_| .__/ .__/\___|_| /__/
-;;       |_|  |_|
-
-
-(defn ->zip [kit]
-  (->> kit
-       flatten-pars
-       ->vec
-       z/vector-zip))
-
-
-(->zip kit-1)
-;; => [[[:chan [[:name x] [:kit name]]]
-;;      [:msg [[:name z] [:kit name]]]
-;;      [:K [[:kit nap]]]
-;;      [:kit say]]
-;;     nil]
-
-
-(->zip kit-2)
-;; => [[[:chan [[:name x] [:kit name]]]
-;;      [:msg [[:name y] [:kit name]]]
-;;      [:K
-;;       [[:chan [[:name y] [:kit name]]]
-;;        [:msg [[:name x] [:kit name]]]
-;;        [:K
-;;         [[:chan [[:name x] [:kit name]]]
-;;          [:msg [[:name y] [:kit name]]]
-;;          [:K [[:kit nap]]]
-;;          [:kit hear]]]
-;;        [:kit say]]]
-;;      [:kit hear]]
-;;     nil]
-
-
-(->zip kit-3)
-;; => [[[:chan [[:name z] [:kit name]]]
-;;      [:msg [[:name v] [:kit name]]]
-;;      [:K
-;;       [[:chan [[:name v] [:kit name]]]
-;;        [:msg [[:name v] [:kit name]]]
-;;        [:K [[:kit nap]]]
-;;        [:kit say]]]
-;;      [:kit hear]]
-;;     nil]
-
-
-(->zip whisper-boat-2)
-;; => [[[:x [[:name x] [:kit name]]]
-;;      [:K
-;;       [[:kits
-;;         ([[:chan [[:name x] [:kit name]]]
-;;           [:msg [[:name z] [:kit name]]]
-;;           [:K [[:kit nap]]]
-;;           [:kit say]]
-;;          [[:chan [[:name x] [:kit name]]]
-;;           [:msg [[:name y] [:kit name]]]
-;;           [:K
-;;            [[:chan [[:name y] [:kit name]]]
-;;             [:msg [[:name x] [:kit name]]]
-;;             [:K
-;;              [[:chan [[:name x] [:kit name]]]
-;;               [:msg [[:name y] [:kit name]]]
-;;               [:K [[:kit nap]]]
-;;               [:kit hear]]]
-;;             [:kit say]]]
-;;           [:kit hear]]
-;;          [[:chan [[:name z] [:kit name]]]
-;;           [:msg [[:name v] [:kit name]]]
-;;           [:K
-;;            [[:chan [[:name v] [:kit name]]]
-;;             [:msg [[:name v] [:kit name]]]
-;;             [:K [[:kit nap]]]
-;;             [:kit say]]]
-;;           [:kit hear]])]
-;;        [:kit pars]]]
-;;      [:kit say]]
-;;     nil]
-
-
-;;  ___        _         _   _
-;; | _ \___ __| |_  _ __| |_(_)___ _ _
-;; |   / -_) _` | || / _|  _| / _ \ ' \
-;; |_|_\___\__,_|\_,_\__|\__|_\___/_||_|
-
-
-;; -+-+-+-+-+-+-+-+-
-;;  M a t c h i n g
-;; -+-+-+-+-+-+-+-+-
-
-
 ;;  __  __      _      _    _
 ;; |  \/  |__ _| |_ __| |_ (_)_ _  __ _
 ;; | |\/| / _` |  _/ _| ' \| | ' \/ _` |
@@ -731,7 +524,7 @@ whisper-boat-2
          ()
          (let [fp (first ps)]
            (if (and fp (not (empty? fp)))
-             {:path (conj path-so-far flat-kit)
+             {:path (conj path-so-far (path-key flat-kit))
               :top-pars (:top-pars fp)}
              () ))))))
 
@@ -740,15 +533,7 @@ whisper-boat-2
 
 
 (find-top-pars whisper-boat-2)
-;; => {:path
-;;     [{:x x,
-;;       :K
-;;       {:kits
-;;        [{:chan x, :msg z, :K {}}
-;;         {:chan x,
-;;          :msg y,
-;;          :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;         {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}],
+;; => {:path [:K],
 ;;     :top-pars
 ;;     {:kits
 ;;      [{:chan x, :msg z, :K {}}
@@ -770,15 +555,7 @@ whisper-boat-2
 
 
 (find-top-says-and-hears whisper-boat-2)
-;; => {:path
-;;     [{:x x,
-;;       :K
-;;       {:kits
-;;        [{:chan x, :msg z, :K {}}
-;;         {:chan x,
-;;          :msg y,
-;;          :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;         {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}],
+;; => {:path [:K],
 ;;     :top-pars
 ;;     {:kits
 ;;      [{:chan x, :msg z, :K {}}
@@ -794,6 +571,43 @@ whisper-boat-2
 ;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}})}
 
 
+(defn non-deterministic-say-hear-match
+  [flat-kit]
+  (let [tsh (find-top-says-and-hears flat-kit)]
+    (if (and (not (empty? tsh))
+             (not (empty? (:says tsh)))
+             (not (empty? (:hears tsh))))
+      (let [match-say (first (:says tsh)) ; could be any
+            match-hear (first (filter
+                               #(= (:chan match-say)
+                                   (:chan %))
+                               (:hears tsh)))]
+        (assoc tsh :match-say match-say, :match-hear match-hear)
+        ))))
+
+(non-deterministic-say-hear-match
+ whisper-boat-2)
+;; => {:path [:K],
+;;     :top-pars
+;;     {:kits
+;;      [{:chan x, :msg z, :K {}}
+;;       {:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]},
+;;     :says ({:chan x, :msg z, :K {}}),
+;;     :hears
+;;     ({:chan x,
+;;       :msg y,
+;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}),
+;;     :match-say {:chan x, :msg z, :K {}},
+;;     :match-hear
+;;     {:chan x,
+;;      :msg y,
+;;      :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}}
+
+
 ;; -+-+-+-+-+-+-+-+-
 ;;  R e n a m i n g
 ;; -+-+-+-+-+-+-+-+-
@@ -807,15 +621,6 @@ whisper-boat-2
 ;; -+-+-+-+-+-+-+-+-
 ;;  G o b b l i n g
 ;; -+-+-+-+-+-+-+-+-
-
-
-(defn non-deterministic-say-hear-match
-  [flat-kit]
-  (let [tsh (find-top-says-and-hears flat-kit)]
-    (if (not (empty? tsh))
-      true
-      )
-    ))
 
 
 (defn -main
