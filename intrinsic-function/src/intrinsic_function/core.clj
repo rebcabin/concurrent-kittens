@@ -182,34 +182,34 @@
 ;; -+-+-+-+-
 
 ;;                  free bound continuation
-(defrecord hear    [chan msg   K]
+(defrecord hear    [hear-chan msg   K]
 
   Names
-  (free-names  [_] (set/union #{chan} (set/difference (free-names K) #{msg})))
+  (free-names  [_] (set/union #{hear-chan} (set/difference (free-names K) #{msg})))
   (bound-names [_] (set/union #{msg}  (bound-names K)))
 
   Rename    (rename-bound [_, old-, new-]
               (assert (= old- msg)
                       (str (f-str "Old name {old-} must equal ")
                            (f-str "current message name {msg}.")))
-              (hear. chan  new-  (rename-bound K old- new-)))
+              (hear. hear-chan  new-  (rename-bound K old- new-)))
 
   Subst     (subst-free [this, x-for, y]
               (cond
 
-                (and (= chan y) (= msg y)) ; false positive!
+                (and (= hear-chan y) (= msg y)) ; false positive!
                 (let [defake (gensym "g")]
                   (hear. x-for defake
                          (rename-bound y defake K)))
 
-                (= chan y)  (hear. x-for msg (subst-free K x-for y))
+                (= hear-chan y)  (hear. x-for msg (subst-free K x-for y))
 
-                (= msg y)   (hear. chan x-for (subst-free K x-for y))
+                (= msg y)   (hear. hear-chan x-for (subst-free K x-for y))
 
                 :else this))
 
   Flatten
-  (flatten-pars [_]  (hear. chan msg (flatten-pars K)))
+  (flatten-pars [_]  (hear. hear-chan msg (flatten-pars K)))
 
   Children  (children [_]    [K])
 
@@ -221,10 +221,10 @@
 ;; -+-+-+-
 
 ;;                  free free continuation
-(defrecord say     [chan  msg  K]
+(defrecord say     [say-chan  msg  K]
 
   Names
-  (free-names  [_] (set/union (set [chan msg]) (free-names K)))
+  (free-names  [_] (set/union (set [say-chan msg]) (free-names K)))
   (bound-names [_] (bound-names K))
 
   Rename    (rename-bound [this, old-, new-]  this)
@@ -233,16 +233,16 @@
 
               (cond
 
-                (and (= chan y) (= msg y))
+                (and (= say-chan y) (= msg y))
                 (say. x-for x-for (subst-free K x-for y))
 
-                (= chan y) (say. x-for msg   (subst-free K x-for y))
+                (= say-chan y) (say. x-for msg   (subst-free K x-for y))
 
-                (= msg  y) (say. chan  x-for (subst-free K x-for y))
+                (= msg  y) (say. say-chan  x-for (subst-free K x-for y))
 
                 :else this))
 
-  Flatten   (flatten-pars [_]  (say. chan msg (flatten-pars K)))
+  Flatten   (flatten-pars [_]  (say. say-chan msg (flatten-pars K)))
 
   Children  (children [_]    [K])
 
@@ -254,22 +254,22 @@
 ;; -+-+-+-+-+-+-+-
 
 
-(defrecord channel [x K]                ; like nu in the pi calculus
+(defrecord channel [whisper-chan K]  ; like nu in the pi calculus
 
   Names
-  (free-names  [_] (set/difference  (free-names K)  #{x}))
-  (bound-names [_] (set/union       #{x} (bound-names K)))
+  (free-names  [_] (set/difference  (free-names K)  #{whisper-chan}))
+  (bound-names [_] (set/union       #{whisper-chan} (bound-names K)))
 
   Rename    (rename-bound [_, old-, new-]
-              (assert (= old- x)
+              (assert (= old- whisper-chan)
                       (str (f-str "Old name {old-} must equal ")
-                           (f-str "current channel name {x}.")))
+                           (f-str "current channel name {whisper-chan}.")))
               (channel. new- (subst-free K new- old-)))
 
   Subst     (subst-free [_, x-for y]
-              (channel. x (subst-free K x-for y)))
+              (channel. whisper-chan (subst-free K x-for y)))
 
-  Flatten   (flatten-pars [_]  (channel. x (flatten-pars K)))
+  Flatten   (flatten-pars [_]  (channel. whisper-chan  (flatten-pars K)))
 
   Children  (children [_]      [K])
 
@@ -343,7 +343,7 @@
 (def kit-1
   (say. 'x 'z (nap.)))
 kit-1
-;; => {:chan x, :msg z, :K {}}
+;; => {:say-chan x, :msg z, :K {}}
 
 
 (def kit-2
@@ -351,16 +351,16 @@ kit-1
          (say. 'y 'x
                (hear. 'x 'y (nap.)))))
 kit-2
-;; => {:chan x,
+;; => {:hear-chan x,
 ;;     :msg y,
-;;     :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;     :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
 
 
 (def kit-3
   (hear. 'z 'v
          (say. 'v 'v (nap.))))
 kit-3
-;; => {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}
+;; => {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}
 
 
 (def whisper-boat
@@ -368,29 +368,29 @@ kit-3
             (par. kit-1
                   (par. kit-2 kit-3))))
 whisper-boat
-;; => {:x x,
+;; => {:whisper-chan x,
 ;;     :K
-;;     {:K {:chan x, :msg z, :K {}},
+;;     {:K {:say-chan x, :msg z, :K {}},
 ;;      :L
 ;;      {:K
-;;       {:chan x,
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}},
-;;       :L {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}}}}
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}},
+;;       :L {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}}}}
 
 
 (def whisper-boat-2
   (channel. 'x
             (pars. [kit-1 kit-2 kit-3])))
 whisper-boat-2
-;; => {:x x,
+;; => {:whisper-chan x,
 ;;     :K
 ;;     {:kits
-;;      [{:chan x, :msg z, :K {}}
-;;       {:chan x,
+;;      [{:say-chan x, :msg z, :K {}}
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]}}
 
 
 ;;  __  __      _      _    _
@@ -422,14 +422,14 @@ whisper-boat-2
 
 
 (find-top-pars whisper-boat-2)
-;; => {:path [:K],
+;; => {:path [[:channel :K]],
 ;;     :top-pars
 ;;     {:kits
-;;      [{:chan x, :msg z, :K {}}
-;;       {:chan x,
+;;      [{:say-chan x, :msg z, :K {}}
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]}}
 
 
 (defn find-top-says-and-hears
@@ -444,20 +444,20 @@ whisper-boat-2
 
 
 (find-top-says-and-hears whisper-boat-2)
-;; => {:path [:K],
+;; => {:path [[:channel :K]],
 ;;     :top-pars
 ;;     {:kits
-;;      [{:chan x, :msg z, :K {}}
-;;       {:chan x,
+;;      [{:say-chan x, :msg z, :K {}}
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]},
-;;     :says ({:chan x, :msg z, :K {}}),
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]},
+;;     :says ({:say-chan x, :msg z, :K {}}),
 ;;     :hears
-;;     ({:chan x,
+;;     ({:hear-chan x,
 ;;       :msg y,
-;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}})}
+;;       :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;      {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}})}
 
 
 (defn non-deterministic-say-hear-match
@@ -469,8 +469,8 @@ whisper-boat-2
              (not (empty? (:hears tsh))))
       (let [match-say (first (:says tsh)) ; could be any
             match-hear (first (filter
-                               #(= (:chan match-say)
-                                   (:chan %))
+                               #(= (:say-chan match-say)
+                                   (:hear-chan %))
                                (:hears tsh)))]
         (assoc tsh :match-say match-say, :match-hear match-hear)
         )
@@ -481,22 +481,22 @@ whisper-boat-2
 ;; => {:path [[:channel :K]],
 ;;     :top-pars
 ;;     {:kits
-;;      [{:chan x, :msg z, :K {}}
-;;       {:chan x,
+;;      [{:say-chan x, :msg z, :K {}}
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]},
-;;     :says ({:chan x, :msg z, :K {}}),
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]},
+;;     :says ({:say-chan x, :msg z, :K {}}),
 ;;     :hears
-;;     ({:chan x,
+;;     ({:hear-chan x,
 ;;       :msg y,
-;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}),
-;;     :match-say {:chan x, :msg z, :K {}},
+;;       :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;      {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}),
+;;     :match-say {:say-chan x, :msg z, :K {}},
 ;;     :match-hear
-;;     {:chan x,
+;;     {:hear-chan x,
 ;;      :msg y,
-;;      :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}}
+;;      :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}}
 
 
 (defn replace-kit
@@ -511,7 +511,7 @@ whisper-boat-2
                flat-kit)
         ms (:match-say  ndshm)
         mh (:match-hear ndshm)]
-    (assert (= (:chan ms) (:chan mh)))
+    (assert (= (:say-chan ms) (:hear-chan mh)))
     (if (and ms mh)
       (let [said (:msg ms)
             renamed (if ((bound-names mh) said)
@@ -524,53 +524,56 @@ whisper-boat-2
             rs          (replace-kit ms say-suffix  old-kits)
             new-kits    (replace-kit mh hear-suffix rs)
             ;; TODO: Use path.
-            gobbled     (channel. (:x flat-kit) (pars. new-kits))
+            gobbled     (channel. (:whisper-chan flat-kit) (pars. new-kits))
             ]
         gobbled)
       ndshm)))
 
 
 whisper-boat-2
-;; => {:x x,
+;; => {:whisper-chan x,
 ;;     :K
 ;;     {:kits
-;;      [{:chan x, :msg z, :K {}}
-;;       {:chan x,
+;;      [{:say-chan x, :msg z, :K {}}
+;;       {:hear-chan x,
 ;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+;;        :K {:say-chan y, :msg x, :K {:hear-chan x, :msg y, :K {}}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]}}
 
 
 (match-subst-gobble
  whisper-boat-2)
-;; => {:x x,
+;; => {:whisper-chan x,
 ;;     :K
 ;;     {:kits
 ;;      [{}
-;;       {:chan z, :msg x, :K {:chan x, :msg z, :K {}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+;;       {:say-chan z, :msg x, :K {:hear-chan x, :msg z, :K {}}}
+;;       {:hear-chan z, :msg v, :K {:say-chan v, :msg v, :K {}}}]}}
 
 
 (match-subst-gobble
  (match-subst-gobble
   whisper-boat-2))
-;; => {:x x,
+;; => {:whisper-chan x,
 ;;     :K
-;;     {:kits [{} {:chan x, :msg z, :K {}} {:chan x, :msg x, :K {}}]}}
+;;     {:kits
+;;      [{}
+;;       {:hear-chan x, :msg z, :K {}}
+;;       {:say-chan x, :msg x, :K {}}]}}
 
 
 (match-subst-gobble
  (match-subst-gobble
   (match-subst-gobble
    whisper-boat-2)))
-;; => {:x x, :K {:kits [{} {} {}]}}
+;; => {:whisper-chan x, :K {:kits [{} {} {}]}}
 
 
 (loop [boat whisper-boat-2]
   (if (every? #(= (nap.) %) (:kits (:K boat)))
     boat
     (recur (match-subst-gobble boat))))
-;; => {:x x, :K {:kits [{} {} {}]}}
+;; => {:whisper-chan x, :K {:kits [{} {} {}]}}
 
 
 (defn -main

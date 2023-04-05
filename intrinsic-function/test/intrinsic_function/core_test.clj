@@ -142,9 +142,20 @@
 
 (deftest construct-others
   (testing  "constructing others"
-    (is (nap.))
-    (is (.equals {:chan 'x, :msg 'y, :K 'p}
-                 (hear. 'x 'y 'p)))))
+    (is (.equals {}
+                 (nap.)))
+    (is (.equals {:kits [{} {} {}]}
+                 (pars. [(nap.) (nap.) (nap.)])))
+    (is (.equals {:K 'p, :L 'q}
+                 (par. 'p 'q)))
+    (is (.equals {:hear-chan 'x, :msg 'y, :K 'p}
+                 (hear. 'x 'y 'p)))
+    (is (.equals {:say-chan  'x  :msg 'z  :K 'p}
+                 (say.  'x 'z 'p)))
+    (is (.equals {:whisper-chan 'x, :K 'p}
+                 (channel. 'x 'p)))
+    (is (.equals {:K 'p}
+                 (repeat-. 'p)))))
 
 
 ;;  _  _
