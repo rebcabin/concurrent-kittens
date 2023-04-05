@@ -87,19 +87,15 @@
 
   Names     (free-names  [_] #{})  (bound-names [_] #{})
 
-  Rename    (rename-bound [this, _, _]
-              #_(println "(rename-bound nap _ _)")
-              this)
+  Rename    (rename-bound [this, _, _]  this)
 
-  Subst     (subst-free   [this, _, _]
-              #_(println "(subst-free nap _ _)")
-              this)
+  Subst     (subst-free   [this, _, _]  this)
 
   Flatten   (flatten-pars [this] this)
 
   Children  (children [_] [])
 
-  Path      (path-key [_] nil))
+  Path      (path-key [this]          [:nap]))
 
 
 ;; -+-+-+-+-
@@ -115,11 +111,9 @@
   (bound-names [this]  (recursor this bound-names))
 
   Rename    (rename-bound [_, old-, new-]
-              #_(println (f-str "(rename-bound pars {old-} {new-})"))
               (pars. (vec (map #(rename-bound % old- new-) kits))))
 
   Subst     (subst-free [_, x-for, y]
-              #_(println (f-str "(subst-free pars {x-for} {y})"))
               (pars. (vec (map #(subst-free % x-for, y) kits))))
 
   Flatten   (flatten-pars [this]
@@ -127,7 +121,8 @@
 
   Children  (children [_]    kits)
 
-  Path      (path-key [_] :kits))
+  Path      (path-key [this]
+              [:pars :kits]))
 
 
 ;;; See https://clojure.org/guides/spec.
@@ -149,11 +144,9 @@
   (bound-names [this]  (recursor this bound-names))
 
   Rename    (rename-bound [_, old-, new-]
-              #_(println (f-str "(rename-bound par {old-} {new-})"))
               (par. (rename-bound K old- new-) (rename-bound L old- new-)))
 
   Subst     (subst-free [_, x-for, y]
-              #_(println (f-str "(subst-free par {x-for} {y})"))
               (par. (subst-free K x-for y) (subst-free L x-for y)))
 
   ;; To flatten a par:
@@ -181,7 +174,7 @@
 
   Children  (children [_]    [K L])
 
-  Path      (path-key [_] nil))
+  Path      (path-key [this]  [:par :K :L]))
 
 
 ;; -+-+-+-+-
@@ -196,14 +189,12 @@
   (bound-names [_] (set/union #{msg}  (bound-names K)))
 
   Rename    (rename-bound [_, old-, new-]
-              #_(println (f-str "(rename-bound hear {old-} {new-})"))
               (assert (= old- msg)
                       (str (f-str "Old name {old-} must equal ")
                            (f-str "current message name {msg}.")))
               (hear. chan  new-  (rename-bound K old- new-)))
 
   Subst     (subst-free [this, x-for, y]
-              #_(println (f-str "(subst-free hear {x-for} {y})"))
               (cond
 
                 (and (= chan y) (= msg y)) ; false positive!
@@ -211,7 +202,9 @@
                   (hear. x-for defake
                          (rename-bound y defake K)))
 
-                (= chan y) (hear. x-for msg (subst-free K x-for y))
+                (= chan y)  (hear. x-for msg (subst-free K x-for y))
+
+                (= msg y)   (hear. chan x-for (subst-free K x-for y))
 
                 :else this))
 
@@ -220,7 +213,7 @@
 
   Children  (children [_]    [K])
 
-  Path      (path-key [_] :K))
+  Path      (path-key [this]  [:hear :K]))
 
 
 ;; -+-+-+-
@@ -234,12 +227,10 @@
   (free-names  [_] (set/union (set [chan msg]) (free-names K)))
   (bound-names [_] (bound-names K))
 
-  Rename    (rename-bound [this, old-, new-]
-              #_(println (f-str "(rename-bound say {old-} {new-})"))
-              this)
+  Rename    (rename-bound [this, old-, new-]  this)
 
   Subst     (subst-free [this, x-for, y]
-              #_(println (f-str "(subst-free say {x-for} {y})"))
+
               (cond
 
                 (and (= chan y) (= msg y))
@@ -255,7 +246,7 @@
 
   Children  (children [_]    [K])
 
-  Path      (path-key [_]    :K))
+  Path      (path-key [this]  [:say :K]))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -270,21 +261,19 @@
   (bound-names [_] (set/union       #{x} (bound-names K)))
 
   Rename    (rename-bound [_, old-, new-]
-              #_(println (f-str "(rename-bound channel {old-} {new-})"))
               (assert (= old- x)
                       (str (f-str "Old name {old-} must equal ")
                            (f-str "current channel name {x}.")))
               (channel. new- (subst-free K new- old-)))
 
   Subst     (subst-free [_, x-for y]
-              #_(println (f-str "(subst-free repeat- {x-for} {y})"))
               (channel. x (subst-free K x-for y)))
 
   Flatten   (flatten-pars [_]  (channel. x (flatten-pars K)))
 
-  Children  (children [_]    [K])
+  Children  (children [_]      [K])
 
-  Path      (path-key [_]    :K))
+  Path      (path-key [this]   [:channel :K]))
 
 
 ;; -+-+-+-+-+-+-+-
@@ -298,19 +287,17 @@
   (free-names  [_] (free-names K))
   (bound-names [_] (bound-names K))
 
-  Rename    (rename-bound [this, old-, new-]
-              #_(println (f-str "(rename-bound repeat- {old-} {new-})"))
-              this)
+  Rename    (rename-bound [this, old-, new-]  this)
 
   Subst     (subst-free [_, x-for y]
-              #_(println (f-str "(subst-free repeat- {x-for} {y})"))
               (repeat-. (subst-free K x-for y)))
+
   Flatten
   (flatten-pars [_]  (repeat-. (flatten-pars K)))
 
   Children  (children [_]    [K])
 
-  Path      (path-key [_]    :K))
+  Path      (path-key [this]  [:repeat- :K]))
 
 
 ;;  ___ _      _     _  ___ _     ___
@@ -406,38 +393,6 @@ whisper-boat-2
 ;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
 
 
-(let [pr (pars. [kit-1
-                 (pars. [kit-2 kit-3])])
-      mpr (mapcat :kits (:kits pr))
-      pl (pars. [(pars. [kit-1 kit-2])
-                 kit-3])
-      mpl (mapcat :kits (:kits pl))
-      ]
-  {:mpr mpr, :mpl mpl})
-;; => {:mpr
-;;     ({:chan x,
-;;       :msg y,
-;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;      {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}),
-;;     :mpl
-;;     ({:chan x, :msg z, :K {}}
-;;      {:chan x,
-;;       :msg y,
-;;       :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}})}
-;; => {:mpr
-;;     (nil
-;;      [{:chan x,
-;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
-;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]),
-;;     :mpl
-;;     ([{:chan x, :msg z, :K {}}
-;;       {:chan x,
-;;        :msg y,
-;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}]
-;;      nil)}
-
-
 ;;  __  __      _      _    _
 ;; |  \/  |__ _| |_ __| |_ (_)_ _  __ _
 ;; | |\/| / _` |  _/ _| ' \| | ' \/ _` |
@@ -507,6 +462,7 @@ whisper-boat-2
 
 (defn non-deterministic-say-hear-match
   [flat-kit]
+  {:pre [(s/assert ::flat-kit flat-kit)]}
   (let [tsh (find-top-says-and-hears flat-kit)]
     (if (and (not (empty? tsh))
              (not (empty? (:says tsh)))
@@ -517,11 +473,12 @@ whisper-boat-2
                                    (:chan %))
                                (:hears tsh)))]
         (assoc tsh :match-say match-say, :match-hear match-hear)
-        ))))
+        )
+      tsh)))
 
 (non-deterministic-say-hear-match
  whisper-boat-2)
-;; => {:path [:K],
+;; => {:path [[:channel :K]],
 ;;     :top-pars
 ;;     {:kits
 ;;      [{:chan x, :msg z, :K {}}
@@ -542,23 +499,82 @@ whisper-boat-2
 ;;      :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}}
 
 
-;; -+-+-+-+-+-+-+-+-
-;;  R e n a m i n g
-;; -+-+-+-+-+-+-+-+-
+(defn replace-kit
+  [old new kits]
+  (reduce #(conj %1 (if (= %2 old) new %2)) [] kits))
 
 
-;; -+-+-+-+-+-+-+-+-+-+-+-+-
-;;  S u b s t i t u t i o n
-;; -+-+-+-+-+-+-+-+-+-+-+-+-
+(defn match-subst-gobble
+  [flat-kit]
+  {:pre [(s/assert ::flat-kit flat-kit)]}
+  (let [ndshm (non-deterministic-say-hear-match
+               flat-kit)
+        ms (:match-say  ndshm)
+        mh (:match-hear ndshm)]
+    (assert (= (:chan ms) (:chan mh)))
+    (if (and ms mh)
+      (let [said (:msg ms)
+            renamed (if ((bound-names mh) said)
+                      (rename-bound mh said (gensym "g"))
+                      mh)
+            substd (subst-free renamed said (:msg mh))
+            say-suffix  (:K ms)
+            hear-suffix (:K substd)
+            old-kits    (:kits (:top-pars ndshm))
+            rs          (replace-kit ms say-suffix  old-kits)
+            new-kits    (replace-kit mh hear-suffix rs)
+            ;; TODO: Use path.
+            gobbled     (channel. (:x flat-kit) (pars. new-kits))
+            ]
+        gobbled)
+      ndshm)))
 
 
-;; -+-+-+-+-+-+-+-+-
-;;  G o b b l i n g
-;; -+-+-+-+-+-+-+-+-
+whisper-boat-2
+;; => {:x x,
+;;     :K
+;;     {:kits
+;;      [{:chan x, :msg z, :K {}}
+;;       {:chan x,
+;;        :msg y,
+;;        :K {:chan y, :msg x, :K {:chan x, :msg y, :K {}}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+
+
+(match-subst-gobble
+ whisper-boat-2)
+;; => {:x x,
+;;     :K
+;;     {:kits
+;;      [{}
+;;       {:chan z, :msg x, :K {:chan x, :msg z, :K {}}}
+;;       {:chan z, :msg v, :K {:chan v, :msg v, :K {}}}]}}
+
+
+(match-subst-gobble
+ (match-subst-gobble
+  whisper-boat-2))
+;; => {:x x,
+;;     :K
+;;     {:kits [{} {:chan x, :msg z, :K {}} {:chan x, :msg x, :K {}}]}}
+
+
+(match-subst-gobble
+ (match-subst-gobble
+  (match-subst-gobble
+   whisper-boat-2)))
+;; => {:x x, :K {:kits [{} {} {}]}}
+
+
+(loop [boat whisper-boat-2]
+  (if (every? #(= (nap.) %) (:kits (:K boat)))
+    boat
+    (recur (match-subst-gobble boat))))
+;; => {:x x, :K {:kits [{} {} {}]}}
 
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (pprint (ns-publics 'intrinsic-function.core))
-  (println "Hello, World!"))
+  #_(println "Hello, World!"))

@@ -108,6 +108,9 @@
 (deftest flat-kit-spec-test
   (is (thrown? java.lang.Exception
                (find-top-pars whisper-boat)))
+  (is (thrown? java.lang.Exception
+               (non-deterministic-say-hear-match
+                whisper-boat)))
   (is (find-top-pars whisper-boat-2)))
 
 
